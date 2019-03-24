@@ -19,7 +19,7 @@
     "semantic-ui-react": "^0.86.0"
   },
   "devDependencies": {
-    "css-loader": "^2.1.1",
+    "css-loader": "^1.0.1",
     "file-loader": "^3.0.1",
     "nodemon": "^1.18.10",
     "url-loader": "^1.1.2"
