@@ -7,21 +7,25 @@ var cors = require('cors')
 var PORT = process.env.PORT || 8016
 var dev = process.env.NODE_ENV !== 'production'
 
-var app = next({ dev })
-var handle = app.getRequestHandler()
+var NextApp = next({ dev })
+var handle = NextApp.getRequestHandler()
+var mongoose = require('mongoose');
 
-app.prepare().then(() => {
-  const server = express()
-  server.use(bodyParser.json())
-  server.use(cors())
+var db = mongoose.connect('mongodb://localhost:27017')
 
-  // server.use('/', require('./routes'))
+NextApp.prepare().then(() => {
+  const app = express()
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(cors())
 
-  server.get('*', (req, res) => {
+  // app.use('/', require('./routes'))
+
+  app.get('*', (req, res) => {
     return handle(req, res)
   })
 
-  server.listen(PORT, err => {
+  app.listen(PORT, err => {
     if (err) throw err
     console.log(`> Ready on http://localhost:${PORT}`)
   })
