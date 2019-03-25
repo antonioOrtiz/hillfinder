@@ -7,7 +7,6 @@ import 'semantic-ui-css/semantic.min.css'
 const Home = () => (
   <div>
     <Head title='Home' />
-
     <Login />
   </div>
 )

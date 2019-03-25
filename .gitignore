@@ -1,6 +1,8 @@
  build output
 dist
 .next
+# OS
+.DS_Store
 
 # dependencies
 node_modules
