@@ -86,7 +86,7 @@ class Login extends Component {
                   name="username"
                   value={this.state.username}
                   onChange={this.handleChange}
-                />
+                />sho
                 <Form.Input
                   fluid
                   icon='lock'
