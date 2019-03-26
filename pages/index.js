@@ -1,14 +1,14 @@
-import React from 'react'
+import React from 'react';
 // import Link from 'next/link'
-import Head from '../components/head'
-import Login from '../components/Login'
-import 'semantic-ui-css/semantic.min.css'
+import Head from '../components/head';
+import Login from '../components/Login';
+import 'semantic-ui-css/semantic.min.css';
 
 const Home = () => (
   <div>
-    <Head title='Home' />
+    <Head title="Home" />
     <Login />
   </div>
-)
+);
 
-export default Home
+export default Home;
