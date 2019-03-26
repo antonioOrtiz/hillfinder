@@ -1,6 +1,5 @@
-// module.exports = () => {
-//   return {
-//     '/': { page: '/' },
-//     '/404': { page: '/404' }
-//   }
-// }
+var router = require('express').Router();
+
+router.use('/users', require('./users'));
+
+module.exports = router;
