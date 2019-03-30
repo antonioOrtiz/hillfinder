@@ -1,5 +1,5 @@
-var router = require('express').Router();
-var UserModel = require('../../models/UserModel');
+var router = require('express').Router()
+var UserModel = require('../../models/UserModel')
 
 router
   .route('/')
@@ -12,5 +12,4 @@ router
   .put()
   .delete()
 
-return router
-
+module.exports = router
