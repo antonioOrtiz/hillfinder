@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
+import React, { Component } from 'react';
+import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 class Login extends Component {
@@ -9,61 +9,60 @@ class Login extends Component {
     this.state = {
       username: '',
       password: ''
-    }
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
   }
 
   componentDidMount() {
-    this.setState({})
+    this.setState({});
   }
 
   handleChange(event) {
-    var { name, value } = event.target
+    const { name, value } = event.target;
     this.setState({
       [name]: value
-    })
+    });
   }
 
   async handleSubmit(event) {
-    event.preventDefault()
-    const { username, password } = this.state
+    event.preventDefault();
+    const { username, password } = this.state;
 
     try {
       const response = await fetch('https://apiurl.io', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
-      })
+      });
 
       if (response.ok) {
-        const { token } = await response.json()
+        const { token } = await response.json();
         const loginOptions = {
           token,
           cookieOptions: { expires: 1 },
           callback: () => Router.push('/profile')
-        }
-        login(loginOptions)
+        };
+        login(loginOptions);
       } else {
-        console.log('Login failed.')
+        console.log('Login failed.');
       }
     } catch (error) {
-      console.log('Implementation or Network error.')
+      console.log('Implementation or Network error.');
     }
   }
 
-
   render() {
     return (
-      <div className='login-form'>
+      <div className="login-form">
         {/*
       Heads up! The styles below are necessary for the correct render of this example.
       You can do same with CSS, the main idea is that all the elements up to the `Grid`
       below must have a height of 100%.
     */}
-        <style>{`
+        <style>
+          {`
       body > div,
       body > div > div,
       body > div > div > div.login-form {
@@ -71,39 +70,42 @@ class Login extends Component {
       }
     `}
         </style>
-        <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
+        <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as='h2' color='teal' textAlign='center'>
+            <Header as="h2" color="teal" textAlign="center">
               {/* <Image src='/logo.png' /> Log-in to your account */}
               Log-in to your account
-        </Header>
-            <Form size='large' onSubmit={this.handleSubmit}>
+            </Header>
+            <Form size="large" onSubmit={this.handleSubmit}>
               <Segment stacked>
                 <Form.Input
-                  fluid icon='user'
-                  iconPosition='left'
-                  placeholder='E-mail address'
+                  fluid
+                  icon="user"
+                  iconPosition="left"
+                  placeholder="E-mail address"
                   name="username"
                   value={this.state.username}
                   onChange={this.handleChange}
-                />sho
+                />
+                sho
                 <Form.Input
                   fluid
-                  icon='lock'
-                  iconPosition='left'
-                  placeholder='Password'
-                  type='password'
+                  icon="lock"
+                  iconPosition="left"
+                  placeholder="Password"
+                  type="password"
                   value={this.state.password}
                   onChange={this.handleChange}
                 />
-
-                <Button color='teal' fluid size='large'>
+                <Button color="teal" fluid size="large">
                   Login
-            </Button>
+                </Button>
               </Segment>
             </Form>
             <Message>
-              New to us? <a href='#'>Sign Up</a>
+              New to us? 
+{' '}
+<a href="#">Sign Up</a>
             </Message>
           </Grid.Column>
         </Grid>
@@ -112,15 +114,6 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
-
-};
+Login.propTypes = {};
 
 export default Login;
-
-
-
-
-
-
-
