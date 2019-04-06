@@ -6,7 +6,7 @@ const defaultDescription = ''
 const defaultOGURL = ''
 const defaultOGImage = ''
 
-const Head = props => (
+export const Head = props => (
   <NextHead>
     <meta charSet='UTF-8' />
     <title>{props.title || ''}</title>
@@ -19,7 +19,6 @@ const Head = props => (
     <link rel='apple-touch-icon' href='/static/touch-icon.png' />
     <link rel='mask-icon' href='/static/favicon-mask.svg' color='#49B882' />
     <link rel='icon' href='/static/favicon.ico' />
-
     <meta property='og:url' content={props.url || defaultOGURL} />
     <meta property='og:title' content={props.title || ''} />
     <meta
