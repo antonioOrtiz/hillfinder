@@ -1,61 +1,66 @@
-import React, { Component } from 'react';
-import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import Router from 'next/router'
+import { login } from 'next-authentication'
+
+import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
+// import PropTypes from 'prop-types';
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       username: '',
       password: ''
-    };
+    }
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  componentDidMount() {
-    this.setState({});
+  componentDidMount () {
+    this.setState({})
   }
 
-  handleChange(event) {
-    const { name, value } = event.target;
+  handleChange (event) {
+    const { name, value } = event.target
     this.setState({
       [name]: value
-    });
+    })
   }
 
-  async handleSubmit(event) {
-    event.preventDefault();
-    const { username, password } = this.state;
+  async handleSubmit (event) {
+    event.preventDefault()
+    const { username, password } = this.state
 
     try {
-      const response = await fetch('https://apiurl.io', {
+      const response = await window.fetch('http://localhost:8016/users', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
-      });
+      })
 
       if (response.ok) {
-        const { token } = await response.json();
+        const { token } = await response.json()
         const loginOptions = {
           token,
           cookieOptions: { expires: 1 },
-          callback: () => Router.push('/profile')
-        };
-        login(loginOptions);
+          callback: () => Router.push('/users')
+        }
+        login(loginOptions)
       } else {
-        console.log('Login failed.');
+        // eslint-disable-next-line no-console
+        console.log('Login failed.')
       }
     } catch (error) {
-      console.log('Implementation or Network error.');
+      console.log('Implementation or Network error.')
     }
   }
 
-  render() {
+  render () {
+    var { username, password } = this.state
     return (
-      <div className="login-form">
+      <div className='login-form'>
         {/*
       Heads up! The styles below are necessary for the correct render of this example.
       You can do same with CSS, the main idea is that all the elements up to the `Grid`
@@ -70,50 +75,49 @@ class Login extends Component {
       }
     `}
         </style>
-        <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
+        <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="teal" textAlign="center">
+            <Header as='h2' color='teal' textAlign='center'>
               {/* <Image src='/logo.png' /> Log-in to your account */}
               Log-in to your account
             </Header>
-            <Form size="large" onSubmit={this.handleSubmit}>
+            <Form size='large' onSubmit={this.handleSubmit}>
               <Segment stacked>
                 <Form.Input
                   fluid
-                  icon="user"
-                  iconPosition="left"
-                  placeholder="E-mail address"
-                  name="username"
-                  value={this.state.username}
+                  icon='user'
+                  iconPosition='left'
+                  placeholder='E-mail address'
+                  name='username'
+                  value={username}
                   onChange={this.handleChange}
                 />
                 sho
                 <Form.Input
                   fluid
-                  icon="lock"
-                  iconPosition="left"
-                  placeholder="Password"
-                  type="password"
-                  value={this.state.password}
+                  icon='lock'
+                  iconPosition='left'
+                  placeholder='Password'
+                  type='password'
+                  value={password}
                   onChange={this.handleChange}
                 />
-                <Button color="teal" fluid size="large">
+                <Button color='teal' fluid size='large'>
                   Login
                 </Button>
               </Segment>
             </Form>
             <Message>
-              New to us? 
-{' '}
-<a href="#">Sign Up</a>
+              New to us?
+              <a href='#'>Sign Up</a>
             </Message>
           </Grid.Column>
         </Grid>
       </div>
-    );
+    )
   }
 }
 
-Login.propTypes = {};
+Login.propTypes = {}
 
-export default Login;
+export default Login
