@@ -1,7 +1,7 @@
-const withCSS = require('@zeit/next-css')
+const withCSS = require('@zeit/next-css');
 
 module.exports = withCSS({
-  webpack: function (config) {
+  webpack(config) {
     config.module.rules.push({
       test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
       use: {
@@ -11,7 +11,7 @@ module.exports = withCSS({
           name: '[name].[ext]'
         }
       }
-    })
-    return config
+    });
+    return config;
   }
-})
+});
