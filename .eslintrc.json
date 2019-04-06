@@ -1,12 +1,51 @@
 {
-    "extends": ["airbnb", "prettier", "react-app", "plugin:prettier/recommended"],
-    "plugins": ["prettier"],
+
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true
+        }
+    },
+    "env": {
+        "browser": true,
+        "jest/globals": true,
+        "cypress/globals": true
+    },
+    "globals": {
+        "fetch": true
+    },
+    "plugins": [
+        "jest",
+        "cypress"
+    ],
+    "extends": [
+        "airbnb",
+        "prettier",
+        "plugin:jest/recommended",
+        "plugin:cypress/recommended"
+    ],
     "rules": {
-        "no-var": false,
-        "prettier/prettier": ["error"],
-        "jsx-a11y/href-no-hash": [0],
-        "react/jsx-filename-extension": [1, {
-            "extensions": [".js", ".jsx"]
-        }]
-    }
+        "react/prop-types": "off",
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [
+                    ".js"
+                ]
+            }
+        ],
+        "jsx-a11y/label-has-for": "off",
+        "jsx-a11y/label-has-associated-control": "off"
+    },
+    "space-before-function-paren": [
+        "error",
+        {
+            "anonymous": "always",
+            "named": "always",
+            "asyncArrow": "always"
+        }
+    ]
 }
