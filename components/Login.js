@@ -6,38 +6,45 @@ import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 // import PropTypes from 'prop-types';
 
 class Login extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.state = {
+      isLoggedIn: false,
       username: '',
       password: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
+    this.handleIsLoggedInClick = this.handleIsLoggedInClick.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.setState({})
   }
 
-  handleChange (event) {
-    const { name, value } = event.target
+  handleChange(event) {
+    var { name, value } = event.target
     this.setState({
       [name]: value
     })
   }
 
-  async handleSubmit (event) {
+  handleIsLoggedInClick() {
+    var { isLoggedIn } = this.state
+    !isLoggedIn ? this.setState({ isLoggedIn: true }) : this.setState({ isLoggedIn: false })
+  }
+
+  async handleSubmit(event) {
     event.preventDefault()
     const { username, password } = this.state
 
     try {
       const response = await window.fetch('http://localhost:8016/users', {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        headers: { 'Content-Type': 'application/json' }
       })
 
       if (response.ok) {
@@ -57,8 +64,8 @@ class Login extends Component {
     }
   }
 
-  render () {
-    var { username, password } = this.state
+  render() {
+    var { username, password, isLoggedIn } = this.state
     return (
       <div className='login-form'>
         {/*
@@ -79,7 +86,7 @@ class Login extends Component {
           <Grid.Column style={{ maxWidth: 450 }}>
             <Header as='h2' color='teal' textAlign='center'>
               {/* <Image src='/logo.png' /> Log-in to your account */}
-              Log-in to your account
+              {isLoggedIn ? `Register for an account` : ` Log-in to your account`}
             </Header>
             <Form size='large' onSubmit={this.handleSubmit}>
               <Segment stacked>
@@ -92,7 +99,7 @@ class Login extends Component {
                   value={username}
                   onChange={this.handleChange}
                 />
-                sho
+
                 <Form.Input
                   fluid
                   icon='lock'
@@ -103,14 +110,19 @@ class Login extends Component {
                   onChange={this.handleChange}
                 />
                 <Button color='teal' fluid size='large'>
-                  Login
+                  {isLoggedIn ? `Register` : `Log-in`}
                 </Button>
               </Segment>
             </Form>
-            <Message>
-              New to us?
-              <a href='#'>Sign Up</a>
-            </Message>
+            {!isLoggedIn
+              ? <Message>
+                New to us?
+                <a onClick={this.handleIsLoggedInClick} href='#'> Register!</a>
+              </Message>
+              : <Message>
+                <a onClick={this.handleIsLoggedInClick} href='#'>Back to Login</a>
+              </Message>
+            }
           </Grid.Column>
         </Grid>
       </div>
