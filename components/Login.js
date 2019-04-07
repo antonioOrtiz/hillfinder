@@ -20,9 +20,9 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  componentDidMount() {
-    this.setState({})
-  }
+  // componentDidMount() {
+  //   this.setState({})
+  // }
 
   handleChange(event) {
     var { name, value } = event.target
@@ -36,32 +36,45 @@ class Login extends Component {
     !isLoggedIn ? this.setState({ isLoggedIn: true }) : this.setState({ isLoggedIn: false })
   }
 
-  async handleSubmit(event) {
+  handleSubmit(event) {
     event.preventDefault()
-    const { username, password } = this.state
+    var { username, password } = this.state
 
-    try {
-      const response = await window.fetch('http://localhost:8016/users', {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
-        headers: { 'Content-Type': 'application/json' }
-      })
+    window.fetch('http://localhost:8016/auth/users', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: username, password: password })
+    }).then(function (response) {
+      console.log(`response ${response}`)
+      return response.json()
+    }).then(function (data) {
+      console.log('User created:', data)
+    })
 
-      if (response.ok) {
-        const { token } = await response.json()
-        const loginOptions = {
-          token,
-          cookieOptions: { expires: 1 },
-          callback: () => Router.push('/users')
-        }
-        login(loginOptions)
-      } else {
-        // eslint-disable-next-line no-console
-        console.log('Login failed.')
-      }
-    } catch (error) {
-      console.log('Implementation or Network error.')
-    }
+    // try {
+    //   const response = await window.fetch('http://localhost:8016/', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ username, password })
+    //   })
+
+    //   if (response.ok) {
+    //     const { token } = await response.json()
+
+    //     const loginOptions = {
+    //       token,
+    //       cookieOptions: { expires: 1 },
+    //       callback: () => Router.push('/auth/users')
+    //     }
+    //     console.log(`token ${token}`)
+    //     login(loginOptions)
+    //   } else {
+    //     // eslint-disable-next-line no-console
+    //     console.log('Login failed.')
+    //   }
+    // } catch (error) {
+    //   console.log('Implementation or Network error.')
+    // }
   }
 
   render() {
@@ -105,7 +118,7 @@ class Login extends Component {
                   icon='lock'
                   iconPosition='left'
                   placeholder='Password'
-                  type='password'
+                  name='password'
                   value={password}
                   onChange={this.handleChange}
                 />
