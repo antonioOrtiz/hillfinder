@@ -7,7 +7,7 @@ var MongoStore = require('connect-mongo')(session)
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var cors = require('cors')
-// var morgan = require('morgan');
+var morgan = require('morgan')
 var HttpStatus = require('http-status-codes')
 
 var PORT = process.env.PORT || 8016
@@ -37,12 +37,10 @@ function errorHandler (err, req, res, next) {
   })
 }
 
-const users = require('./routes')
-
 NextApp.prepare()
   .then(() => {
     const app = express()
-    mongoose.connect(db)
+    mongoose.connect(db, { useNewUrlParser: true })
     mongoose.Promise = global.Promise
 
     mongoose.connection
@@ -55,7 +53,7 @@ NextApp.prepare()
 
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
-    // app.use(morgan('combined'));
+    app.use(morgan('dev'))
 
     app.use(cookieParser())
     app.use(
@@ -69,7 +67,7 @@ NextApp.prepare()
     app.use(cors())
 
     // eslint-disable-next-line global-require
-    app.use('/', users)
+    app.use('/auth', require('./auth'))
 
     app.get('*', (req, res) => {
       return handle(req, res)
