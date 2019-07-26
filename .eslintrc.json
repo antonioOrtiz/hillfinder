@@ -28,6 +28,7 @@
         "plugin:cypress/recommended"
     ],
     "rules": {
+        "react/jsx-boolean-value": 0,
         "react/prop-types": "off",
         "react/jsx-filename-extension": [
             1,
