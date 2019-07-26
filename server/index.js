@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable no-shadow */
 var express = require('express')
+require('dotenv').config()
+
 var next = require('next')
 var session = require('express-session')
 var MongoStore = require('connect-mongo')(session)
@@ -9,17 +11,42 @@ var bodyParser = require('body-parser')
 var cors = require('cors')
 var morgan = require('morgan')
 var HttpStatus = require('http-status-codes')
-
 var PORT = process.env.PORT || 8016
-var dev = process.env.NODE_ENV !== 'production'
+var dev = process.env.NODE_ENV !== `production`;
+
+
+function processNODEENVCheckerAndServerRuntimeConfigSetter(ENV) {
+  var environment,
+    environments = {
+      'production': () => {
+        environment = process.env.PRODUCTION_DB_DSN;
+        return environment;
+      },
+      'test': () => {
+        environment = process.env.TEST_DB_DSN;
+        return environment;
+      },
+      'default': () => {
+        environment = process.env.DEVELOPMENT_DB_DSN;
+        console.log("environment ", environment);
+        return environment;
+      },
+    };
+  (environments[ENV] || environments['default'])();
+
+  return environment
+}
+
+var db = processNODEENVCheckerAndServerRuntimeConfigSetter()
+console.log("db ", db);
+
 var NextApp = next({ dev })
 var handle = NextApp.getRequestHandler()
 
 var mongoose = require('mongoose')
 
-var db = `mongodb://127.0.0.1:27017/hillfinder`
 
-function errorHandler (err, req, res, next) {
+function errorHandler(err, req, res, next) {
   // Set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
@@ -36,6 +63,7 @@ function errorHandler (err, req, res, next) {
     message: HttpStatus.getStatusText(err.status)
   })
 }
+
 
 NextApp.prepare()
   .then(() => {
@@ -56,14 +84,14 @@ NextApp.prepare()
     app.use(morgan('dev'))
 
     app.use(cookieParser())
-    app.use(
-      session({
-        secret: 'very secret 12345',
-        resave: true,
-        saveUninitialized: false,
-        store: new MongoStore({ mongooseConnection: mongoose.connection })
-      })
-    )
+
+    session({
+      secret: 'very secret 12345',
+      resave: true,
+      saveUninitialized: false,
+      store: new MongoStore({ mongooseConnection: mongoose.connection })
+    })
+
     app.use(cors())
 
     // eslint-disable-next-line global-require
