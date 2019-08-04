@@ -39,7 +39,7 @@ class RegisterForm extends Component {
   // }
 
   handleBlur() {
-    var { username, usernameError } = this.state
+    var { username, usernameError, password, passwordError, emailExistsError } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -47,6 +47,16 @@ class RegisterForm extends Component {
       this.setState({ usernameError: true, error: true })
     } else {
       this.setState({ usernameError: false, error: false })
+    }
+
+    if ((!password.length) && (passwordError)) {
+      this.setState({ passwordError: true, error: true })
+    } else {
+      this.setState({ passwordError: false, error: false, formSuccess: false })
+    }
+
+    if (emailExistsError) {
+      this.setState({ formSuccess: false, error: true })
     }
   }
 
@@ -185,7 +195,7 @@ class RegisterForm extends Component {
                   content='Please re-enter another email address.' />
               </Transition>}
 
-              <Transition visible={(formSuccess) && (!error)}
+              <Transition visible={formSuccess && !error}
                 animation='scale'
                 duration={500}>
                 <Message success header='Your user registration was successful.'
