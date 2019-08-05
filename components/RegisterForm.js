@@ -48,11 +48,7 @@ class RegisterForm extends Component {
       this.setState({ usernameError: false, error: false })
     }
 
-    if (password.length <= 8 || !password.length) {
-      this.setState({ passwordError: true, error: true })
-    } else {
-      this.setState({ passwordError: false, error: false })
-    }
+
   }
 
   handleErrors(response) {
@@ -91,7 +87,7 @@ class RegisterForm extends Component {
       this.setState({ usernameError: false })
     }
 
-    if (!username.match(mailFormat) && (password.length <= 8)) {
+    if (password.length <= 8) {
       this.setState({ passwordError: true, error: true })
     } else {
       this.setState({ usernameError: false })
