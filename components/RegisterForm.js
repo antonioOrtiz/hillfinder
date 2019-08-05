@@ -42,7 +42,7 @@ class RegisterForm extends Component {
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    if ((!username.match(mailFormat)) && (!username)) {
+    if ((!username.match(mailFormat)) || (!username)) {
       this.setState({ usernameError: true, error: true })
     } else {
       this.setState({ usernameError: false, error: false })
@@ -190,7 +190,7 @@ class RegisterForm extends Component {
               </Button>
 
               {console.log("emailExistsError ", emailExistsError)}
-              {<Transition visible={emailExistsError}
+              {<Transition visible={emailExistsError && error}
                 animation='scale'
                 duration={500}>
                 <Message error centered="true" header='This email exists.'
