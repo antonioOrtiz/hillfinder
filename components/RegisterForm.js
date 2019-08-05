@@ -8,7 +8,6 @@ class RegisterForm extends Component {
 
     this.state = {
       fadeUp: 'fade up',
-      // isLoggedIn: true,
       duration: 500,
       username: '',
       password: '',
@@ -49,7 +48,7 @@ class RegisterForm extends Component {
       this.setState({ usernameError: false, error: false })
     }
 
-    if (password.length <= 8) {
+    if (password.length <= 8 || !password.length) {
       this.setState({ passwordError: true, error: true })
     } else {
       this.setState({ passwordError: false, error: false })
@@ -86,8 +85,14 @@ class RegisterForm extends Component {
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 
+    if (!username.match(mailFormat)) {
+      this.setState({ usernameError: true, error: true })
+    } else {
+      this.setState({ usernameError: false })
+    }
+
     if (!username.match(mailFormat) && (password.length <= 8)) {
-      this.setState({ usernameError: true, passwordError: true, error: true })
+      this.setState({ passwordError: true, error: true })
     } else {
       this.setState({ usernameError: false })
     }
@@ -179,11 +184,12 @@ class RegisterForm extends Component {
 
               <Button color='teal'
                 fluid size='large'
-                disabled={!this.state.username || !this.state.password}>
+                disabled={!username || !password || error}>
                 Register
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
+              {console.log("emailExistsError ", emailExistsError)}
               {<Transition visible={emailExistsError}
                 animation='scale'
                 duration={500}>
@@ -191,7 +197,7 @@ class RegisterForm extends Component {
                   content='Please re-enter another email address.' />
               </Transition>}
 
-              <Transition visible={(formSuccess) && (!error)}
+              <Transition visible={formSuccess && !emailExistsError && !error}
                 animation='scale'
                 duration={500}>
                 <Message success header='Your user registration was successful.'
@@ -201,7 +207,7 @@ class RegisterForm extends Component {
           </Form>
 
           {formSuccess && !emailExistsError ?
-            <Transition visible={formSuccess}
+            <Transition visible={formSuccess && !emailExistsError}
               animation='scale'
               duration={1000}>
               <Message>
