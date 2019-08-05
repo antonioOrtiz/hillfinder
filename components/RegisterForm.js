@@ -39,24 +39,20 @@ class RegisterForm extends Component {
   // }
 
   handleBlur() {
-    var { username, usernameError, password, passwordError, emailExistsError } = this.state
+    var { username, password } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    if ((!username.match(mailFormat)) && (!usernameError)) {
+    if ((!username.match(mailFormat)) && (!username)) {
       this.setState({ usernameError: true, error: true })
     } else {
       this.setState({ usernameError: false, error: false })
     }
 
-    if ((!password.length) && (passwordError)) {
+    if (password.length <= 8) {
       this.setState({ passwordError: true, error: true })
     } else {
-      this.setState({ passwordError: false, error: false, formSuccess: false })
-    }
-
-    if (emailExistsError) {
-      this.setState({ formSuccess: false, error: true })
+      this.setState({ passwordError: false, error: false })
     }
   }
 
@@ -90,9 +86,8 @@ class RegisterForm extends Component {
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 
-
     if (!username.match(mailFormat) && (password.length <= 8)) {
-      this.setState({ usernameError: true, error: true })
+      this.setState({ usernameError: true, passwordError: true, error: true })
     } else {
       this.setState({ usernameError: false })
     }
@@ -171,6 +166,7 @@ class RegisterForm extends Component {
                 placeholder='Password'
                 name='password'
                 value={password}
+                onBlur={this.handleBlur}
                 onChange={this.handleChange}
                 error={passwordError}
               />
@@ -178,7 +174,7 @@ class RegisterForm extends Component {
               <Transition visible={passwordError}
                 animation='scale'
                 duration={500}>
-                <Message error content='Paswword needs to be greater than eight characters.' />
+                <Message error content='Password needs to be greater than eight characters.' />
               </Transition>
 
               <Button color='teal'
@@ -188,14 +184,14 @@ class RegisterForm extends Component {
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
-              {<Transition visible={emailExistsError && error}
+              {<Transition visible={emailExistsError}
                 animation='scale'
                 duration={500}>
                 <Message error centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
               </Transition>}
 
-              <Transition visible={formSuccess && !error}
+              <Transition visible={(formSuccess) && (!error)}
                 animation='scale'
                 duration={500}>
                 <Message success header='Your user registration was successful.'
