@@ -60,7 +60,7 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          userNameDup: true, error: true
+          userNameDup: true, error: true, formSuccess: false
         })
       }
       throw Error(response.statusText);
@@ -137,8 +137,8 @@ class RegisterForm extends Component {
 
           <Form size='large'
             onSubmit={this.handleSubmit}
-            error={formSuccess || usernameError || passwordError}
-            success={!formSuccess}>
+            error={!formSuccess || usernameError || passwordError}
+            success={formSuccess}>
             <Segment stacked>
               <Form.Input fluid icon='user'
                 iconPosition='left'
@@ -178,6 +178,8 @@ class RegisterForm extends Component {
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
+
+              {console.log("userNameDup ", userNameDup)}
               <Transition visible={formSuccess && !userNameDup}
                 animation='scale'
                 duration={500}>
