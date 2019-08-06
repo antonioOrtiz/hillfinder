@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
-import Link from 'next/link';
+import Router from 'next/router'
 
 class RegisterForm extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class RegisterForm extends Component {
       usernameError: false,
       passwordError: false,
       formSuccess: false,
-      emailExistsError: false,
+      userNameDup: false,
       error: false
     }
 
@@ -39,24 +39,19 @@ class RegisterForm extends Component {
   // }
 
   handleBlur() {
-    var { username, usernameError, password, passwordError, emailExistsError } = this.state
+    var { username, password, usernameError } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     if ((!username.match(mailFormat)) && (!usernameError)) {
-      this.setState({ usernameError: true, error: true })
+      this.setState({ usernameError: true, error: true, })
     } else {
-      this.setState({ usernameError: false, error: false })
+      this.setState({ usernameError: false })
     }
-
-    if ((!password.length) && (passwordError)) {
+    if (password.length <= 8) {
       this.setState({ passwordError: true, error: true })
     } else {
-      this.setState({ passwordError: false, error: false, formSuccess: false })
-    }
-
-    if (emailExistsError) {
-      this.setState({ formSuccess: false, error: true })
+      this.setState({ passwordError: false, error: false })
     }
   }
 
@@ -65,14 +60,7 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          emailExistsError: true, error: true
-        })
-      }
-
-      if (response.status === 401) {
-        console.log("response.status ", response.status);
-        this.setState({
-          emailExistsError: true, error: true
+          userNameDup: true, error: true
         })
       }
       throw Error(response.statusText);
@@ -85,25 +73,28 @@ class RegisterForm extends Component {
   handleSubmit(event) {
     event.preventDefault()
 
-    var { username, password, error, emailExistsError } = this.state
+    var { username, password } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-
-
-    if (!username.match(mailFormat) && (password.length <= 8)) {
+    if (!username.match(mailFormat)) {
       this.setState({ usernameError: true, error: true })
     } else {
-      this.setState({ usernameError: false })
+      this.setState({ usernameError: false, error: false })
     }
 
-    if (error == true) {
-      this.setState({ formSuccess: false })
+    if (password.length <= 8) {
+      this.setState({ passwordError: true, error: true })
     } else {
+      this.setState({ passwordError: false, error: false, formSuccess: true })
+    }
+
+
+    console.log(`error ${this.state.error}`)
+    if (this.state.error == false) {
       this.setState({ formSuccess: true })
     }
 
-    console.log(`error ${this.state.error}`)
 
     window.fetch('http://localhost:8016/users/registration', {
       method: 'POST',
@@ -115,7 +106,6 @@ class RegisterForm extends Component {
         console.log(`response ${response}`)
         return response.json()
       }).then(function (data) {
-
         console.log('User created:', data)
       }).catch(function (error) {
         console.log(error);
@@ -124,7 +114,7 @@ class RegisterForm extends Component {
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, emailExistsError, error } = this.state;
+    var { username, password, usernameError, passwordError, formSuccess, userNameDup, error } = this.state;
 
     return (<div className='login-form'> {
       /*
@@ -147,8 +137,8 @@ class RegisterForm extends Component {
 
           <Form size='large'
             onSubmit={this.handleSubmit}
-            error={!formSuccess || usernameError || passwordError}
-            success={formSuccess}>
+            error={formSuccess || usernameError || passwordError}
+            success={!formSuccess}>
             <Segment stacked>
               <Form.Input fluid icon='user'
                 iconPosition='left'
@@ -163,7 +153,7 @@ class RegisterForm extends Component {
               <Transition visible={usernameError}
                 animation='scale'
                 duration={500}>
-                <Message error content='username_Email is in incorrect format e.g. joe@schmoe.com' />
+                <Message error content='Email is in incorrect format e.g. joe@schmoe.com' />
               </Transition>
 
               <Form.Input fluid icon='lock'
@@ -188,34 +178,34 @@ class RegisterForm extends Component {
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
-              {<Transition visible={emailExistsError && error}
-                animation='scale'
-                duration={500}>
-                <Message error centered="true" header='This email exists.'
-                  content='Please re-enter another email address.' />
-              </Transition>}
-
-              <Transition visible={formSuccess && !error}
+              <Transition visible={formSuccess && !userNameDup}
                 animation='scale'
                 duration={500}>
                 <Message success header='Your user registration was successful.'
                   content='You may now log-in with the username you have chosen.' />
               </Transition>
+
+              <Transition visible={userNameDup && error}
+                animation='scale'
+                duration={500}>
+                <Message error centered="true" header='This email exists.'
+                  content='Please re-enter another email address.' />
+              </Transition>
+
+
+
             </Segment>
           </Form>
 
-          {formSuccess && !emailExistsError ?
-            <Transition visible={formSuccess}
-              animation='scale'
-              duration={1000}>
-              <Message>
-                <Link href="/login">
-                  <a>Login</a>
-                </Link> </Message>
-            </Transition>
-            : null
-          }
-        </Grid.Column> </Grid> </div>
+          {/* {!isLoggedIn ?
+            <Message >
+              New to us ?
+                <a onClick={this.handleIsLoggedInClick}
+                href='#' > Register! </a> </Message > : <Message>
+              <a onClick={this.handleIsLoggedInClick}
+                href='#' > Back to Login </a> </Message>
+          }  */}
+        </Grid.Column> </Grid> </div >
     )
   }
 }
