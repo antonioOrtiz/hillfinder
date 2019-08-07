@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
-import Router from 'next/router'
+import Link from 'next/link';
 
 class RegisterForm extends Component {
   constructor(props) {
@@ -8,7 +8,6 @@ class RegisterForm extends Component {
 
     this.state = {
       fadeUp: 'fade up',
-      // isLoggedIn: true,
       duration: 500,
       username: '',
       password: '',
@@ -16,7 +15,6 @@ class RegisterForm extends Component {
       passwordError: false,
       formSuccess: false,
       userNameDup: false,
-      error: false
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -28,7 +26,7 @@ class RegisterForm extends Component {
   }
 
   handleChange(event) {
-    var { name, value } = event.target
+    var { name, value } = event.target;
     this.setState({
       [name]: value
     })
@@ -39,20 +37,19 @@ class RegisterForm extends Component {
   // }
 
   handleBlur() {
-    var { username, password, usernameError } = this.state
+    var { username } = this.state;
+    var error = false;
 
-    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if ((!username.match(mailFormat)) && (!usernameError)) {
-      this.setState({ usernameError: true, error: true, })
+    if ((!username.match(mailFormat)) || (!username)) {
+      error = true;
+      this.setState({ usernameError: true });
     } else {
-      this.setState({ usernameError: false })
+      this.setState({ usernameError: false, });
     }
-    if (password.length <= 8) {
-      this.setState({ passwordError: true, error: true })
-    } else {
-      this.setState({ passwordError: false, error: false })
-    }
+
+
   }
 
   handleErrors(response) {
@@ -60,39 +57,47 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          userNameDup: true, error: true, formSuccess: false
+          userNameDup: true,
         })
       }
-      throw Error(response.statusText);
-
+    } else {
+      this.setState({
+        userNameDup: false,
+      })
     }
+
 
     return response;
   }
 
   handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
+    var error = false
 
-    var { username, password } = this.state
+    var { username, password, userNameDup } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+
     if (!username.match(mailFormat)) {
-      this.setState({ usernameError: true, error: true })
+      this.setState({ usernameError: true });
+      error = true;
     } else {
-      this.setState({ usernameError: false, error: false })
+      this.setState({ usernameError: false });
     }
 
-    if (password.length <= 8) {
-      this.setState({ passwordError: true, error: true })
+    if (password.length < 8) {
+      this.setState({ passwordError: true });
+      error = true;
     } else {
-      this.setState({ passwordError: false, error: false, formSuccess: true })
+      this.setState({ passwordError: false })
     }
 
-
-    console.log(`error ${this.state.error}`)
-    if (this.state.error == false) {
-      this.setState({ formSuccess: true })
+    if (error) {
+      this.setState({ formSuccess: false });
+      return;
+    } else {
+      this.setState({ formSuccess: true });
     }
 
 
@@ -106,15 +111,18 @@ class RegisterForm extends Component {
         console.log(`response ${response}`)
         return response.json()
       }).then(function (data) {
+
         console.log('User created:', data)
       }).catch(function (error) {
         console.log(error);
       });
 
+    setTimeout(() => { this.setState({ username: '', password: '' }) })
+
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, userNameDup, error } = this.state;
+    var { username, password, usernameError, passwordError, formSuccess, userNameDup } = this.state;
 
     return (<div className='login-form'> {
       /*
@@ -137,8 +145,7 @@ class RegisterForm extends Component {
 
           <Form size='large'
             onSubmit={this.handleSubmit}
-            error={!formSuccess || usernameError || passwordError}
-            success={formSuccess}>
+            error={!formSuccess}>
             <Segment stacked>
               <Form.Input fluid icon='user'
                 iconPosition='left'
@@ -153,7 +160,7 @@ class RegisterForm extends Component {
               <Transition visible={usernameError}
                 animation='scale'
                 duration={500}>
-                <Message error content='Email is in incorrect format e.g. joe@schmoe.com' />
+                <Message error content='username_Email is in incorrect format e.g. joe@schmoe.com' />
               </Transition>
 
               <Form.Input fluid icon='lock'
@@ -161,6 +168,7 @@ class RegisterForm extends Component {
                 placeholder='Password'
                 name='password'
                 value={password}
+                onBlur={this.handleBlur}
                 onChange={this.handleChange}
                 error={passwordError}
               />
@@ -168,46 +176,45 @@ class RegisterForm extends Component {
               <Transition visible={passwordError}
                 animation='scale'
                 duration={500}>
-                <Message error content='Paswword needs to be greater than eight characters.' />
+                <Message error content='Password needs to be greater than eight characters.' />
               </Transition>
 
               <Button color='teal'
                 fluid size='large'
-                disabled={!this.state.username || !this.state.password}>
+                disabled={!username || !password}>
                 Register
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
-
               {console.log("userNameDup ", userNameDup)}
-              <Transition visible={formSuccess && !userNameDup}
-                animation='scale'
-                duration={500}>
-                <Message success header='Your user registration was successful.'
-                  content='You may now log-in with the username you have chosen.' />
-              </Transition>
-
-              <Transition visible={userNameDup && error}
+              <Transition visible={userNameDup}
                 animation='scale'
                 duration={500}>
                 <Message error centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
               </Transition>
 
-
-
+              <Transition visible={formSuccess && !userNameDup}
+                animation='scale'
+                duration={500}>
+                <Message success header='Your user registration was successful.'
+                  content='You may now log-in with the username you have chosen.' />
+              </Transition>
             </Segment>
           </Form>
 
-          {/* {!isLoggedIn ?
-            <Message >
-              New to us ?
-                <a onClick={this.handleIsLoggedInClick}
-                href='#' > Register! </a> </Message > : <Message>
-              <a onClick={this.handleIsLoggedInClick}
-                href='#' > Back to Login </a> </Message>
-          }  */}
-        </Grid.Column> </Grid> </div >
+          {formSuccess ?
+            <Transition visible={formSuccess}
+              animation='scale'
+              duration={1000}>
+              <Message>
+                <Link href="/login">
+                  <a>Login</a>
+                </Link> </Message>
+            </Transition>
+            : null
+          }
+        </Grid.Column> </Grid> </div>
     )
   }
 }
