@@ -14,8 +14,7 @@ class RegisterForm extends Component {
       usernameError: false,
       passwordError: false,
       formSuccess: false,
-      emailExistsError: false,
-      error: false
+      userNameDup: false,
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -27,7 +26,7 @@ class RegisterForm extends Component {
   }
 
   handleChange(event) {
-    var { name, value } = event.target
+    var { name, value } = event.target;
     this.setState({
       [name]: value
     })
@@ -38,14 +37,16 @@ class RegisterForm extends Component {
   // }
 
   handleBlur() {
-    var { username, password } = this.state
+    var { username } = this.state;
+    var error = false;
 
-    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if ((!username.match(mailFormat)) || (!username)) {
-      this.setState({ usernameError: true, error: true })
+      error = true;
+      this.setState({ usernameError: true });
     } else {
-      this.setState({ usernameError: false, error: false })
+      this.setState({ usernameError: false, });
     }
 
 
@@ -56,50 +57,49 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          emailExistsError: true, error: true
+          userNameDup: true,
         })
       }
-
-      if (response.status === 401) {
-        console.log("response.status ", response.status);
-        this.setState({
-          emailExistsError: true, error: true
-        })
-      }
-      throw Error(response.statusText);
-
+    } else {
+      this.setState({
+        userNameDup: false,
+      })
     }
+
 
     return response;
   }
 
   handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
+    var error = false
 
-    var { username, password, error, emailExistsError } = this.state
+    var { username, password, userNameDup } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 
     if (!username.match(mailFormat)) {
-      this.setState({ usernameError: true, error: true })
+      this.setState({ usernameError: true });
+      error = true;
     } else {
-      this.setState({ usernameError: false })
+      this.setState({ usernameError: false });
     }
 
-    if (password.length <= 8) {
-      this.setState({ passwordError: true, error: true })
+    if (password.length < 8) {
+      this.setState({ passwordError: true });
+      error = true;
     } else {
-      this.setState({ usernameError: false })
+      this.setState({ passwordError: false })
     }
 
-    if (error == true) {
-      this.setState({ formSuccess: false })
+    if (error) {
+      this.setState({ formSuccess: false });
+      return;
     } else {
-      this.setState({ formSuccess: true })
+      this.setState({ formSuccess: true });
     }
 
-    console.log(`error ${this.state.error}`)
 
     window.fetch('http://localhost:8016/users/registration', {
       method: 'POST',
@@ -117,10 +117,12 @@ class RegisterForm extends Component {
         console.log(error);
       });
 
+    setTimeout(() => { this.setState({ username: '', password: '' }) })
+
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, emailExistsError, error } = this.state;
+    var { username, password, usernameError, passwordError, formSuccess, userNameDup } = this.state;
 
     return (<div className='login-form'> {
       /*
@@ -143,8 +145,7 @@ class RegisterForm extends Component {
 
           <Form size='large'
             onSubmit={this.handleSubmit}
-            error={!formSuccess || usernameError || passwordError}
-            success={formSuccess}>
+            error={!formSuccess}>
             <Segment stacked>
               <Form.Input fluid icon='user'
                 iconPosition='left'
@@ -180,20 +181,20 @@ class RegisterForm extends Component {
 
               <Button color='teal'
                 fluid size='large'
-                disabled={!username || !password || error}>
+                disabled={!username || !password}>
                 Register
                 {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
 
-              {console.log("emailExistsError ", emailExistsError)}
-              {<Transition visible={emailExistsError && error}
+              {console.log("userNameDup ", userNameDup)}
+              <Transition visible={userNameDup}
                 animation='scale'
                 duration={500}>
                 <Message error centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
-              </Transition>}
+              </Transition>
 
-              <Transition visible={formSuccess && !emailExistsError && !error}
+              <Transition visible={formSuccess && !userNameDup}
                 animation='scale'
                 duration={500}>
                 <Message success header='Your user registration was successful.'
@@ -202,8 +203,8 @@ class RegisterForm extends Component {
             </Segment>
           </Form>
 
-          {formSuccess && !emailExistsError ?
-            <Transition visible={formSuccess && !emailExistsError}
+          {formSuccess ?
+            <Transition visible={formSuccess}
               animation='scale'
               duration={1000}>
               <Message>
