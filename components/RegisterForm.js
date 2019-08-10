@@ -18,6 +18,7 @@ class RegisterForm extends Component {
     }
 
     this.handleChange = this.handleChange.bind(this)
+    this.handleFocus = this.handleFocus.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
     // this.handleIsLoggedInClick = this.handleIsLoggedInClick.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -31,6 +32,15 @@ class RegisterForm extends Component {
       [name]: value
     })
   }
+
+  handleFocus() {
+    var { userNameDup } = this.state;
+
+    if (userNameDup) {
+      this.setState({ formSuccess: false });
+    }
+  }
+
 
   // handleIsLoggedInClick() {
   //   this.state.isLoggedIn = this.state.isLoggedIn ? this.setState({ isLoggedIn: true }) : this.setState({ isLoggedIn: false })
@@ -48,8 +58,6 @@ class RegisterForm extends Component {
     } else {
       this.setState({ usernameError: false, });
     }
-
-
   }
 
   handleErrors(response) {
@@ -57,23 +65,41 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          userNameDup: true,
+          userNameDup: true, formSuccess: false
         })
       }
     } else {
       this.setState({
-        userNameDup: false,
+        userNameDup: false, formSuccess: true
       })
     }
-
-
     return response;
+  }
+
+  componentDidMount() {
+    var { username, password, userNameDup } = this.state
+
+    window.fetch('http://localhost:8016/users/registration', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username_email: username, password: password })
+    })
+      .then(this.handleErrors)
+      .then(function (response) {
+        console.log(`response ${response}`)
+        return response.json()
+      }).then(function (data) {
+
+        console.log('User created:', data)
+      }).catch(function (error) {
+        console.log(error);
+      });
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    var error = false
-
+    var error = false;
+    var foo;
     var { username, password, userNameDup } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -101,28 +127,19 @@ class RegisterForm extends Component {
     }
 
 
-    window.fetch('http://localhost:8016/users/registration', {
-      method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username_email: username, password: password })
-    })
-      .then(this.handleErrors)
-      .then(function (response) {
-        console.log(`response ${response}`)
-        return response.json()
-      }).then(function (data) {
 
-        console.log('User created:', data)
-      }).catch(function (error) {
-        console.log(error);
-      });
 
-    setTimeout(() => { this.setState({ username: '', password: '' }) })
+    setTimeout(() => {
+      this.setState({
+        username: '', password: '', usernameError: false,
+        passwordError: false,
+      })
+    }, 5000)
 
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, userNameDup } = this.state;
+    var { username, password, usernameError, passwordError, formSuccess, userNameDup, duratiom } = this.state;
 
     return (<div className='login-form'> {
       /*
@@ -153,13 +170,14 @@ class RegisterForm extends Component {
                 name='username'
                 value={username}
                 onBlur={this.handleBlur}
+                onFocus={this.handleFocus}
                 onChange={this.handleChange}
                 error={usernameError}
               />
 
               <Transition visible={usernameError}
                 animation='scale'
-                duration={500}>
+                duration={duratiom}>
                 <Message error content='username_Email is in incorrect format e.g. joe@schmoe.com' />
               </Transition>
 
@@ -175,7 +193,7 @@ class RegisterForm extends Component {
 
               <Transition visible={passwordError}
                 animation='scale'
-                duration={500}>
+                duration={duratiom}>
                 <Message error content='Password needs to be greater than eight characters.' />
               </Transition>
 
@@ -189,22 +207,22 @@ class RegisterForm extends Component {
               {console.log("userNameDup ", userNameDup)}
               <Transition visible={userNameDup}
                 animation='scale'
-                duration={500}>
+                duration={duratiom}>
                 <Message error centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
               </Transition>
 
-              <Transition visible={formSuccess && !userNameDup}
+              <Transition visible={formSuccess}
                 animation='scale'
-                duration={500}>
+                duration={duratiom}>
                 <Message success header='Your user registration was successful.'
                   content='You may now log-in with the username you have chosen.' />
               </Transition>
             </Segment>
           </Form>
 
-          {formSuccess ?
-            <Transition visible={formSuccess}
+          {formSuccess || !userNameDup ?
+            <Transition visible={false}
               animation='scale'
               duration={1000}>
               <Message>
