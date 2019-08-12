@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
+import { Loader, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import Link from 'next/link';
 
 class RegisterForm extends Component {
@@ -14,7 +14,9 @@ class RegisterForm extends Component {
       usernameError: false,
       passwordError: false,
       formSuccess: false,
+      formError: false,
       userNameDup: false,
+      isLoading: true
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -24,6 +26,12 @@ class RegisterForm extends Component {
     this.handleErrors = this.handleErrors.bind(this)
 
   }
+
+  componentDidMount() {
+    this.setState({isLoading: false})
+  }
+
+
 
   handleChange(event) {
     var { name, value } = event.target;
@@ -57,16 +65,15 @@ class RegisterForm extends Component {
       if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-          userNameDup: true,
-        })
+          userNameDup: true, formError: true, formSuccess:false
+        });
+        return;
       }
     } else {
       this.setState({
-        userNameDup: false,
+        userNameDup: false, formError:false, formSuccess: true
       })
     }
-
-
     return response;
   }
 
@@ -96,10 +103,7 @@ class RegisterForm extends Component {
     if (error) {
       this.setState({ formSuccess: false });
       return;
-    } else {
-      this.setState({ formSuccess: true });
     }
-
 
     window.fetch('http://localhost:8016/users/registration', {
       method: 'POST',
@@ -111,7 +115,6 @@ class RegisterForm extends Component {
         console.log(`response ${response}`)
         return response.json()
       }).then(function (data) {
-
         console.log('User created:', data)
       }).catch(function (error) {
         console.log(error);
@@ -122,7 +125,7 @@ class RegisterForm extends Component {
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, userNameDup } = this.state;
+    var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
 
     return (<div className='login-form'> {
       /*
@@ -143,9 +146,13 @@ class RegisterForm extends Component {
             {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
           </Header>
 
+            {console.log("formSuccess 1", formSuccess)}
           <Form size='large'
             onSubmit={this.handleSubmit}
-            error={!formSuccess}>
+            error={userNameDup || formError}>
+            {console.log("formSuccess 2", formSuccess)}
+
+
             <Segment stacked>
               <Form.Input fluid icon='user'
                 iconPosition='left'
@@ -159,7 +166,7 @@ class RegisterForm extends Component {
 
               <Transition visible={usernameError}
                 animation='scale'
-                duration={500}>
+                duration={duration}>
                 <Message error content='username_Email is in incorrect format e.g. joe@schmoe.com' />
               </Transition>
 
@@ -175,7 +182,7 @@ class RegisterForm extends Component {
 
               <Transition visible={passwordError}
                 animation='scale'
-                duration={500}>
+                duration={duration}>
                 <Message error content='Password needs to be greater than eight characters.' />
               </Transition>
 
@@ -183,23 +190,32 @@ class RegisterForm extends Component {
                 fluid size='large'
                 disabled={!username || !password}>
                 Register
-                {/* {isLoggedIn ? `Register` : `Log-in`} */}
               </Button>
-
-              {console.log("userNameDup ", userNameDup)}
-              <Transition visible={userNameDup}
+          {isLoading
+          ? <Loader> Loading </Loader>
+          : <Transition visible={userNameDup || formError}
+                unmountOnHide={true}
                 animation='scale'
-                duration={500}>
-                <Message error centered="true" header='This email exists.'
+                duration={duration}>
+                <Message
+                  error
+                  centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
               </Transition>
+          }
 
-              <Transition visible={formSuccess && !userNameDup}
+          {isLoading
+          ? <Loader> Loading </Loader>
+          :  <Transition visible={formSuccess}
+                unmountOnHide={true}
                 animation='scale'
-                duration={500}>
-                <Message success header='Your user registration was successful.'
+                duration={duration}>
+                <Message
+                  success
+                  header='Your user registration was successful.'
                   content='You may now log-in with the username you have chosen.' />
               </Transition>
+          }
             </Segment>
           </Form>
 

@@ -61,3 +61,7 @@ typings/
 .next
 
 ~$*.pptx
+
+#mongoDB related dirs
+mongoDB-atlas-backup/
+config/
