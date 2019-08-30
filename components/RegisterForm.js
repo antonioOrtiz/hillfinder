@@ -56,20 +56,7 @@ class RegisterForm extends Component {
   }
 
   handleErrors(response) {
-    if (!response.ok) {
-      if (response.status === 409) {
-        console.log("response.status ", response.status);
-        this.setState({
-          userNameDup: true, formError: true, formSuccess:false
-        });
-        return;
-      }
-    } else {
-      this.setState({
-        userNameDup: false, formError:false, formSuccess: true
-      })
-    }
-    return response;
+
   }
 
   handleSubmit(event) {
@@ -106,25 +93,36 @@ class RegisterForm extends Component {
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ username_email: username, password: password })
     })
-     .then(this.handleErrors)
+     // .then(this.handleErrors)
      .then((response)=>{
       if (response.ok) {
        const { token } = response.clone();
+
        const loginOptions = {
         token,
         cookieOptions: { expires: 1 },
         callback: () => Router.push('/login')
        }
        setTimeout(() => {
-        () => { this.setState({ username: '', password: '', formSuccess: false }) }; login(loginOptions)
+        login(loginOptions)
        }, 5000)
-       return response.json();
 
-      } else {
-       console.log(response.status)
+       this.setState({
+        username: '', password: '', userNameDup: false, formError: false, formSuccess: true
+       })
+
+       return response.json();
+      } else if (!response.ok) {
+       if (response.status === 409) {
+        console.log("response.status ", response.status);
+        this.setState({
+         userNameDup: true, formError: true, formSuccess: false
+        });
+        return;
+       }
       }
+      return response;
      })
-    .then(result => console.log('User created', result))
     .catch(function (error) {
         console.log(error);
       });
