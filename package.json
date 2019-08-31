@@ -23,6 +23,8 @@
         "next": "^8.0.3",
         "next-authentication": "^0.1.1",
         "next-page-transitions": "^1.0.0-beta.2",
+        "passport": "^0.4.0",
+        "passport-local": "^1.0.0",
         "prop-types": "^15.7.2",
         "react": "^16.8.4",
         "react-dom": "^16.8.4",
