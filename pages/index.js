@@ -8,9 +8,6 @@ import 'semantic-ui-css/semantic.min.css'
 const Home = () => (
   <div>
     <Head title='Home' />
-    <Link href='/about'>
-      <a className='btn btn-light'>About us</a>
-    </Link>
     <Register />
   </div>
 )
