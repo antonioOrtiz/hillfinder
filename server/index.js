@@ -4,10 +4,11 @@ var express = require('express')
 require('dotenv').config()
 
 var next = require('next')
+var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var MongoStore = require('connect-mongo')(session)
-var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
+var auth = require('./lib/auth');
 var cors = require('cors')
 var morgan = require('morgan')
 var HttpStatus = require('http-status-codes')
@@ -77,7 +78,7 @@ NextApp.prepare()
             })
             .on('error', err => {
                 console.log(`Connection error: ${err.message}`)
-            })
+            });
 
         app.use(bodyParser.json())
         app.use(bodyParser.urlencoded({ extended: true }))
@@ -85,14 +86,16 @@ NextApp.prepare()
 
         app.use(cookieParser())
 
-        session({
+        app.use(session({
             secret: 'very secret 12345',
             resave: true,
             saveUninitialized: false,
             store: new MongoStore({ mongooseConnection: mongoose.connection })
-        })
+        }));
 
-
+        app.use(auth.initialize);
+        app.use(auth.session);
+        app.use(auth.setUser);
 
         app.use(cors())
 
@@ -102,6 +105,10 @@ NextApp.prepare()
         app.get('*', (req, res) => {
             return handle(req, res)
         })
+
+        app.use(function(req, res, next) {
+            res.status(404).send('404 - Not Found!');
+        });
 
         // eslint-disable-next-line func-names
         app.use(errorHandler, function(error, req, res, next) {
