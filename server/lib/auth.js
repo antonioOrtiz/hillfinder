@@ -1,9 +1,9 @@
 var passport = require('passport');
-var localStrategy = require('passport-local');
+var LocalStrategy = require('passport-local').Strategy;
 var UserModel = require('../models/UserModel');
 
 
-passport.use(newLocalStrategy({ username_email: 'username' }, async(username, password, done) => {
+passport.use(new LocalStrategy({ username_email: 'username' }, async(username, password, done) => {
     try {
         var user = await UserModel.findOne({ username_email: username }).exec();
         if (!user) {
@@ -12,7 +12,6 @@ passport.use(newLocalStrategy({ username_email: 'username' }, async(username, pa
         var passwordOk = await user.comparePassword(password);
         if (!passwordOk) {
             return done(null, false, { message: 'Invalid username or password' })
-
         }
         return done(null, user)
     } catch (err) {
