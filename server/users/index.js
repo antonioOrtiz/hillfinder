@@ -1,13 +1,25 @@
-var router = require('express').Router()
-var UserModel = require('../models/UserModel')
+var router = require('express').Router();
+var UserModel = require('../models/UserModel');
+var passport = require('passport');
 var { body, validationResult } = require('express-validator');
+
+router.route('/login')
+    .post(passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/users/login?error=true'
+    }))
+    .get((req, res) => { res.render('users/login', { error: req.query.error }) });
+
+
 
 router.route('/registration')
     .get(function(req, res) {
-        UserModel.find({}, (err, users) => {
-            if (err) res.status(500).send(err)
-            res.json(users)
-        })
+        // UserModel.find({}, (err, users) => {
+        //     if (err) res.status(500).send(err)
+        //     res.json(users)
+        // })
+        if (err) res.status(404)
+        res.json(req.query.success)
     })
     .post(body('username_email').custom(value => {
         return UserModel.findOne({ 'username_email': value }).then(user => { // Return Promise
@@ -21,8 +33,6 @@ router.route('/registration')
         if (!errors.isEmpty()) {
             return res.status(409).json({ errors: errors.array() });
         }
-
-
         try {
             let newUser = new UserModel(req.body)
             let savedUser = await newUser.save()
@@ -33,6 +43,5 @@ router.route('/registration')
             return next(err)
         }
     })
-
 
 module.exports = router
