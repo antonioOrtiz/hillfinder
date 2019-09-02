@@ -7,6 +7,7 @@
     },
     "dependencies": {
         "@zeit/next-css": "^1.0.1",
+        "@zeit/next-sass": "^1.0.1",
         "bcrypt": "^3.0.5",
         "body-parser": "^1.18.3",
         "connect-mongo": "^2.0.3",
@@ -23,6 +24,7 @@
         "next": "^8.0.3",
         "next-authentication": "^0.1.1",
         "next-page-transitions": "^1.0.0-beta.2",
+        "node-sass": "^4.12.0",
         "passport": "^0.4.0",
         "passport-local": "^1.0.0",
         "prop-types": "^15.7.2",
