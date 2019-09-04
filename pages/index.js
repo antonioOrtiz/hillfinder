@@ -1,9 +1,9 @@
 import React from 'react'
-import Link from 'next/link'
 import Head from '../components/head'
-import Register from '../components/RegisterForm'
-import '../components/Register.css'
+import Register from '../components/Register/RegisterForm'
+import '../components/Register/Register.css'
 import 'semantic-ui-css/semantic.min.css'
+import '../styles/styles.scss'
 
 const Home = () => (
   <div>
