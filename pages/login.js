@@ -1,16 +1,12 @@
 import Router from 'next/router'
 import withAuth from 'next-authentication'
 import 'semantic-ui-css/semantic.min.css'
+import LoginForm from '../components/Login/LoginForm'
 
 const Login = () => (
  <div>
-  {/* <Link href='/register'>
-   <a className='btn btn-light'>Register</a>
-  </Link> */}
-
-  <h2>LOGIN</h2>
-  <p>This is the login page</p>
- </div>
+ <LoginForm/>
+</div>
 )
 
 const authOptions = {
