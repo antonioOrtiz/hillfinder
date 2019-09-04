@@ -8,18 +8,17 @@ router.route('/login')
         successRedirect: '/',
         failureRedirect: '/users/login?error=true'
     }))
-    .get((req, res) => { res.render('users/login', { error: req.query.error }) });
+    // .get((req, res) => { res.render('users/login', { error: req.query.error }) });
 
 
 
 router.route('/registration')
     .get(function(req, res) {
-        // UserModel.find({}, (err, users) => {
-        //     if (err) res.status(500).send(err)
-        //     res.json(users)
-        // })
-        if (err) res.status(404)
-        res.json(req.query.success)
+        UserModel.find({}, (err, users) => {
+            if (err) res.status(500).send(err)
+            res.json(users)
+        })
+
     })
     .post(body('username_email').custom(value => {
         return UserModel.findOne({ 'username_email': value }).then(user => { // Return Promise
