@@ -19,7 +19,6 @@ class LoginForm extends Component {
    passwordError: false,
    formSuccess: false,
    formError: false,
-   userNameDup: false,
    isLoading: true
   }
 
@@ -104,15 +103,15 @@ class LoginForm extends Component {
      }, 5000)
 
      this.setState({
-      username: '', password: '', userNameDup: false, formError: false, formSuccess: true
+      username: '', password: '', formError: false, formSuccess: true
      })
 
      return response.json();
     } else if (!response.ok) {
-     if (response.status === 409) {
+     if (response.status === 401) {
       console.log("response.status ", response.status);
       this.setState({
-       userNameDup: true, formError: true, formSuccess: false
+        formError: true, formSuccess: false
       });
       return;
      }
@@ -125,7 +124,7 @@ class LoginForm extends Component {
  }
 
  render() {
-  var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
+  var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
 
   return (<div className='login-form'> {
 
@@ -139,14 +138,12 @@ class LoginForm extends Component {
       color='teal'
       textAlign='center'>
       Log-in to your account
-            {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
      </Header>
 
      {console.log("formSuccess 1", formSuccess)}
      <Form size='large'
       onSubmit={this.handleSubmit}
       error={userNameDup || formError}>
-      {console.log("formSuccess 2", formSuccess)}
 
 
       <Segment stacked>
@@ -179,7 +176,7 @@ class LoginForm extends Component {
        <Transition visible={passwordError}
         animation='scale'
         duration={duration}>
-        <Message error content='Password needs to be greater than eight characters.' />
+        <Message error content='Password is incorrect, please try again.' />
        </Transition>
 
        <Button color='teal'
@@ -208,8 +205,7 @@ class LoginForm extends Component {
          duration={duration}>
          <Message
           success
-          header='Your user registration was successful.'
-          content='You may now log-in with the username you have chosen.' />
+          header='Your have successfully logged in.'/>
         </Transition>
        }
       </Segment>
