@@ -19,7 +19,8 @@
     },
     "plugins": [
         "jest",
-        "cypress"
+        "cypress",
+        "react-hooks"
     ],
     "extends": [
         "airbnb",
@@ -28,6 +29,8 @@
         "plugin:cypress/recommended"
     ],
     "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
         "react/jsx-boolean-value": 0,
         "react/prop-types": "off",
         "react/jsx-filename-extension": [
