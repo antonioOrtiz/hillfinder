@@ -1,15 +1,26 @@
 var router = require('express').Router();
 var UserModel = require('../models/UserModel');
 var passport = require('passport');
-var { body, validationResult } = require('express-validator');
+var { check, body, validationResult } = require('express-validator');
 
 router.route('/login')
-    .post(passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/users/login?error=true'
-    }))
-    // .get((req, res) => { res.render('users/login', { error: req.query.error }) });
-
+    .post((req, res, next) => {
+        console.log(`users/login, req.body ${req.body}`)
+        next()
+    }, passport.authenticate('local'), (req, res) => {
+        console.log('logged in', req.user)
+        var userInfo = {
+            username: req.user.username
+        }
+        res.send(userInfo)
+    })
+    // .post(passport.authenticate('local',
+    //     function(req, res) {
+    //         // If this function gets called, authentication was successful.
+    //         // `req.user` contains the authenticated user.
+    //         console.log(`req.user.username ${req}`);
+    //         res.redirect('/users/' + req.user.username);
+    //     }))
 
 
 router.route('/registration')
