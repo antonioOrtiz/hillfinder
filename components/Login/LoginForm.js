@@ -19,7 +19,8 @@ class LoginForm extends Component {
    passwordError: false,
    formSuccess: false,
    formError: false,
-   isLoading: true
+   isLoading: true,
+   isLoggedIn:false
   }
 
   this.handleChange = this.handleChange.bind(this)
@@ -90,7 +91,7 @@ class LoginForm extends Component {
   })
    // .then(this.handleErrors)
    .then((response) => {
-    if (response.ok) {
+    if (response.status === 200) {
      const { token } = response.clone();
 
      const loginOptions = {
@@ -103,7 +104,7 @@ class LoginForm extends Component {
      }, 5000)
 
      this.setState({
-      username: '', password: '', formError: false, formSuccess: true
+      username: username, password: '', formError: false, formSuccess: true
      })
 
      return response.json();
@@ -143,7 +144,7 @@ class LoginForm extends Component {
      {console.log("formSuccess 1", formSuccess)}
      <Form size='large'
       onSubmit={this.handleSubmit}
-      error={userNameDup || formError}>
+      error={ formError}>
 
 
       <Segment stacked>
@@ -186,7 +187,7 @@ class LoginForm extends Component {
               </Button>
        {isLoading
         ? <Loader> Loading </Loader>
-        : <Transition visible={userNameDup || formError}
+        : <Transition visible={ formError}
          unmountOnHide={true}
          animation='scale'
          duration={duration}>
