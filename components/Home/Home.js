@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types'
+import Link from 'next/link';
+
+
 import React, { useState, Component } from 'react'
 import {
  Button,
@@ -33,7 +36,7 @@ const HomepageHeading = ({ mobile }) => (
  <Container text>
   <Header
    as='h1'
-   content='Imagine-a-Company'
+   content='Hillfinder'
    inverted
    style={{
     fontSize: mobile ? '2em' : '4em',
@@ -44,7 +47,7 @@ const HomepageHeading = ({ mobile }) => (
   />
   <Header
    as='h2'
-   content='Do whatever you want when you want to.'
+   content='An app on the decline...Er about!'
    inverted
    style={{
     fontSize: mobile ? '1.5em' : '1.7em',
@@ -98,19 +101,32 @@ class DesktopContainer extends Component {
        size='large'
       >
        <Container>
-        <Menu.Item as='a' active>
-         Home
-                </Menu.Item>
-        <Menu.Item as='a'>Work</Menu.Item>
-        <Menu.Item as='a'>Company</Menu.Item>
-        <Menu.Item as='a'>Careers</Menu.Item>
+        <Menu.Item  active>
+         <Link href="/">
+          <a>Home</a>
+         </Link>
+        </Menu.Item>
+        <Menu.Item>
+         <Link href="/profile">
+          <a>Profile</a>
+         </Link>
+        </Menu.Item>
+        <Menu.Item>
+         <Link href="/dashboard">
+          <a>Dashboard</a>
+         </Link>
+        </Menu.Item>
         <Menu.Item position='right'>
-         <Button as='a' inverted={!fixed}>
-          Log in
-                  </Button>
-         <Button as='a' inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
-          Register
-                  </Button>
+         <Button inverted={!fixed}>
+          <Link href="/login">
+           <a>Login</a>
+          </Link>
+         </Button>
+         <Button inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
+          <Link href="/register">
+           <a>Register</a>
+          </Link>
+         </Button>
         </Menu.Item>
        </Container>
       </Menu>
@@ -153,14 +169,14 @@ class MobileContainer extends Component {
      vertical
      visible={sidebarOpened}
     >
-     <Menu.Item as='a' active>
-      Home
-          </Menu.Item>
-     <Menu.Item as='a'>Work</Menu.Item>
-     <Menu.Item as='a'>Company</Menu.Item>
-     <Menu.Item as='a'>Careers</Menu.Item>
-     <Menu.Item as='a'>Log in</Menu.Item>
-     <Menu.Item as='a'>Register</Menu.Item>
+     <Menu.Item active>
+      <Link href="/">
+       <a>Home</a>
+      </Link>
+     </Menu.Item>
+
+     <Menu.Item as='a'>Profile</Menu.Item>
+     <Menu.Item as='a'>Dashboard</Menu.Item>
     </Sidebar>
 
     <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -237,17 +253,7 @@ const HomepageLayout = () => {
       <a href='#'>Case Studies</a>
      </Divider>
 
-     <Header as='h3' style={{ fontSize: '2em' }}>
-      Did We Tell You About Our Bananas?
-         </Header>
-     <p style={{ fontSize: '1.33em' }}>
-      Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but
-      it's really true. It took years of gene splicing and combinatory DNA research, but our
-      bananas can really dance.
-         </p>
-     <Button as='a' size='large'>
-      I'm Still Quite Interested
-         </Button>
+
     </Container>
    </Segment>
 
