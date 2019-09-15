@@ -77,7 +77,7 @@ class DesktopContainer extends Component {
  showFixedMenu = () => this.setState({ fixed: true })
 
  render() {
-  const { children } = this.props
+  const { children, isLoggedIn } = this.props
   const { fixed } = this.state
 
   return (
@@ -106,22 +106,27 @@ class DesktopContainer extends Component {
           <a>Home</a>
          </Link>
         </Menu.Item>
-        <Menu.Item>
+       {isLoggedIn ?
+       <Menu.Item>
          <Link href="/profile">
           <a>Profile</a>
          </Link>
         </Menu.Item>
+        : null}
+        {isLoggedIn ?
         <Menu.Item>
          <Link href="/dashboard">
           <a>Dashboard</a>
          </Link>
         </Menu.Item>
+        : null}
         <Menu.Item position='right'>
+         {isLoggedIn  ?
          <Button inverted={!fixed}>
-          <Link href="/login">
+         <Link href="/login">
            <a>Login</a>
           </Link>
-         </Button>
+         </Button> : null}
          <Button inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
           <Link href="/register">
            <a>Register</a>
@@ -152,7 +157,7 @@ class MobileContainer extends Component {
  handleToggle = () => this.setState({ sidebarOpened: true })
 
  render() {
-  const { children } = this.props
+  const { children, isLoggedIn } = this.props
   const { sidebarOpened } = this.state
 
   return (
@@ -175,8 +180,8 @@ class MobileContainer extends Component {
       </Link>
      </Menu.Item>
 
-     <Menu.Item as='a'>Profile</Menu.Item>
-     <Menu.Item as='a'>Dashboard</Menu.Item>
+     {isLoggedIn ? <Menu.Item as='a'>Profile</Menu.Item> : null}
+     {isLoggedIn ? <Menu.Item as='a'>Dashboard</Menu.Item> : null}
     </Sidebar>
 
     <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -192,12 +197,12 @@ class MobileContainer extends Component {
          <Icon name='sidebar' />
         </Menu.Item>
         <Menu.Item position='right'>
-         <Button as='a' inverted>
-          Log in
-                  </Button>
+         {isLoggedIn ? <Button as='a' inverted>
+          Log in!
+         </Button> : null}
          <Button as='a' inverted style={{ marginLeft: '0.5em' }}>
-          Register
-                  </Button>
+          Register!
+         </Button>
         </Menu.Item>
        </Menu>
       </Container>
@@ -226,8 +231,8 @@ ResponsiveContainer.propTypes = {
  children: PropTypes.node,
 }
 
-const HomepageLayout = () => {
- var [isLoggedIn, setLogInState] = useState(false)
+const HomepageLayout = ({custom}) => {
+ // var [isLoggedIn, setLogInState] = useState(false)
  return (
   <ResponsiveContainer>
    <Segment style={{ padding: '8em 0em' }} vertical>
@@ -282,10 +287,10 @@ const HomepageLayout = () => {
        <Grid.Column width={7}>
         <Header as='h4' inverted>
          Footer Header
-               </Header>
+        </Header>
         <p>
          Extra space for a call to action inside the footer that could help re-engage users.
-               </p>
+        </p>
        </Grid.Column>
       </Grid.Row>
      </Grid>
