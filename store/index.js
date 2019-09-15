@@ -1,46 +1,48 @@
-git
 import { createStore, applyMiddleware } from 'redux';
-import createLogger from 'redux-logger'
+import { createLogger } from 'redux-logger'
 import { composeWithDevTools } from 'redux-devtools-extension';
-import thunkMiddleware from 'react-thunk';
+import thunkMiddleware from 'redux-thunk';
 
-// ACTION TYPES
-const GET_USER = 'GET_USER'
+/* initial state */
+var startState = { isLoggedIn: false }
 
-// ACTION CREATORS
-export function getUser(user) {
-    const action = {
-        type: GET_USER,
-        user,
-    };
-    return action;
+
+/* actions */
+
+export const logInUser = () => {
+    return {
+        type: 'LOGINUSER',
+        isLoggedIn: true
+    }
 }
 
-//THUNK CREATORS
+/* reducer */
 
-export function fetchUser(userId) {
-    return function thunk(dispatch) {
-        return axios
-            .get('/users/' + `${userId}`)
-            .then(res => res.data)
-            .then(user => {
-                const action = getUser(user);
-                dispatch(action);
-            });
-    };
-}
-
-// REDUCER
-const reducer = function(state = [], action) {
+export const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case GET_USER:
-            return action.user;
+        case 'LOGINUSER':
+            return {
+                isLoggedIn: action.isLoggedIn,
+            }
         default:
-            return state;
+            return state
     }
 };
+const middleware = composeWithDevTools(applyMiddleware(
+    thunkMiddleware,
+    createLogger({ collapsed: true })
+))
 
 
-export var initStore = (initialState = startState) => {
-    return createStore(reducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware, createLogger({ collapsed: true }))))
+// create a store
+export const initializeStore = (initialState = startState) => {
+    return createStore(
+        reducer,
+        initialState,
+        middleware
+    )
 }
+
+// export const initStore = (initialState = startState) => {
+//     return createStore(reducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)));
+// }
