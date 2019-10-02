@@ -3,7 +3,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var UserModel = require('../models/UserModel');
 
 
-passport.use(new LocalStrategy({ username_email: 'username' }, async(username, password, done) => {
+passport.use(new LocalStrategy({ usernameField: 'username' }, async(username, password, done) => {
     try {
         var user = await UserModel.findOne({ username_email: username }).exec();
         if (!user) {
