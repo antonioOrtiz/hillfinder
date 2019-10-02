@@ -115,6 +115,7 @@ NextApp.prepare()
             res.json({ message: error.message })
         })
 
+
         app.listen(PORT, err => {
             if (err) throw err
             console.log(`> Ready on http://localhost:${PORT}`)
