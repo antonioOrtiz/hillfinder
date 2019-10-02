@@ -4,17 +4,16 @@ import 'semantic-ui-css/semantic.min.css'
 import ProfilePage from '../components/Profile/ProfilePage'
 
 const Profile = () => (
- <div>
-  <ProfilePage/>
-</div>
+   <div>
+    <ProfilePage/>
+    </div>
 )
 
 const authOptions = {
- // client callback for invalid sessions
- callback: () => Router.push('/register'),
- // the server takes care of the redirect, only pass a string
- // with the route
- serverRedirect: '/register'
+    // client callback for invalid sessions
+    callback: () => Router.push('/'),
+    // the server takes care of the redirect, only pass a string
+    // with the route
+    serverRedirect: '/'
 }
 export default withAuth(authOptions)(ProfilePage)
-

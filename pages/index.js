@@ -3,12 +3,44 @@ import Head from '../components/head'
 import HomeLayout from '../components/Home/Home'
 import 'semantic-ui-css/semantic.min.css'
 import '../styles/styles.scss'
+import { connect } from 'react-redux'
 
-const Home = () => (
-  <div>
-    <Head title='Home' />
-    <HomeLayout/>
-  </div>
-)
+// import {bindActionCreators} from 'redux'
+// import withRedux from 'next-redux-wrapper'
+import { logInUser } from '../store'
 
-export default Home
+
+class Home extends React.Component {
+    static async getInitialProps({ isLoggedIn }) {
+        return { isLoggedIn }
+    }
+
+    render() {
+        const { isLoggedIn } = this.props
+        return (
+        <div>
+        {console.log("isLoggedIn ", isLoggedIn)}
+           <Head title = 'Home' />
+            <HomeLayout isLoggedIn = { isLoggedIn }/>
+        </div>
+        )
+    }
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logInUser: bindActionCreators(logInUser, dispatch)
+    }
+}
+
+const mapStateToProps = ({ isLoggedIn }) => ({ isLoggedIn })
+
+
+// const mapStateToProps = (state) => {
+//  return {
+//   isLoggedIn: state.isLoggedIn
+//  }
+// }
+
+export default connect(state => state)(Home);
