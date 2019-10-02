@@ -79,6 +79,7 @@ class DesktopContainer extends Component {
  render() {
   const { children, isLoggedIn } = this.props
   const { fixed } = this.state
+  { console.log("isLoggedIn ", isLoggedIn) }
 
   return (
    <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -161,6 +162,7 @@ class MobileContainer extends Component {
   const { sidebarOpened } = this.state
 
   return (
+
    <Responsive
     as={Sidebar.Pushable}
     getWidth={getWidth}
@@ -179,9 +181,9 @@ class MobileContainer extends Component {
        <a>Home</a>
       </Link>
      </Menu.Item>
-
      {isLoggedIn ? <Menu.Item as='a'>Profile</Menu.Item> : null}
      {isLoggedIn ? <Menu.Item as='a'>Dashboard</Menu.Item> : null}
+
     </Sidebar>
 
     <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -220,10 +222,10 @@ MobileContainer.propTypes = {
  children: PropTypes.node,
 }
 
-const ResponsiveContainer = ({ children }) => (
+const ResponsiveContainer = ({ children, isLoggedIn }) => (
  <div>
-  <DesktopContainer>{children}</DesktopContainer>
-  <MobileContainer>{children}</MobileContainer>
+  <DesktopContainer isLoggedIn={isLoggedIn}>{children}</DesktopContainer>
+  <MobileContainer isLoggedIn={isLoggedIn}>{children}</MobileContainer>
  </div>
 )
 
@@ -231,10 +233,10 @@ ResponsiveContainer.propTypes = {
  children: PropTypes.node,
 }
 
-const HomepageLayout = ({custom}) => {
+const HomepageLayout = ({isLoggedIn}) => {
  // var [isLoggedIn, setLogInState] = useState(false)
  return (
-  <ResponsiveContainer>
+  <ResponsiveContainer isLoggedIn={isLoggedIn}>
    <Segment style={{ padding: '8em 0em' }} vertical>
     <Container text>
      <Header as='h3' style={{ fontSize: '2em' }}>
