@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Router from 'next/router'
 import { login } from 'next-authentication'
 
+import { connect } from 'react-redux'
 
 
 class LoginForm extends Component {
@@ -87,7 +88,7 @@ class LoginForm extends Component {
   return window.fetch('http://localhost:8016/users/login', {
    method: 'POST',
    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-   body: JSON.stringify({ username_email: username, password: password })
+   body: JSON.stringify({ username, password })
   })
    // .then(this.handleErrors)
    .then((response) => {
@@ -126,6 +127,10 @@ class LoginForm extends Component {
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
+  const { state} = this.props;
+
+  (formSuccess === true) ? state.isLoggedIn = true : state.isLoggedIn = false;
+  console.log("isLoggedIn ", state.isLoggedIn);
 
   return (<div className='login-form'> {
 
@@ -138,7 +143,7 @@ class LoginForm extends Component {
      <Header as='h2'
       color='teal'
       textAlign='center'>
-      Log-in to your account
+      Log-in to your account!
      </Header>
 
      {console.log("formSuccess 1", formSuccess)}
@@ -183,7 +188,7 @@ class LoginForm extends Component {
        <Button color='teal'
         fluid size='large'
         disabled={!username || !password}>
-        Register
+        Log-in
               </Button>
        {isLoading
         ? <Loader> Loading </Loader>
@@ -227,4 +232,11 @@ class LoginForm extends Component {
   )
  }
 }
-export default LoginForm
+
+const mapStateToProps = state => {
+ return {
+  state
+ }
+}
+
+export default connect(mapStateToProps)(LoginForm)
