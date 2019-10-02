@@ -3,7 +3,7 @@ import { Loader, Transition, Button, Form, Grid, Header, Message, Segment } from
 import Link from 'next/link';
 import Router from 'next/router'
 import { login } from 'next-authentication'
-
+import { connect } from 'react-redux'
 
 
 class RegisterForm extends Component {
@@ -26,7 +26,6 @@ class RegisterForm extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleErrors = this.handleErrors.bind(this)
 
   }
 
@@ -55,9 +54,6 @@ class RegisterForm extends Component {
     }
   }
 
-  handleErrors(response) {
-
-  }
 
   handleSubmit(event) {
     event.preventDefault();
@@ -107,6 +103,8 @@ class RegisterForm extends Component {
         login(loginOptions)
        }, 5000)
 
+
+
        this.setState({
         username: '', password: '', userNameDup: false, formError: false, formSuccess: true
        })
@@ -130,6 +128,8 @@ class RegisterForm extends Component {
 
   render() {
     var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
+   const { state } = this.props
+   console.log("isLoggedIn ", state.isLoggedIn);
 
     return (<div className='login-form'> {
       /*
@@ -193,7 +193,7 @@ class RegisterForm extends Component {
               <Button color='teal'
                 fluid size='large'
                 disabled={!username || !password}>
-                Register
+                Register!!
               </Button>
           {isLoading
           ? <Loader> Loading </Loader>
@@ -238,4 +238,12 @@ class RegisterForm extends Component {
     )
   }
 }
-export default RegisterForm
+
+
+const mapStateToProps = state => {
+ return {
+  state
+ }
+}
+
+export default connect(mapStateToProps)(RegisterForm)
