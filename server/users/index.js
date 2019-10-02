@@ -4,25 +4,10 @@ var passport = require('passport');
 var { check, body, validationResult } = require('express-validator');
 
 router.route('/login')
-    .post((req, res, next) => {
-        console.log(`users/login, req.body ${req.body}`)
-        next()
-    }, passport.authenticate('local'), (req, res) => {
-        console.log('logged in', req.user)
-        var userInfo = {
-            username: req.user.username
-        }
-        res.send(userInfo)
-    })
-    // .post(passport.authenticate('local',
-    //     function(req, res) {
-    //         // If this function gets called, authentication was successful.
-    //         // `req.user` contains the authenticated user.
-    //         console.log(`req.user.username ${req}`);
-    //         res.redirect('/users/' + req.user.username);
-    //     }))
-
-
+    .post(passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/users/login?error=true',
+    }))
 router.route('/registration')
     .get(function(req, res) {
         UserModel.find({}, (err, users) => {
@@ -47,6 +32,7 @@ router.route('/registration')
             let newUser = new UserModel(req.body)
             let savedUser = await newUser.save()
 
+            console.log("savedUser ", savedUser);
             if (savedUser) return res.redirect('/users/registration?success=true');
             return next(new Error('Failed to save user for unknown reasons'))
         } catch (err) {
