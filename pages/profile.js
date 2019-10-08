@@ -1,12 +1,12 @@
 import Router from 'next/router'
 import withAuth from 'next-authentication'
 import 'semantic-ui-css/semantic.min.css'
-import ProfilePage from '../components/Profile/ProfilePage'
+import ProfilePage from '../components/Profile/ProfilePage.jsx'
 
 const Profile = () => (
    <div>
     <ProfilePage/>
-    </div>
+   </div>
 )
 
 const authOptions = {
