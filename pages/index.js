@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from '../components/head'
-import HomeLayout from '../components/Home/Home'
+import HomeLayout from '../components/Home/Home.jsx'
 import 'semantic-ui-css/semantic.min.css'
 import '../styles/styles.scss'
 import { connect } from 'react-redux'
@@ -15,6 +15,8 @@ class Home extends React.Component {
         return { isLoggedIn }
     }
 
+
+
     render() {
         const { isLoggedIn } = this.props
         return (
@@ -28,19 +30,6 @@ class Home extends React.Component {
 }
 
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        logInUser: bindActionCreators(logInUser, dispatch)
-    }
-}
 
-const mapStateToProps = ({ isLoggedIn }) => ({ isLoggedIn })
-
-
-// const mapStateToProps = (state) => {
-//  return {
-//   isLoggedIn: state.isLoggedIn
-//  }
-// }
 
 export default connect(state => state)(Home);
