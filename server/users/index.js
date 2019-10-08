@@ -5,9 +5,10 @@ var { check, body, validationResult } = require('express-validator');
 
 router.route('/login')
     .post(passport.authenticate('local', {
-        successRedirect: '/',
+        successRedirect: '/profile',
         failureRedirect: '/users/login?error=true',
     }))
+
 router.route('/registration')
     .get(function(req, res) {
         UserModel.find({}, (err, users) => {
