@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Loader, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
+import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import Link from 'next/link';
 import Router from 'next/router'
 import { login } from 'next-authentication'
@@ -60,7 +60,7 @@ class RegisterForm extends Component {
 
     var error = false;
 
-    var { username, password } = this.state
+  var { username, password, isLoading } = this.state
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -103,7 +103,7 @@ class RegisterForm extends Component {
        }, 5000)
 
        this.setState({
-        username: '', password: '', userNameDup: false, formError: false, formSuccess: true
+        username: '', password: '', userNameDup: false, formError: false, formSuccess: true, isLoading:false
        })
 
        return response.json();
@@ -111,7 +111,7 @@ class RegisterForm extends Component {
        if (response.status === 409) {
         console.log("response.status ", response.status);
         this.setState({
-         userNameDup: true, formError: true, formSuccess: false
+         userNameDup: true, formError: true, formSuccess: false, isLoading:false
         });
         return;
        }
@@ -192,31 +192,40 @@ class RegisterForm extends Component {
                 disabled={!username || !password}>
                 Register
               </Button>
-          {isLoading
-          ? <Loader> Loading </Loader>
-          : <Transition visible={userNameDup || formError}
+
+              <Transition visible={userNameDup || formError}
                 unmountOnHide={true}
                 animation='scale'
                 duration={duration}>
+
+               {isLoading ?
+                <Dimmer active inverted>
+                  <Loader />
+                </Dimmer>
+                :
                 <Message
                   error
                   centered="true" header='This email exists.'
                   content='Please re-enter another email address.' />
+               }
               </Transition>
-          }
 
-          {isLoading
-          ? <Loader> Loading </Loader>
-          :  <Transition visible={formSuccess}
+              <Transition visible={formSuccess}
                 unmountOnHide={true}
                 animation='scale'
                 duration={duration}>
+                {isLoading ?
+                <Dimmer active inverted>
+                 <Loader />
+                </Dimmer>
+                :
                 <Message
                   success
                   header='Your user registration was successful.'
                   content='You may now log-in with the username you have chosen.' />
+               }
               </Transition>
-          }
+
             </Segment>
           </Form>
 

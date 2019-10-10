@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Loader, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
+import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import Link from 'next/link';
 import Router from 'next/router'
 import { login } from 'next-authentication'
@@ -21,7 +21,6 @@ class LoginForm extends Component {
    formSuccess: false,
    formError: false,
    isLoading: true,
-   isLoggedIn:false
   }
 
   this.handleChange = this.handleChange.bind(this)
@@ -57,11 +56,15 @@ class LoginForm extends Component {
 
 
  handleSubmit(event) {
+  this.setState({
+   isLoading: true
+  })
+
   event.preventDefault();
 
   var error = false;
 
-  var { username, password } = this.state
+  var { username, password, isLoading } = this.state
 
   var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -85,6 +88,9 @@ class LoginForm extends Component {
    return;
   }
 
+  {console.log("isLoading 1", isLoading)}
+
+
   return window.fetch('http://localhost:8016/users/login', {
    method: 'POST',
    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -92,6 +98,7 @@ class LoginForm extends Component {
   })
    .then((response) => {
     if (response.ok) {
+
      const { token } = response.clone();
 
      const loginOptions = {
@@ -104,13 +111,14 @@ class LoginForm extends Component {
      }, 5000)
 
      this.setState({
-      username: username, password: '', formError: false, formSuccess: true
+      username: username, password: '', formError: false, formSuccess: true,isLoading:false
      })
     } else if (!response.ok) {
      if (response.status === 404) {
       console.log("response.status ", response.status);
+      {console.log("isLoading 2", isLoading)}
       this.setState({
-        formError: true, formSuccess: false
+        formError: true, formSuccess: false, isLoading:false
       });
       return;
      }
@@ -124,8 +132,8 @@ class LoginForm extends Component {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
   const { state} = this.props;
 
-  (formSuccess === true) ? state.isLoggedIn = true : state.isLoggedIn = false;
-  console.log("isLoggedIn ", state.isLoggedIn);
+
+  // (formSuccess === true) ? state.isLoggedIn = true : state.isLoggedIn = false;
 
   return (<div className='login-form'> {
 
@@ -141,7 +149,6 @@ class LoginForm extends Component {
       Log-in to your account
      </Header>
 
-     {console.log("formSuccess 1", formSuccess)}
      <Form size='large'
       onSubmit={this.handleSubmit}
       error={ formError}>
@@ -184,31 +191,43 @@ class LoginForm extends Component {
         fluid size='large'
         disabled={!username || !password}>
         Log-in
-              </Button>
-       {isLoading
-        ? <Loader> Loading </Loader>
-        : <Transition visible={ formError}
-         unmountOnHide={true}
-         animation='scale'
-         duration={duration}>
-         <Message
-          error
-          centered="true" header='This email does not exist...'
-          content='Please re-enter another email address, or  click the link below to register.' />
-        </Transition>
-       }
+       </Button>
 
-       {isLoading
-        ? <Loader> Loading </Loader>
-        : <Transition visible={formSuccess}
+       <Transition visible={ formError}
+        unmountOnHide={true}
+        animation='scale'
+        duration={duration}>
+
+       {isLoading ?
+        <Dimmer active inverted>
+          <Loader />
+        </Dimmer>
+        :
+        <Message
+         error
+         centered="true" header='This email does not exist...'
+         content='Please re-enter another email address, or  click the link below to register.' />
+         }
+       </Transition>
+
+
+
+        <Transition visible={formSuccess}
          unmountOnHide={true}
          animation='scale'
          duration={duration}>
+         {isLoading ?
+         <Dimmer active inverted>
+          <Loader />
+         </Dimmer>
+         :
          <Message
           success
-          header='Your have successfully logged in.'/>
+          header='Your have successfully logged in.'
+          content='Welcome to Hillfinder!' />
+          }
         </Transition>
-       }
+
       </Segment>
      </Form>
 
