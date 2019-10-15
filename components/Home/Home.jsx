@@ -17,6 +17,11 @@ import {
 } from 'semantic-ui-react'
 import Link from 'next/link';
 
+
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { logOutUser } from '../../store'
+
 // Heads up!
 // We using React Static to prerender our docs with server side rendering, this is a quite simple solution.
 // For more advanced usage please check Responsive docs under the "Usage" section.
@@ -26,6 +31,27 @@ import Link from 'next/link';
 /* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
  * such things.
  */
+// function GenericIsUserLoggedInLink({ isLoggedIn, route, anchorText }) {
+//  return isLoggedIn ? <Menu.Item><Link href={route}><a>{anchorText}</a></Link></Menu.Item> : null;
+// }
+
+// function GenericIsUserLoggedInLink({ isLoggedIn, logOutUser, route, anchorText }) {
+//  return isLoggedIn ? <Link href="/"><a onClick={() => logOutUser()}>Log out!</a></Link> : <Link href={route}><a>{anchorText}</a></Link>;
+// }
+function GenericIsUserLoggedInLink({ isLoggedIn, logOutUser, route, anchorText }) {
+ if (isLoggedIn) {
+  if (anchorText === undefined) {
+   return <Link href="/"><a onClick={() => logOutUser()}>Log out!</a></Link>
+  } else if (anchorText) {
+   return <Link href={route}><a>{anchorText}</a></Link>
+  } else {
+   return null
+  }
+ } else {
+  return  <Link href="/login"><a>Log in!</a></Link>
+ }
+}
+
 const HomepageHeading = ({ mobile }) => (
   <Container text>
     <Header
@@ -64,15 +90,25 @@ HomepageHeading.propTypes = {
  * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
  * It can be more complicated, but you can create really flexible markup.
  */
+
 class DesktopContainer extends Component {
   state = {}
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
 
+ logOutUser = () => {
+  const { logOutUser } = this.props
+  logOutUser()
+ }
+
   render() {
-    const { children, getWidth, isLoggedIn } = this.props
- console.log("isLoggedIn ", isLoggedIn);
+   const { children, getWidth, isLoggedIn, logOutUser } = this.props
+    console.log("isLoggedIn ", isLoggedIn);
+    console.log("logOutUser ", logOutUser);
+    console.log("this.props ", this.props);
+
+
     const { fixed } = this.state
 
     return (
@@ -101,26 +137,26 @@ class DesktopContainer extends Component {
                   <a>Home</a>
                 </Link>
               </Menu.Item>
-               {isLoggedIn ?
-                <Menu.Item>
-                 <Link href="/profile">
-                  <a>Profile</a>
-                 </Link>
-               </Menu.Item>
-               :
-               null}
-               {isLoggedIn ?
-                 <Menu.Item>
-                  <Link href="/dashboard">
-                   <a>Dashboard</a>
-                  </Link>
-                 </Menu.Item>
-                : null}
+
+          <Menu.Item>
+           <GenericIsUserLoggedInLink
+            isLoggedIn={isLoggedIn}
+            route="/profile"
+            anchorText="Profile"
+           />
+          </Menu.Item>
+
+
+              <Menu.Item>
+               <GenericIsUserLoggedInLink
+                isLoggedIn={isLoggedIn}
+                route="/dashboard"
+                anchorText="Dashboard"
+               />
+              </Menu.Item>
                 <Menu.Item position='right'>
                  <Button inverted={!fixed}>
-                  <Link href="/login">
-                   <a>Log in!</a>
-                  </Link>
+                  <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} logOutUser={logOutUser}/>
                  </Button>
                  <Button inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
                   <Link href="/register">
@@ -151,8 +187,13 @@ class MobileContainer extends Component {
 
   handleToggle = () => this.setState({ sidebarOpened: true })
 
+ logOutUser = () => {
+  const { logOutUser } = this.props
+  logOutUser()
+ }
+
   render() {
-    const { children, getWidth, isLoggedIn } = this.props
+   const { children, getWidth, isLoggedIn, logOutUser } = this.props
     const { sidebarOpened } = this.state
 
     return (
@@ -169,34 +210,27 @@ class MobileContainer extends Component {
           vertical
           visible={sidebarOpened}
         >
-          <Menu.Item active>
+       <Menu.Item active>
            <Link href="/">
-            <a>Home</a>
+           <a>Home</a>
+          </Link>
+       </Menu.Item>
+        <Menu.Item>
+         <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} route="/profile" anchorText="Profile" />
+        </Menu.Item>
+        <Menu.Item>
+         <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} route="/dashboard" anchorText="Dashboard" />
+        </Menu.Item>
+        <Menu.Item>
+        <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} logOutUser={logOutUser} />
+
+        </Menu.Item>
+
+          <Menu.Item >
+           <Link href="/register">
+            <a>Register</a>
            </Link>
           </Menu.Item>
-          {isLoggedIn ?
-           <Menu.Item>
-            <Link href="/profile">
-             <a>Profile</a>
-            </Link>
-           </Menu.Item>
-           : null}
-          {isLoggedIn ?
-          <Menu.Item>
-           <Link href="/dashboard">
-            <a>Dashboard</a>
-          </Link></Menu.Item>
-          : null}
-         <Menu.Item>
-         <Link href="/login">
-          <a>Log in!</a>
-         </Link>
-        </Menu.Item>
-         <Menu.Item >
-          <Link href="/register">
-           <a>Register</a>
-          </Link>
-         </Menu.Item>
         </Sidebar>
 
         <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -211,7 +245,6 @@ class MobileContainer extends Component {
                 <Menu.Item onClick={this.handleToggle}>
                   <Icon name='sidebar' />
                 </Menu.Item>
-
               </Menu>
             </Container>
             <HomepageHeading mobile />
@@ -228,10 +261,10 @@ MobileContainer.propTypes = {
   children: PropTypes.node,
 }
 
-const ResponsiveContainer = ({ children,  getWidth, isLoggedIn }) => (
+const ResponsiveContainer = ({ children, getWidth, isLoggedIn, logOutUser }) => (
   <React.Fragment>
-    <DesktopContainer isLoggedIn={isLoggedIn}>{children}</DesktopContainer>
-    <MobileContainer getWidth={getWidth} isLoggedIn={isLoggedIn}>{children}</MobileContainer>
+   <DesktopContainer isLoggedIn={isLoggedIn} logOutUser={logOutUser}>{children}</DesktopContainer>
+   <MobileContainer getWidth={getWidth} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>{children}</MobileContainer>
   </React.Fragment>
 )
 
@@ -248,8 +281,9 @@ const getWidthFactory = isMobileFromSSR => () => {
   return isSSR ? ssrValue : window.innerWidth;
 };
 
-const HomepageLayout = ({ getWidth, isMobileFromSSR, isLoggedIn }) => (
-  <ResponsiveContainer isLoggedIn={isLoggedIn} getWidth={getWidthFactory(isMobileFromSSR)} >    <Segment style={{ padding: '8em 0em' }} vertical>
+const HomepageLayout = ({ getWidth, isMobileFromSSR, isLoggedIn, logOutUser}) => (
+ <ResponsiveContainer isLoggedIn={isLoggedIn} logOutUser={logOutUser} getWidth={getWidthFactory(isMobileFromSSR)}>
+ <Segment style={{ padding: '8em 0em' }} vertical>
       <Grid container stackable verticalAlign='middle'>
         <Grid.Row>
           <Grid.Column width={8}>
@@ -376,4 +410,15 @@ const HomepageLayout = ({ getWidth, isMobileFromSSR, isLoggedIn }) => (
   </ResponsiveContainer>
 )
 
-export default HomepageLayout
+function mapStateToProps(state) {
+ const { isLoggedIn } = state
+ return { isLoggedIn }
+}
+const mapDispatchToProps = dispatch =>
+ bindActionCreators({ logOutUser }, dispatch)
+
+
+export default connect(
+ mapStateToProps,
+ mapDispatchToProps
+)(HomepageLayout)
