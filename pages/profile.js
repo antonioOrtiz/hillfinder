@@ -2,12 +2,16 @@ import Router from 'next/router'
 import withAuth from 'next-authentication'
 import 'semantic-ui-css/semantic.min.css'
 import ProfilePage from '../components/Profile/ProfilePage.jsx'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import {  logOutUser } from '../store'
 
-const Profile = () => (
-   <div>
-    <ProfilePage/>
-   </div>
-)
+const Profile = ({ isLoggedIn, logOutUser}) => (
+    <>
+     <ProfilePage isLoggedIn={isLoggedIn} logOutUser={logOutUser}/>
+    </>
+ )
+
 
 const authOptions = {
     // client callback for invalid sessions
@@ -16,4 +20,14 @@ const authOptions = {
     // with the route
     serverRedirect: '/'
 }
-export default withAuth(authOptions)(ProfilePage)
+
+
+function mapStateToProps(state) {
+ const { isLoggedIn, logOutUser } = state
+ return { isLoggedIn, logOutUser }
+}
+const mapDispatchToProps = dispatch =>
+ bindActionCreators({logOutUser }, dispatch)
+
+export default withAuth(authOptions)(connect(mapStateToProps, mapDispatchToProps)(Profile));
+// export default withAuth(authOptions)(Profile)
