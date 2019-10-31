@@ -1,313 +1,80 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
 import {
   Button,
   Container,
   Divider,
+  Icon,
   Grid,
   Header,
-  Icon,
-  Image,
   List,
-  Menu,
   Responsive,
   Segment,
-  Sidebar,
-  Visibility,
-} from 'semantic-ui-react'
-import Link from 'next/link';
 
+} from 'semantic-ui-react'
+// import { getWidthFactory } from '../../utils/utils';
+
+import Layout from '../Layout/LayoutComponent.jsx'
+import { getWidthFactory } from '../../utils/utils';
 
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { logOutUser } from '../../store'
-
-// Heads up!
-// We using React Static to prerender our docs with server side rendering, this is a quite simple solution.
-// For more advanced usage please check Responsive docs under the "Usage" section.
-
-
-/* eslint-disable react/no-multi-comp */
-/* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
- * such things.
- */
-// function GenericIsUserLoggedInLink({ isLoggedIn, route, anchorText }) {
-//  return isLoggedIn ? <Menu.Item><Link href={route}><a>{anchorText}</a></Link></Menu.Item> : null;
-// }
-
-// function GenericIsUserLoggedInLink({ isLoggedIn, logOutUser, route, anchorText }) {
-//  return isLoggedIn ? <Link href="/"><a onClick={() => logOutUser()}>Log out!</a></Link> : <Link href={route}><a>{anchorText}</a></Link>;
-// }
-function GenericIsUserLoggedInLink({ isLoggedIn, logOutUser, route, anchorText }) {
- if (isLoggedIn) {
-  if (anchorText === undefined) {
-   return <Link href="/"><a onClick={() => logOutUser()}>Log out!</a></Link>
-  } else if (anchorText) {
-   return <Link href={route}><a>{anchorText}</a></Link>
-  } else {
-   return null
-  }
- } else {
-  return  <Link href="/login"><a>Log in!</a></Link>
- }
-}
 
 const HomepageHeading = ({ mobile }) => (
-  <Container text>
-    <Header
-      as='h1'
-      content='An app on the decline...uh about one!'
-      inverted
-      style={{
-        fontSize: mobile ? '2em' : '4em',
-        fontWeight: 'normal',
-        marginBottom: 0,
-        marginTop: mobile ? '1.5em' : '3em',
-      }}
-    />
-    <Header
-      as='h2'
-      content='Do whatever you want when you want to.'
-      inverted
-      style={{
-        fontSize: mobile ? '1.5em' : '1.7em',
-        fontWeight: 'normal',
-        marginTop: mobile ? '0.5em' : '1.5em',
-      }}
-    />
-    <Button primary size='huge'>
-      Get Started
+ <Container text>
+  <Header
+   as='h1'
+   content='This is the home page! An app on the decline...uh about one!'
+   inverted
+   style={{
+    fontSize: mobile ? '2em' : '4em',
+    fontWeight: 'normal',
+    marginBottom: 0,
+    marginTop: mobile ? '1.5em' : '3em',
+   }}
+  />
+  <Header
+   as='h2'
+   content='Do whatever you want when you want to.'
+   inverted
+   style={{
+    fontSize: mobile ? '1.5em' : '1.7em',
+    fontWeight: 'normal',
+    marginTop: mobile ? '0.5em' : '1.5em',
+   }}
+  />
+
+  <Button primary size='huge'>
+   Get Started
       <Icon name='right arrow' />
-    </Button>
-  </Container>
+  </Button>
+ </Container>
 )
 
 HomepageHeading.propTypes = {
-  mobile: PropTypes.bool,
+ mobile: PropTypes.bool,
 }
 
-/* Heads up!
- * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
- * It can be more complicated, but you can create really flexible markup.
- */
-
-class DesktopContainer extends Component {
-  state = {}
-
-  hideFixedMenu = () => this.setState({ fixed: false })
-  showFixedMenu = () => this.setState({ fixed: true })
-
- logOutUser = () => {
-  const { logOutUser } = this.props
-  logOutUser()
- }
-
-  render() {
-   const { children, getWidth, isLoggedIn, logOutUser } = this.props
-    console.log("isLoggedIn ", isLoggedIn);
-    console.log("logOutUser ", logOutUser);
-    console.log("this.props ", this.props);
-
-
-    const { fixed } = this.state
-
-    return (
-      <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
-        <Visibility
-          once={false}
-          onBottomPassed={this.showFixedMenu}
-          onBottomPassedReverse={this.hideFixedMenu}
-        >
-          <Segment
-            inverted
-            textAlign='center'
-            style={{ minHeight: 700, padding: '1em 0em' }}
-            vertical
-          >
-            <Menu
-              fixed={fixed ? 'top' : null}
-              inverted={!fixed}
-              pointing={!fixed}
-              secondary={!fixed}
-              size='large'
-            >
-              <Container>
-               <Menu.Item active>
-                 <Link href="/">
-                  <a>Home</a>
-                </Link>
-              </Menu.Item>
-
-          <Menu.Item>
-           <GenericIsUserLoggedInLink
-            isLoggedIn={isLoggedIn}
-            route="/profile"
-            anchorText="Profile"
-           />
-          </Menu.Item>
-
-
-              <Menu.Item>
-               <GenericIsUserLoggedInLink
-                isLoggedIn={isLoggedIn}
-                route="/dashboard"
-                anchorText="Dashboard"
-               />
-              </Menu.Item>
-                <Menu.Item position='right'>
-                 <Button inverted={!fixed}>
-                  <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} logOutUser={logOutUser}/>
-                 </Button>
-                 <Button inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
-                  <Link href="/register">
-                   <a>Register</a>
-                  </Link>
-                </Button>
-               </Menu.Item>
-              </Container>
-            </Menu>
-            <HomepageHeading />
-          </Segment>
-        </Visibility>
-
-        {children}
-      </Responsive>
-    )
-  }
-}
-
-DesktopContainer.propTypes = {
-  children: PropTypes.node,
-}
-
-class MobileContainer extends Component {
-  state = {}
-
-  handleSidebarHide = () => this.setState({ sidebarOpened: false })
-
-  handleToggle = () => this.setState({ sidebarOpened: true })
-
- logOutUser = () => {
-  const { logOutUser } = this.props
-  logOutUser()
- }
-
-  render() {
-   const { children, getWidth, isLoggedIn, logOutUser } = this.props
-    const { sidebarOpened } = this.state
-
-    return (
-      <Responsive
-        as={Sidebar.Pushable}
-        getWidth={getWidth}
-        maxWidth={Responsive.onlyMobile.maxWidth}
-      >
-        <Sidebar
-          as={Menu}
-          animation='push'
-          inverted
-          onHide={this.handleSidebarHide}
-          vertical
-          visible={sidebarOpened}
-        >
-       <Menu.Item active>
-           <Link href="/">
-           <a>Home</a>
-          </Link>
-       </Menu.Item>
-        <Menu.Item>
-         <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} route="/profile" anchorText="Profile" />
-        </Menu.Item>
-        <Menu.Item>
-         <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} route="/dashboard" anchorText="Dashboard" />
-        </Menu.Item>
-        <Menu.Item>
-        <GenericIsUserLoggedInLink isLoggedIn={isLoggedIn} logOutUser={logOutUser} />
-
-        </Menu.Item>
-
-          <Menu.Item >
-           <Link href="/register">
-            <a>Register</a>
-           </Link>
-          </Menu.Item>
-        </Sidebar>
-
-        <Sidebar.Pusher dimmed={sidebarOpened}>
-          <Segment
-            inverted
-            textAlign='center'
-            style={{ minHeight: 350, padding: '1em 0em' }}
-            vertical
-          >
-            <Container>
-              <Menu inverted pointing secondary size='large'>
-                <Menu.Item onClick={this.handleToggle}>
-                  <Icon name='sidebar' />
-                </Menu.Item>
-              </Menu>
-            </Container>
-            <HomepageHeading mobile />
-          </Segment>
-
-          {children}
-        </Sidebar.Pusher>
-      </Responsive>
-    )
-  }
-}
-
-MobileContainer.propTypes = {
-  children: PropTypes.node,
-}
-
-const ResponsiveContainer = ({ children, getWidth, isLoggedIn, logOutUser }) => (
-  <React.Fragment>
-   <DesktopContainer isLoggedIn={isLoggedIn} logOutUser={logOutUser}>{children}</DesktopContainer>
-   <MobileContainer getWidth={getWidth} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>{children}</MobileContainer>
-  </React.Fragment>
-)
-
-ResponsiveContainer.propTypes = {
-  children: PropTypes.node,
-}
-
-const getWidthFactory = isMobileFromSSR => () => {
-  const isSSR = typeof window === "undefined";
-  const ssrValue = isMobileFromSSR
-    ? Responsive.onlyMobile.maxWidth
-    : Responsive.onlyTablet.minWidth;
-
-  return isSSR ? ssrValue : window.innerWidth;
-};
-
-const HomepageLayout = ({ getWidth, isMobileFromSSR, isLoggedIn, logOutUser}) => (
- <ResponsiveContainer isLoggedIn={isLoggedIn} logOutUser={logOutUser} getWidth={getWidthFactory(isMobileFromSSR)}>
+const HomepageLayout = ({ isMobileFromSSR, isLoggedIn, logInUser, logOutUser}) => (
+ <Layout GenericHeadingComponent={HomepageHeading} isLoggedIn={isLoggedIn} logInUser={logInUser} logOutUser={logOutUser} getWidth={getWidthFactory(isMobileFromSSR)}>
  <Segment style={{ padding: '8em 0em' }} vertical>
-      <Grid container stackable verticalAlign='middle'>
+      <Grid centered container stackable verticalAlign='middle'>
         <Grid.Row>
-          <Grid.Column width={8}>
-            <Header as='h3' style={{ fontSize: '2em' }}>
+          <Grid.Column width={12}>
+      <Header  as='h3' style={{ fontSize: '2em' }}>
               We Help Companies and Companions
             </Header>
             <p style={{ fontSize: '1.33em' }}>
               We can give your company superpowers to do things that they never thought possible.
               Let us delight your customers and empower your needs... through pure data analytics.
             </p>
-            <Header as='h3' style={{ fontSize: '2em' }}>
-              We Make Bananas That Can Dance
-            </Header>
-            <p style={{ fontSize: '1.33em' }}>
-              Yes that's right, you thought it was the stuff of dreams, but even bananas can be
-              bioengineered.
-            </p>
+
+
           </Grid.Column>
           <Grid.Column floated='right' width={6}>
             {/* <Image bordered rounded size='large' src='/images/wireframe/white-image.png' /> */}
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
-          <Grid.Column textAlign='center'>
+          <Grid.Column>
             <Button size='huge'>Check Them Out</Button>
           </Grid.Column>
         </Grid.Row>
@@ -407,18 +174,14 @@ const HomepageLayout = ({ getWidth, isMobileFromSSR, isLoggedIn, logOutUser}) =>
         </Grid>
       </Container>
     </Segment>
-  </ResponsiveContainer>
+  </Layout>
 )
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
- return { isLoggedIn }
+ const { isLoggedIn, logInUser, logOutUser } = state
+ return { isLoggedIn, logInUser, logOutUser }
 }
-const mapDispatchToProps = dispatch =>
- bindActionCreators({ logOutUser }, dispatch)
-
 
 export default connect(
  mapStateToProps,
- mapDispatchToProps
 )(HomepageLayout)
