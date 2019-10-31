@@ -5,7 +5,8 @@ import Router from 'next/router'
 import { login } from 'next-authentication'
 
 import { connect } from 'react-redux'
-
+import { bindActionCreators } from 'redux'
+import { logInUser } from '../../store'
 
 class LoginForm extends Component {
  constructor(props) {
@@ -54,18 +55,15 @@ class LoginForm extends Component {
   }
  }
 
-
  handleSubmit(event) {
+  event.preventDefault();
+
   this.setState({
    isLoading: true
   })
 
-  event.preventDefault();
-
   var error = false;
-
-  var { username, password, isLoading } = this.state
-
+  var { username, password, isLoading } = this.state;
   var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 
@@ -88,8 +86,6 @@ class LoginForm extends Component {
    return;
   }
 
-  {console.log("isLoading 1", isLoading)}
-
 
   return window.fetch('http://localhost:8016/users/login', {
    method: 'POST',
@@ -106,8 +102,11 @@ class LoginForm extends Component {
       cookieOptions: { expires: 1 },
       callback: () => Router.push('/profile')
      }
+
      setTimeout(() => {
-      login(loginOptions)
+      this.props.logInUser()
+
+      login(loginOptions);
      }, 5000)
 
      this.setState({
@@ -123,6 +122,7 @@ class LoginForm extends Component {
       return;
      }
     }
+
     return response;
    })
    .catch(err => console.dir(err))
@@ -130,10 +130,12 @@ class LoginForm extends Component {
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
-  const { state} = this.props;
+  console.log("this.props ", this.props);
 
+  var { isLoggedIn } = this.props;
 
-  // (formSuccess === true) ? state.isLoggedIn = true : state.isLoggedIn = false;
+  {console.log('isLoggedIn', isLoggedIn)}
+  (formSuccess === true) ? isLoggedIn = true : isLoggedIn = false;
 
   return (<div className='login-form'> {
 
@@ -247,10 +249,14 @@ class LoginForm extends Component {
  }
 }
 
-const mapStateToProps = state => {
- return {
-  state
- }
+function mapStateToProps (state) {
+  const { isLoggedIn } = state
+  return { isLoggedIn}
 }
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ logInUser }, dispatch)
 
-export default connect(mapStateToProps)(LoginForm)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginForm)
