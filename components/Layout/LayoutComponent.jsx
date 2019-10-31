@@ -16,13 +16,14 @@ import { bindActionCreators } from 'redux'
 import { logInUser, logOutUser } from '../../store'
 
 import Link from 'next/link';
+import Router from 'next/router'
 
 // Heads up!
 // We using React Static to prerender our docs with server side rendering, this is a quite simple solution.
 // For more advanced usage please check Responsive docs under the "Usage" section.
 
 var comparator;
-const GenericIsUserLoggedInLink = React.memo(({ isHomeButton, isLoggedIn, logOutUser, route, anchorText, mobile, activeItem, name, handleItemClick }) => {
+const GenericIsUserLoggedInLink = React.memo(({ isHomeButton, isLoggedIn, logOutUser, route, anchorText, mobile, name, active, handleItemClick }) => {
 
  comparator = (prevProps, nextProps) => {
 
@@ -35,25 +36,56 @@ const GenericIsUserLoggedInLink = React.memo(({ isHomeButton, isLoggedIn, logOut
   if (prevProps.mobile !== nextProps.setProps.mobile) {
    return true;
   }
+  if (prevProps.name !== nextProps.setProps.name) {
+   return true;
+  }
   if (prevProps.active !== nextProps.setProps.active) {
    return true;
   }
   return false;
  }
+
+ function currentNav(route, name, active, handleItemClick) {
+
+  // console.log("handleItemClick ", handleItemClick);
+  // console.log("active ", active);
+  // console.log("name ", name);
+  const handler = (route) => {
+   Router.push({
+    pathname: route
+   })
+  }
+
+
+  return (
+    <Menu.Item
+     to={route}
+     key={name}
+     name={name}
+     active={active == name}
+     onClick={(e) => {
+      Router.onRouteChangeStart=  handler(route)
+       handleItemClick(e, { name });
+
+     }
+    }
+    >
+    </Menu.Item>
+  );
+ }
+
  if (isHomeButton) {
-  return <Link href="/"><Menu.Item name={name} active={activeItem === name} onClick={() => handleItemClick(name)}></Menu.Item></Link>
+  return currentNav(route, name, active, handleItemClick)
  }
  if (isLoggedIn) {
   if (anchorText === undefined) {
    return <Link href="/"><a onClick={() => logOutUser()}>Log out!</a></Link>
   }
   else if (mobile) {
-
-   return <Link href={route}><Menu.Item name={name} active={activeItem === name}></Menu.Item></Link>
+   return currentNav(route, name, active, handleItemClick)
   }
-  else if ((!(mobile))) {
-   console.log("mobile 2 ", mobile);
-   return <Link href={route}><Menu.Item name={name} active={activeItem === name} onClick={() => handleItemClick(name)}></Menu.Item></Link>
+  else if (!(mobile)) {
+   return currentNav(route, name, active, handleItemClick)
   }
 
   else if (anchorText) {
@@ -70,7 +102,7 @@ const GenericIsUserLoggedInLink = React.memo(({ isHomeButton, isLoggedIn, logOut
 
 
 class DesktopContainer extends Component {
- state = {activeItem: 'home'}
+ state = {activeItem : 'home'}
 
  hideFixedMenu = () => this.setState({ fixed: false })
  showFixedMenu = () => this.setState({ fixed: true })
@@ -112,8 +144,9 @@ class DesktopContainer extends Component {
 
         <GenericIsUserLoggedInLink
          isHomeButton={true}
+         route="/"
          name='home'
-         activeItem={activeItem}
+         active={activeItem}
          handleItemClick={this.handleItemClick}
          mobile={false}
         />
@@ -123,7 +156,7 @@ class DesktopContainer extends Component {
          route="/profile"
          anchorText="Profile"
          name='profile'
-         activeItem={activeItem}
+         active={activeItem}
          handleItemClick={this.handleItemClick}
          mobile={false}
         />
@@ -133,7 +166,7 @@ class DesktopContainer extends Component {
          route="/dashboard"
          anchorText="Dashboard"
          name='dashboard'
-         activeItem={activeItem}
+         active={activeItem}
          handleItemClick={this.handleItemClick}
          mobile={false}
         />
@@ -170,7 +203,7 @@ DesktopContainer.propTypes = {
 }
 
 class MobileContainer extends Component {
- state = {}
+ state = { activeItem: 'home' }
 
  handleSidebarHide = () => this.setState({ sidebarOpened: false })
 
@@ -203,18 +236,20 @@ class MobileContainer extends Component {
 
      <GenericIsUserLoggedInLink
       isHomeButton={true}
+      route="/"
       name='home'
-      activeItem={activeItem}
+      active={activeItem}
       handleItemClick={this.handleItemClick}
       mobile={true}
      />
+
 
      <GenericIsUserLoggedInLink
       isLoggedIn={isLoggedIn}
       route="/profile"
       anchorText="Profile"
       name='profile'
-      activeItem={activeItem}
+      active={activeItem}
       handleItemClick={this.handleItemClick}
       mobile={true}
      />
@@ -224,7 +259,7 @@ class MobileContainer extends Component {
       route="/dashboard"
       anchorText="Dashboard"
       name='dashboard'
-      activeItem={activeItem}
+      active={activeItem}
       handleItemClick={this.handleItemClick}
       mobile={true}
      />
