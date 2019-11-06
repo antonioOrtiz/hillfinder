@@ -102,9 +102,21 @@ NextApp.prepare()
         // eslint-disable-next-line global-require
         app.use('/users', require('./users'))
 
-        app.get('*', (req, res) => {
-            return handle(req, res)
-        })
+        // app.get('*', (req, res) => {
+        //     return handle(req, res)
+        // })
+
+        // Redirect all requests to main entrypoint pages/index.js
+        app.get('/*', async(req, res, next) => {
+            try {
+                req.locals = {};
+                req.locals.context = {};
+                handle(req, res, '/');
+            } catch (e) {
+                next(e);
+            }
+        });
+
 
         app.use(function(req, res, next) {
             res.status(404).send('404 - Not Found!');

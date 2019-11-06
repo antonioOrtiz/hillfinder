@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types'
 import { Button, Segment, Grid, Divider,  Container, Header, Icon } from 'semantic-ui-react'
-import Layout from '../Layout/LayoutComponent.jsx'
-import { getWidthFactory } from '../../utils/utils';
 
 const HomepageHeading = ({ mobile }) => (
  <Container text>
@@ -40,27 +38,21 @@ HomepageHeading.propTypes = {
 
 const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR }) => (
  <>
-  <Layout GenericHeadingComponent={HomepageHeading}
-   isLoggedIn={isLoggedIn}
-   logOutUser={logOutUser}
-   getWidth={getWidthFactory(isMobileFromSSR)}
->
    <Segment style={{ padding: '8em 0em' }} vertical>
     <Grid centered container stackable verticalAlign='middle'>
      <Grid.Row>
       <Grid.Column width={12}>
        <Header as='h3' style={{ fontSize: '2em' }}>
         We Help Companies and Companions
-            </Header>
+       </Header>
        <p style={{ fontSize: '1.33em' }}>
         We can give your company superpowers to do things that they never thought possible.
         Let us delight your customers and empower your needs... through pure data analytics.
-            </p>
+       </p>
 
 
       </Grid.Column>
       <Grid.Column floated='right' width={6}>
-       {/* <Image bordered rounded size='large' src='/images/wireframe/white-image.png' /> */}
       </Grid.Column>
      </Grid.Row>
      <Grid.Row>
@@ -131,15 +123,6 @@ const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR }) => (
    </Segment>
 
    <Segment inverted vertical style={{ padding: '5em 0em' }}></Segment>
-  </Layout>
-
-
-  {/* <Card image='../../static/profile-avatars/charly_desktop.jpg'
-   header='Charly Pavicevac-Ortiz'
-   meta='Friend'
-   description='Charly was the son of Antonio and Barbara, and the brother to Aria'
-   extra={extra}
-  /> */}
  </>
 
 )

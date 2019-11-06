@@ -1,9 +1,14 @@
-import App from 'next/app'
 import React from 'react'
+import App, { Container } from 'next/app';
+
 import withReduxStore from '../lib/with-redux-store'
 import { Provider } from 'react-redux'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
+
+
+import withReactRouter from '../with-next-router/with-next-router'
+
 
 class MyApp extends App {
  constructor(props) {
@@ -19,11 +24,13 @@ class MyApp extends App {
      loading={<Component {...pageProps} />}
      persistor={this.persistor}
     >
-    <Component {...pageProps} />
+    <Container>
+      <Component {...pageProps} />
+    </Container>
     </PersistGate>
    </Provider>
   )
  }
 }
 
-export default withReduxStore(MyApp)
+export default withReduxStore(withReactRouter(MyApp))
