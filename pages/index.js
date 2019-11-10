@@ -5,13 +5,12 @@ import Profile from './profile'
 import Dashboard from './dashboard'
 import Login from './login'
 import Register from './register'
-import LinkNav from './LinkNav'
+import LinkNavWithLayout from './LinkNavWithLayout'
 
 class App extends Component {
   constructor() {
   super()
  }
-
 
  render(){
   let navBars = [
@@ -27,26 +26,25 @@ class App extends Component {
      <Route
       path="/"
       exact
-      render={() => <LinkNav data={navBars}><Index /></LinkNav>}
+      render={() => <LinkNavWithLayout data={navBars}><Index /></LinkNavWithLayout>}
      />
      <Route
       path="/profile/"
-      render={() => <LinkNav data={navBars}><Profile /></LinkNav>}
+      render={() => <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>}
      />
      <Route
       path="/dashboard/"
-      render={() => <LinkNav data={navBars}><Dashboard /></LinkNav>}
+      render={() => <LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>}
      />
      <Route
       path="/login"
-      render={() => <LinkNav data={navBars}><Login /></LinkNav>}
+      render={() => <LinkNavWithLayout data={navBars}><Login /></LinkNavWithLayout>}
      />
      <Route
       path="/register"
-      render={() => <LinkNav data={navBars}><Register /></LinkNav>}
+      render={() => <LinkNavWithLayout data={navBars}><Register /></LinkNavWithLayout>}
      />
-     {/* <Redirect from="/people/" to="/users/" /> */}
-     {/* <Route component={NotFound} /> */}
+     {/* <Route component={()=> <h1>Not found</h1>} /> */}
     </Switch>
    </>
   )

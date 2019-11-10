@@ -49,7 +49,7 @@ class DesktopContainer extends Component {
      <Segment
       inverted
       textAlign='center'
-      style={{ minHeight: 'auto', padding: '1em 0em' }}
+      style={{ minHeight: 'auto', padding: '0' }}
       vertical
      >
       <Menu
@@ -114,6 +114,7 @@ class MobileContainer extends Component {
      {data.map(nav => {
      return (
       <Menu.Item
+       exact
        key={nav.path}
        as={NavLink}
        to={nav.path}
@@ -129,7 +130,7 @@ class MobileContainer extends Component {
      <Segment
       inverted
       textAlign='center'
-      style={{ minHeight: 350, padding: '1em 0em' }}
+      style={{ minHeight: 'auto', padding: '1em 0em' }}
       vertical
      >
       <Container>
@@ -156,7 +157,7 @@ class MobileContainer extends Component {
  }
 }
 
-const LinkNav = ({ GenericHeadingComponent, children,  data, isLoggedIn, logOutUser }) => (
+const LinkNavWithLayout = ({ GenericHeadingComponent, children,  data, isLoggedIn, logOutUser }) => (
  <React.Fragment>
   <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} data={data} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>
   {children}
@@ -177,4 +178,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
  mapStateToProps,
  mapDispatchToProps
-)(withRouter(LinkNav))
+)(withRouter(LinkNavWithLayout))
