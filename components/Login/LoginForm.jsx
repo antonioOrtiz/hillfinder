@@ -56,6 +56,10 @@ class LoginForm extends Component {
  }
 
  handleSubmit(event) {
+
+  var {history} = this.props;
+
+ console.log("history in handleSubmit", history);
   event.preventDefault();
 
   this.setState({
@@ -100,7 +104,7 @@ class LoginForm extends Component {
      const loginOptions = {
       token,
       cookieOptions: { expires: 1 },
-      callback: () => Router.push('/profile')
+      callback: () => history.push('/profile')
      }
 
      setTimeout(() => {
@@ -110,14 +114,14 @@ class LoginForm extends Component {
      }, 5000)
 
      this.setState({
-      username: username, password: '', formError: false, formSuccess: true,isLoading:false
+      username: username, password: '', formError: false, formSuccess: true, isLoading: false
      })
     } else if (!response.ok) {
      if (response.status === 404) {
       console.log("response.status ", response.status);
-      {console.log("isLoading 2", isLoading)}
+      { console.log("isLoading 2", isLoading) }
       this.setState({
-        formError: true, formSuccess: false, isLoading:false
+       formError: true, formSuccess: false, isLoading: false
       });
       return;
      }
@@ -134,7 +138,7 @@ class LoginForm extends Component {
 
   var { isLoggedIn } = this.props;
 
-  {console.log('isLoggedIn', isLoggedIn)}
+  { console.log('isLoggedIn', isLoggedIn) }
   (formSuccess === true) ? isLoggedIn = true : isLoggedIn = false;
 
   return (<div className='login-form'> {
@@ -153,7 +157,7 @@ class LoginForm extends Component {
 
      <Form size='large'
       onSubmit={this.handleSubmit}
-      error={ formError}>
+      error={formError}>
 
 
       <Segment stacked>
@@ -195,30 +199,30 @@ class LoginForm extends Component {
         Log-in
        </Button>
 
-       <Transition visible={ formError}
+       <Transition visible={formError}
         unmountOnHide={true}
         animation='scale'
         duration={duration}>
 
-       {isLoading ?
-        <Dimmer active inverted>
+        {isLoading ?
+         <Dimmer active inverted>
           <Loader />
-        </Dimmer>
-        :
-        <Message
-         error
-         centered="true" header='This email does not exist...'
-         content='Please re-enter another email address, or  click the link below to register.' />
-         }
+         </Dimmer>
+         :
+         <Message
+          error
+          centered="true" header='This email does not exist...'
+          content='Please re-enter another email address, or  click the link below to register.' />
+        }
        </Transition>
 
 
 
-        <Transition visible={formSuccess}
-         unmountOnHide={true}
-         animation='scale'
-         duration={duration}>
-         {isLoading ?
+       <Transition visible={formSuccess}
+        unmountOnHide={true}
+        animation='scale'
+        duration={duration}>
+        {isLoading ?
          <Dimmer active inverted>
           <Loader />
          </Dimmer>
@@ -227,8 +231,8 @@ class LoginForm extends Component {
           success
           header='Your have successfully logged in.'
           content='Welcome to Hillfinder!' />
-          }
-        </Transition>
+        }
+       </Transition>
 
       </Segment>
      </Form>
@@ -249,14 +253,14 @@ class LoginForm extends Component {
  }
 }
 
-function mapStateToProps (state) {
-  const { isLoggedIn } = state
-  return { isLoggedIn}
+function mapStateToProps(state) {
+ const { isLoggedIn } = state
+ return { isLoggedIn }
 }
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ logInUser }, dispatch)
+ bindActionCreators({ logInUser }, dispatch)
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+ mapStateToProps,
+ mapDispatchToProps
 )(LoginForm)
