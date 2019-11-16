@@ -39,11 +39,9 @@ export const logOutUser = () => {
  return { type: actionTypes.IS_LOGGED_OUT }
 }
 
-
 const persistConfig = {
     key: 'root',
     storage,
-
 }
 
 const persistedReducer = persistReducer(persistConfig, reducer)
