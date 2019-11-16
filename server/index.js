@@ -1,9 +1,8 @@
-/* eslint-disable no-console */
-/* eslint-disable no-shadow */
-var express = require('express')
+const express = require('express');
+
 require('dotenv').config()
 
-var next = require('next')
+const nextJS = require('next');
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var MongoStore = require('connect-mongo')(session)
@@ -13,8 +12,8 @@ var cors = require('cors')
 var morgan = require('morgan')
 var HttpStatus = require('http-status-codes')
 var PORT = process.env.PORT || 8016
-var dev = process.env.NODE_ENV !== `production`;
 
+const { isBlockedPage, isInternalUrl } = require('next-server/dist/server/utils');
 
 function NODE_ENVSetter(ENV) {
     var environment,
@@ -39,13 +38,7 @@ function NODE_ENVSetter(ENV) {
 }
 
 var db = NODE_ENVSetter('development')
-console.log("db ", db);
-
-var NextApp = next({ dev })
-var handle = NextApp.getRequestHandler()
-
 var mongoose = require('mongoose')
-
 
 function errorHandler(err, req, res, next) {
     // Set locals, only providing error in development
@@ -65,74 +58,102 @@ function errorHandler(err, req, res, next) {
     })
 }
 
+async function start() {
+    const dev = process.env.NODE_ENV !== 'production';
+    const app = nextJS({ dev });
+    const server = express();
+    await app.prepare()
+        .then(() => {
+            mongoose.connect(db, { useNewUrlParser: true })
+            mongoose.Promise = global.Promise
 
-NextApp.prepare()
-    .then(() => {
-        const app = express()
-        mongoose.connect(db, { useNewUrlParser: true })
-        mongoose.Promise = global.Promise
+            mongoose.connection
+                .on('connected', () => {
+                    console.log(`Mongoose connection open on ${db}`)
+                })
+                .on('error', err => {
+                    console.log(`Connection error: ${err.message}`)
+                });
+        })
+        .catch(err => {
+            console.error(err)
+        })
 
-        mongoose.connection
-            .on('connected', () => {
-                console.log(`Mongoose connection open on ${db}`)
-            })
-            .on('error', err => {
-                console.log(`Connection error: ${err.message}`)
-            });
+    server.use(bodyParser.json())
+    server.use(bodyParser.urlencoded({ extended: true }))
+    server.use(morgan('dev'))
 
-        app.use(bodyParser.json())
-        app.use(bodyParser.urlencoded({ extended: true }))
-        app.use(morgan('dev'))
+    server.use(cookieParser())
 
-        app.use(cookieParser())
+    server.use(session({
+        secret: 'very secret 12345',
+        resave: true,
+        saveUninitialized: false,
+        store: new MongoStore({ mongooseConnection: mongoose.connection })
+    }));
 
-        app.use(session({
-            secret: 'very secret 12345',
-            resave: true,
-            saveUninitialized: false,
-            store: new MongoStore({ mongooseConnection: mongoose.connection })
-        }));
+    server.use(auth.initialize);
+    server.use(auth.session);
+    server.use(auth.setUser);
 
-        app.use(auth.initialize);
-        app.use(auth.session);
-        app.use(auth.setUser);
+    server.use(cors())
+    server.use('/users', require('./users'))
 
-        app.use(cors())
-
-        // eslint-disable-next-line global-require
-        app.use('/users', require('./users'))
-
-        // app.get('*', (req, res) => {
-        //     return handle(req, res)
-        // })
-
-        // Redirect all requests to main entrypoint pages/index.js
-        app.get('/*', async(req, res, next) => {
-            try {
-                req.locals = {};
-                req.locals.context = {};
-                handle(req, res, '/');
-            } catch (e) {
-                next(e);
+    // Redirect all requests to main entrypoint pages/index.js
+    server.get('/*', async(req, res, next) => {
+        try {
+            // @NOTE code duplication from here
+            // https://github.com/zeit/next.js/blob/cc6fe5fdf92c9c618a739128fbd5192a6d397afa/packages/next-server/server/next-server.ts#L405
+            const pathName = req.originalUrl;
+            if (isInternalUrl(req.url)) {
+                return app.handleRequest(req, res, req.originalUrl)
             }
-        });
 
+            if (isBlockedPage(pathName)) {
+                return app.render404(req, res, req.originalUrl)
+            }
 
-        app.use(function(req, res, next) {
-            res.status(404).send('404 - Not Found!');
-        });
+            // Provide react-router static router with a context object
+            // https://reacttraining.com/react-router/web/guides/server-rendering
+            req.locals = {};
+            req.locals.context = {};
+            const html = await app.renderToHTML(req, res, '/', {});
 
-        // eslint-disable-next-line func-names
-        app.use(errorHandler, function(error, req, res, next) {
-            res.json({ message: error.message })
-        })
+            // Handle client redirects
+            const context = req.locals.context;
+            if (context.url) {
+                return res.redirect(context.url)
+            }
 
+            // Handle client response statuses
+            if (context.status) {
+                return res.status(context.status).send();
+            }
 
-        app.listen(PORT, err => {
-            if (err) throw err
-            console.log(`> Ready on http://localhost:${PORT}`)
-        })
+            // Request was ended by the user
+            if (html === null) {
+                return;
+            }
+
+            app.sendHTML(req, res, html);
+        } catch (e) {
+            next(e);
+        }
+    });
+
+    server.use(function(req, res, next) {
+        res.status(404).send('404 - Not Found!');
+    });
+
+    // eslint-disable-next-line func-names
+    server.use(errorHandler, function(error, req, res, next) {
+        res.json({ message: error.message })
     })
-    .catch(err => {
-        console.error(err)
-    })
+
+    server.listen(PORT, err => {
+        if (err) throw err;
+        console.log(`> Ready on http://localhost:${PORT}`)
+    });
+}
+
+start();
