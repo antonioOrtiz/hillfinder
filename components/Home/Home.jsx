@@ -1,16 +1,13 @@
 import {
   Button,
   Container,
-  Divider,
   Grid,
   Header,
   List,
   Segment,
 } from 'semantic-ui-react'
 
-import { getWidthFactory } from '../../utils/utils';
 import MyHeader from '../Header/Header.jsx'
-import { connect } from 'react-redux'
 
 const HomepageLayout = () => (
  <>
@@ -99,13 +96,4 @@ const HomepageLayout = () => (
  </>
 )
 
-
-
-function mapStateToProps(state) {
- const { isLoggedIn, logInUser, logOutUser } = state
- return { isLoggedIn, logInUser, logOutUser }
-}
-
-export default connect(
- mapStateToProps,
-)(HomepageLayout)
+export default HomepageLayout
