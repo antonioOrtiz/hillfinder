@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import Link from 'next/link';
-import Router from 'next/router'
 import { login } from 'next-authentication'
 
 import { connect } from 'react-redux'
@@ -56,12 +55,7 @@ class LoginForm extends Component {
  }
 
  handleSubmit(event) {
-
-  var {history} = this.props;
-
- console.log("history in handleSubmit", history);
-  event.preventDefault();
-
+ var {history} = this.props
   this.setState({
    isLoading: true
   })
@@ -134,7 +128,7 @@ class LoginForm extends Component {
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
-  console.log("this.props ", this.props);
+  console.log("LoginForm this.props ", this.props);
 
   var { isLoggedIn } = this.props;
 
