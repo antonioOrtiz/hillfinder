@@ -1,10 +1,9 @@
-import Router from 'next/router'
-// import withAuth from 'next-authentication'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { logOutUser } from '../store'
 import { withRouter } from "react-router-dom";
+
 let Dashboard;
 
 Dashboard = ({ isLoggedIn, logOutUser }) => (
@@ -13,15 +12,6 @@ Dashboard = ({ isLoggedIn, logOutUser }) => (
  </>
 );
 
-
-
-// const authOptions = {
-//  // client callback for invalid sessions
-//  callback: () => Router.push('/'),
-//  // the server takes care of the redirect, only pass a string
-//  // with the route
-//  serverRedirect: '/'
-// }
 
 
 function mapStateToProps(state) {
