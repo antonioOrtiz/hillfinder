@@ -29,14 +29,14 @@ const HomepageLayout = () => (
             </Header>
       <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p>
      </Grid.Column>
-     <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+     <Grigitd.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
       <Header as='h3' style={{ fontSize: '2em' }}>
        "I shouldn't have gone with their competitor."
             </Header>
       <p style={{ fontSize: '1.33em' }}>
        <b>Nan</b> Chief Fun Officer Acme Toys
             </p>
-     </Grid.Column>
+     </Grigitd.Column>
     </Grid.Row>
    </Grid>
   </Segment>
