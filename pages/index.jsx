@@ -1,23 +1,39 @@
 import React, { Component } from 'react'
-import { Route, Switch, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { logInUser, logOutUser } from '../store/index'
+import { bindActionCreators } from 'redux'
 
+import {
+ Route,
+ Switch,
+ Redirect,
+ withRouter
+} from 'react-router-dom'
+
+import LinkNavWithLayout from './LinkNavWithLayout'
 import Index from './home'
 import Profile from './profile'
 import Dashboard from './dashboard'
 import Login from './login'
 import Register from './register'
-import LinkNavWithLayout from './LinkNavWithLayout'
 
 class App extends Component {
-  constructor(props) {
+ static getInitialProps({ store, isLoggedIn, logInUser, logOutUser }) {
+  return { store, isLoggedIn, logInUser, logOutUser }
+ }
+
+ constructor(props) {
   super(props)
+
+  this.state = {
+   isLoggedIn: false
+  }
  }
 
  render(){
   const { isLoggedIn } = this.props
 
- console.log("this.props ", this.props);
+ console.log("pages/index this.props ", this.props);
   let navBars = [
    { name: "Home", path: "/"},
    { name: "Profile", path: "/profile"},
@@ -26,14 +42,17 @@ class App extends Component {
    { name: "Register", path: "/register"}
   ];
 
-  const PrivateRoute = ({ component: Component, children, ...rest }) => (
-   <Route {...rest} render={props => {
-    console.log("In PrivateRoute isLoggedIn ", isLoggedIn);
-    return isLoggedIn === true
-     ? <Component {...props} >{children}</Component>
-     : <Redirect to='/' />
-   }} />
-  )
+  const PrivateRoute = ({ component: Component, isLoggedIn, ...rest }) => (
+    <Route {...rest}
+     render={props =>
+      isLoggedIn === true
+       ? <Component  {...props}/>
+       : <Redirect to={{
+          pathname: '/',
+          state: {from: props.location}
+      }}/>}
+  />)
+
 
   return (
     <>
@@ -41,34 +60,30 @@ class App extends Component {
      <Route
       path='/'
       exact
-      render={(props) => <LinkNavWithLayout {...props} data={navBars}><Index {...props} /></LinkNavWithLayout>} />
-
-     <Route
-      path='/login'
-      render={(props) => <Login {...props} />}
-     />
-
-     <Route
-      path='/register'
-      render={(props) => <Register {...props} />}
-     />
+      render={(props) => <LinkNavWithLayout {...props} data={navBars}><Index /></LinkNavWithLayout>} />
 
      <PrivateRoute
       path='/profile'
       isLoggedIn={isLoggedIn}
-      component={( ) => ( // not sure where you're planning on passing `children` from `PrivateRoute`
-       <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>
-      )}
+      component={() => <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>}
      />
 
      <PrivateRoute
       path='/dashboard'
       isLoggedIn={isLoggedIn}
-      component={() => ( // not sure where you're planning on passing `children` from `PrivateRoute`
-       <LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>
-      )}
-   />
-     {/* <Route component={()=> <h1>Not found</h1>} /> */}
+      component={()=><LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>}/>
+
+     <Route
+      path='/login'
+      render={(props) => <Login {...props}/>}
+     />
+
+     <Route
+      path='/register'
+      render={() => <Register />}
+     />
+
+     <Route component={({ location }) => <p>Sorry but the page <h1>{location.pathname.substring(1)} </h1> Page, Could Not be found</p>} />
     </Switch>
     </>
   )
@@ -76,8 +91,14 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
- return { isLoggedIn }
+ const { isLoggedIn, logInUser, logOutUser } = state
+ return { isLoggedIn, logInUser, logOutUser }
 }
 
-export default connect(mapStateToProps)(withRouter(App));
+const mapDispatchToProps = dispatch =>
+ bindActionCreators({ logInUser, logOutUser }, dispatch)
+
+export default connect(
+ mapStateToProps,
+ mapDispatchToProps
+)(withRouter(App))
