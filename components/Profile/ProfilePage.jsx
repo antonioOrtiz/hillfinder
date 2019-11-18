@@ -1,103 +1,204 @@
-import PropTypes from 'prop-types'
-import { Button, Segment, Grid, Divider,  Container, Header, Icon } from 'semantic-ui-react'
+import { Button, Card, Feed, Icon, Image, Segment, Grid, Divider, Message, Container, Header } from 'semantic-ui-react'
 
-const HomepageHeading = ({ mobile }) => (
- <Container text>
-  <Header
-   as='h1'
-   content='This is the profile page! '
-   inverted
-   style={{
-    fontSize: mobile ? '2em' : '4em',
-    fontWeight: 'normal',
-    marginBottom: 0,
-    marginTop: mobile ? '1.5em' : '3em',
-   }}
-  />
-  <Header
-   as='h2'
-   content='Do whatever you want when you want to.'
-   inverted
-   style={{
-    fontSize: mobile ? '1.5em' : '1.7em',
-    fontWeight: 'normal',
-    marginTop: mobile ? '0.5em' : '1.5em',
-   }}
-  />
+import MyHeader from '../Header/Header.jsx'
 
-  <Button primary size='huge'>
-   Get Started
-      <Icon name='right arrow' />
-  </Button>
- </Container>
-)
-
-HomepageHeading.propTypes = {
- mobile: PropTypes.bool,
+const style = {
+  h1: {
+    marginTop: '3em',
+  },
+  h2: {
+    margin: '4em 0em 2em',
+  },
+  h3: {
+    marginTop: '1em',
+    padding: '0',
+  },
+  last: {
+    marginBottom: '300px',
+  },
 }
 
-const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR }) => (
+
+const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => (
  <>
-   <Segment style={{ padding: '8em 0em' }} vertical>
-    <Grid centered container stackable verticalAlign='middle'>
-     <Grid.Row>
-      <Grid.Column width={12}>
-       <Header as='h3' style={{ fontSize: '2em' }}>
-        We Help Companies and Companions
-       </Header>
-       <p style={{ fontSize: '1.33em' }}>
-        We can give your company superpowers to do things that they never thought possible.
-        Let us delight your customers and empower your needs... through pure data analytics.
-       </p>
-
-
-      </Grid.Column>
-      <Grid.Column floated='right' width={6}>
-      </Grid.Column>
-     </Grid.Row>
-     <Grid.Row>
+ {console.log('Profile Page ', props)}
+     <Grid container columns={1} relaxed stackable>
       <Grid.Column>
-       <Button size='huge'>Check Them Out</Button>
+        <MyHeader as='h2' content='Foo' textAlign='left' />
       </Grid.Column>
-     </Grid.Row>
     </Grid>
-   </Segment>
 
-   <Segment style={{ padding: '0em' }} vertical>
-    <Grid celled='internally' columns='equal' stackable>
-     <Grid.Row textAlign='center'>
-      <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-       <Header as='h3' style={{ fontSize: '2em' }}>
-        "What a Company"
-            </Header>
-       <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p>
+    <Grid container columns={2} divided relaxed stackable>
+      <Grid.Column>
+        <Segment>
+         <Card fluid>
+          <Image src='static/profile-avatars/charly_desktop.jpg' wrapped ui={false} />
+          <Card.Content>
+            <Card.Header>Charly</Card.Header>
+            <Card.Meta>
+            <span className='date'>Joined in 2015</span>
+            </Card.Meta>
+            <Card.Description>
+            Charly
+            </Card.Description>
+            </Card.Content>
+          <Card.Content extra>
+          <a>
+           <Icon name='user' />
+           22 Friends
+          </a>
+        </Card.Content>
+       </Card>
+      </Segment>
       </Grid.Column>
-      <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-       <Header as='h3' style={{ fontSize: '2em' }}>
-        "I shouldn't have gone with their competitor."
-            </Header>
-       <p style={{ fontSize: '1.33em' }}>
-        {/* <Image avatar src='/images/avatar/large/nan.jpg' /> */}
-        <b>Nan</b> Chief Fun Officer Acme Toys
-            </p>
-      </Grid.Column>
-     </Grid.Row>
+      <Grid.Column>
+        <Segment>
+         <Card fluid>
+          <Card.Content>
+            <Card.Header>Recent Activity</Card.Header>
+          </Card.Content>
+          <Card.Content>
+            <Feed>
+              <Feed.Event>
+                <Feed.Label image='/images/avatar/small/jenny.jpg' />
+                <Feed.Content>
+                  <Feed.Date content='1 day ago' />
+                  <Feed.Summary>
+                    You added <a>Jenny Hess</a> to your <a>coworker</a> group.
+                  </Feed.Summary>
+                </Feed.Content>
+              </Feed.Event>
+
+              <Feed.Event>
+                <Feed.Label image='/images/avatar/small/molly.png' />
+                <Feed.Content>
+                  <Feed.Date content='3 days ago' />
+                  <Feed.Summary>
+                    You added <a>Molly Malone</a> as a friend.
+                  </Feed.Summary>
+                </Feed.Content>
+              </Feed.Event>
+
+              <Feed.Event>
+                <Feed.Label image='/images/avatar/small/elliot.jpg' />
+                <Feed.Content>
+                  <Feed.Date content='4 days ago' />
+                  <Feed.Summary>
+                    You added <a>Elliot Baker</a> to your <a>musicians</a> group.
+                  </Feed.Summary>
+                </Feed.Content>
+              </Feed.Event>
+            </Feed>
+          </Card.Content>
+       </Card>
+      </Segment>
+
+      <Segment>
+         <Feed>
+           <Feed.Event>
+             <Feed.Label>
+               <img src='/images/avatar/small/elliot.jpg' />
+             </Feed.Label>
+             <Feed.Content>
+               <Feed.Summary>
+                 <Feed.User>Elliot Fu</Feed.User> added you as a friend
+                 <Feed.Date>1 Hour Ago</Feed.Date>
+               </Feed.Summary>
+               <Feed.Meta>
+                 <Feed.Like>
+                   <Icon name='like' />4 Likes
+                 </Feed.Like>
+               </Feed.Meta>
+             </Feed.Content>
+           </Feed.Event>
+
+           <Feed.Event>
+             <Feed.Label image='/images/avatar/small/helen.jpg' />
+             <Feed.Content>
+               <Feed.Summary>
+                 <a>Helen Troy</a> added <a>2 new illustrations</a>
+                 <Feed.Date>4 days ago</Feed.Date>
+               </Feed.Summary>
+               <Feed.Extra images>
+                 <a>
+                   <img src='/images/wireframe/image.png' />
+                 </a>
+                 <a>
+                   <img src='/images/wireframe/image.png' />
+                 </a>
+               </Feed.Extra>
+               <Feed.Meta>
+                 <Feed.Like>
+                   <Icon name='like' />1 Like
+                 </Feed.Like>
+               </Feed.Meta>
+             </Feed.Content>
+           </Feed.Event>
+
+           <Feed.Event>
+             <Feed.Label image='/images/avatar/small/jenny.jpg' />
+             <Feed.Content>
+               <Feed.Summary
+                 date='2 Days Ago'
+                 user='Jenny Hess'
+                 content='add you as a friend'
+               />
+               <Feed.Meta>
+                 <Feed.Like>
+                   <Icon name='like' />8 Likes
+                 </Feed.Like>
+               </Feed.Meta>
+             </Feed.Content>
+           </Feed.Event>
+
+           <Feed.Event>
+             <Feed.Label image='/images/avatar/small/joe.jpg' />
+             <Feed.Content>
+               <Feed.Summary>
+                 <a>Joe Henderson</a> posted on his page
+                 <Feed.Date>3 days ago</Feed.Date>
+               </Feed.Summary>
+               <Feed.Extra text>
+                 Ours is a life of constant reruns. We're always circling back to where
+                 we'd we started, then starting all over again. Even if we don't run
+                 extra laps that day, we surely will come back for more of the same
+                 another day soon.
+               </Feed.Extra>
+               <Feed.Meta>
+                 <Feed.Like>
+                   <Icon name='like' />5 Likes
+                 </Feed.Like>
+               </Feed.Meta>
+             </Feed.Content>
+           </Feed.Event>
+
+           <Feed.Event>
+             <Feed.Label image='/images/avatar/small/justen.jpg' />
+             <Feed.Content>
+               <Feed.Summary>
+                 <a>Justen Kitsune</a> added <a>2 new photos</a> of you
+                 <Feed.Date>4 days ago</Feed.Date>
+               </Feed.Summary>
+               <Feed.Extra images>
+                 <a>
+                   <img src='/images/wireframe/image.png' />
+                 </a>
+                 <a>
+                   <img src='/images/wireframe/image.png' />
+                 </a>
+               </Feed.Extra>
+               <Feed.Meta>
+                 <Feed.Like>
+                   <Icon name='like' />
+                   41 Likes
+                 </Feed.Like>
+               </Feed.Meta>
+             </Feed.Content>
+           </Feed.Event>
+         </Feed>
+       </Segment>
+     </Grid.Column>
     </Grid>
-   </Segment>
-
-   <Segment style={{ padding: '8em 0em' }} vertical>
-    <Container text>
-     <Header as='h3' style={{ fontSize: '2em' }}>
-      Breaking The Grid, Grabs Your Attention
-        </Header>
-     <p style={{ fontSize: '1.33em' }}>
-      Instead of focusing on content creation and hard work, we have learned how to master the
-      art of doing nothing by providing massive amounts of whitespace and generic content that
-      can seem massive, monolithic and worth your attention.
-        </p>
-     <Button as='a' size='large'>
-      Read More
-        </Button>
 
      <Divider
       as='h4'
@@ -108,20 +209,21 @@ const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR }) => (
       <a href='#'>Case Studies</a>
      </Divider>
 
+   <Segment style={{ padding: '8em 0em' }} vertical>
+    <Container text>
      <Header as='h3' style={{ fontSize: '2em' }}>
-      Did We Tell You About Our Bananas?
-        </Header>
+      Breaking The Grid, Grabs Your Attention
+     </Header>
      <p style={{ fontSize: '1.33em' }}>
-      Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but
-      it's really true. It took years of gene splicing and combinatory DNA research, but our
-      bananas can really dance.
-        </p>
+      Instead of focusing on content creation and hard work, we have learned how to master the
+      art of doing nothing by providing massive amounts of whitespace and generic content that
+      can seem massive, monolithic and worth your attention.
+      </p>
      <Button as='a' size='large'>
-      I'm Still Quite Interested
-        </Button>
+      Read More
+     </Button>
     </Container>
    </Segment>
-
    <Segment inverted vertical style={{ padding: '5em 0em' }}></Segment>
  </>
 
