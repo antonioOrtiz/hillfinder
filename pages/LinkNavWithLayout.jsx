@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link, NavLink, Redirect, withRouter } from 'react-router-dom'
+import { Link, NavLink, withRouter } from 'react-router-dom'
 
 import {
   Container,
@@ -14,7 +14,7 @@ import {
 
 import { connect } from 'react-redux'
 
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 import { logInUser, logOutUser } from '../store/index'
 
 const getWidth = () => {
@@ -296,7 +296,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)
 
-export default connect(
- mapStateToProps,
- mapDispatchToProps
-)(withRouter(LinkNavWithLayout))
+export default compose(
+ withRouter,
+ connect(mapStateToProps, mapDispatchToProps)
+)(withRouter(LinkNavWithLayout));

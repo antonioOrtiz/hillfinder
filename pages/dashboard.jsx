@@ -1,6 +1,6 @@
 
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 import { logOutUser } from '../store'
 import { withRouter } from "react-router-dom";
 
@@ -21,5 +21,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logOutUser }, dispatch)
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Dashboard));
-
+export default compose(
+ withRouter,
+ connect(mapStateToProps, mapDispatchToProps)
+)(withRouter(Dashboard));

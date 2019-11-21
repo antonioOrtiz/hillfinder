@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { logInUser, logOutUser } from '../store/index'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 
 import {
  Route,
@@ -98,7 +98,9 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)
 
-export default connect(
- mapStateToProps,
- mapDispatchToProps
-)(withRouter(App))
+
+
+export default compose(
+ withRouter,
+ connect(mapStateToProps, mapDispatchToProps)
+)(withRouter(App));
