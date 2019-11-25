@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { logInUser, logOutUser } from '../store/index'
-import { bindActionCreators, compose } from 'redux'
+import { bindActionCreators } from 'redux'
 
 import {
- Route,
+ BrowserRouter as Router,
  Switch,
+ Route,
  Redirect,
+
  withRouter
 } from 'react-router-dom'
 
@@ -28,10 +30,11 @@ class App extends Component {
   this.state = {
    isLoggedIn: false
   }
+
  }
 
  render(){
-  const { isLoggedIn } = this.props
+  const { isLoggedIn } = this.props;
 
  console.log("pages/index this.props ", this.props);
   let navBars = [
@@ -42,17 +45,25 @@ class App extends Component {
    { name: "Register", path: "/register"}
   ];
 
-  const PrivateRoute = ({ component: Component, isLoggedIn, ...rest }) => (
-    <Route {...rest}
-     render={props =>
-      isLoggedIn === true
-       ? <Component  {...props}/>
-       : <Redirect to={{
-          pathname: '/',
-          state: {from: props.location}
-      }}/>}
-  />)
-
+  function PrivateRoute({ children, ...rest }) {
+   return (
+    <Route
+     {...rest}
+     render={({ location }) =>
+      isLoggedIn ? (
+       children
+      ) : (
+        <Redirect
+         to={{
+          pathname: "/login",
+          state: { from: location }
+         }}
+        />
+       )
+     }
+    />
+   );
+  }
 
   return (
     <>
@@ -65,13 +76,16 @@ class App extends Component {
      <PrivateRoute
       path='/profile'
       isLoggedIn={isLoggedIn}
-      component={() => <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>}
-     />
+      >
+      <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>
+     </PrivateRoute>
 
      <PrivateRoute
       path='/dashboard'
       isLoggedIn={isLoggedIn}
-      component={()=><LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>}/>
+     >
+      <LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>
+     </PrivateRoute>
 
      <Route
       path='/login'
@@ -91,16 +105,12 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
- const { isLoggedIn, logInUser, logOutUser } = state
- return { isLoggedIn, logInUser, logOutUser }
+ const { isLoggedIn } = state
+ return { isLoggedIn }
 }
 
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)
 
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App))
 
-
-export default compose(
- withRouter,
- connect(mapStateToProps, mapDispatchToProps)
-)(withRouter(App));
