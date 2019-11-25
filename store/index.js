@@ -11,21 +11,21 @@ const startState = { isLoggedIn: false }
 
 /* action types */
 export const actionTypes = {
-   IS_LOGGED_IN: 'IS_LOGGED_IN',
-   IS_LOGGED_OUT: 'IS_LOGGED_OUT'
+    IS_LOGGED_IN: 'IS_LOGGED_IN',
+    IS_LOGGED_OUT: 'IS_LOGGED_OUT'
 }
 
 /* reducer(s) */
 export const reducer = (state = startState, action) => {
     switch (action.type) {
         case actionTypes.IS_LOGGED_IN:
-          return Object.assign({}, state, {
-            isLoggedIn: true,
-          });
+            return Object.assign({}, state, {
+                isLoggedIn: true,
+            });
         case actionTypes.IS_LOGGED_OUT:
-          return Object.assign({}, state, {
-            isLoggedIn: false,
-        })
+            return Object.assign({}, state, {
+                isLoggedIn: false,
+            });
         default:
             return state
     }
@@ -36,12 +36,14 @@ export const logInUser = () => {
     return { type: actionTypes.IS_LOGGED_IN }
 }
 export const logOutUser = () => {
- return { type: actionTypes.IS_LOGGED_OUT }
+    return { type: actionTypes.IS_LOGGED_OUT }
 }
 
 const persistConfig = {
-    key: 'root',
+    key: 'primary',
     storage,
+    whitelist: ['isLoggedIn'], // place to select which state you want to persist
+
 }
 
 const persistedReducer = persistReducer(persistConfig, reducer)
