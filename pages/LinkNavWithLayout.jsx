@@ -71,7 +71,7 @@ const logOutMenuItem = (isMobile, isLoggedIn, nav, NavLink, logOutUser, handleSi
      onClick={() => {
       console.log("nav ", nav); logOutUser();
      }}
-    >
+    >-+
     </Menu.Item>
    )
   } else {
@@ -296,7 +296,6 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)
 
-export default compose(
- withRouter,
- connect(mapStateToProps, mapDispatchToProps)
-)(withRouter(LinkNavWithLayout));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LinkNavWithLayout))
+
+
