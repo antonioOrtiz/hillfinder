@@ -7,7 +7,7 @@ import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 
 
-import withReactRouter from '../with-react-router.js/with-react-router'
+import withReactRouter from '../with-react-router/with-react-router'
 
 
 class MyApp extends App {
