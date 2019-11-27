@@ -46,10 +46,10 @@ const persistConfig = {
 
 }
 
-const persistedReducer = persistReducer(persistConfig, reducer)
+export let persistedReducer = persistReducer(persistConfig, reducer);
 
 // create a store
-export const initializeStore = (initialState = startState) => {
+export function initializeStore(initialState = startState) {
     return createStore(
         persistedReducer,
         initialState,
