@@ -9,8 +9,6 @@ import '../styles/styles.scss'
 
 class Home extends React.Component {
     render() {
-     console.log("pages/home this.props ", this.props);
-
          return (
           <>
            <Head title = 'Home' />
