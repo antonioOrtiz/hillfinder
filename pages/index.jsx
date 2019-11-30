@@ -27,7 +27,7 @@ class App extends Component {
  }
 
  render(){
-  const { isLoggedIn } = this.props;
+ const { isLoggedIn } = this.props;
 
  console.log("pages/index this.props ", this.props);
   let navBars = [
