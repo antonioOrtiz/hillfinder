@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware } from 'redux';
+
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+import { persistStore } from 'redux-persist';
 
 import { createLogger } from 'redux-logger'
 import thunkMiddleware from 'redux-thunk';
@@ -39,23 +39,52 @@ export const logOutUser = () => {
     return { type: actionTypes.IS_LOGGED_OUT }
 }
 
-const persistConfig = {
-    key: 'primary',
-    storage,
-    whitelist: ['isLoggedIn'], // place to select which state you want to persist
 
-}
 
-export let persistedReducer = persistReducer(persistConfig, reducer);
+// export let persistedReducer = persistReducer(persistConfig, reducer);
 
-// create a store
-export function initializeStore(initialState = startState) {
-    return createStore(
-        persistedReducer,
-        initialState,
-        composeWithDevTools(applyMiddleware(
+
+export default () => {
+ let store;
+ const isClient = typeof window !== 'undefined';
+ if (isClient) {
+  const { persistReducer } = require('redux-persist');
+  const storage = require('redux-persist/lib/storage').default;
+  const persistConfig = {
+   key: 'primary',
+   storage,
+   whitelist: ['isLoggedIn'], // place to select which state you want to persist
+
+  }
+  store = createStore(
+   persistReducer(persistConfig, reducer),
+   startState,
+     composeWithDevTools(applyMiddleware(
             thunkMiddleware,
             createLogger({ collapsed: false })
         ))
-    )
-}
+  );
+  store.__PERSISTOR = persistStore(store);
+ } else {
+  store = createStore(
+   reducer,
+   startState,
+     composeWithDevTools(applyMiddleware(
+            thunkMiddleware,
+            createLogger({ collapsed: false })
+        ))
+  );
+ }
+ return store;
+};
+
+
+
+// create a store
+// export function initializeStore(initialState = startState) {
+//     return createStore(
+//         persistedReducer,
+//         initialState,
+
+//     )
+// }
