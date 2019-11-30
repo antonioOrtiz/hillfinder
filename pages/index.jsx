@@ -4,11 +4,9 @@ import { logInUser, logOutUser } from '../store/index'
 import { bindActionCreators } from 'redux'
 
 import {
- BrowserRouter as Router,
  Switch,
  Route,
  Redirect,
-
  withRouter
 } from 'react-router-dom'
 
@@ -65,21 +63,22 @@ class App extends Component {
     <Switch>
      <Route
       path='/'
+      isLoggedIn={isLoggedIn}
       exact
-      render={(props) => <LinkNavWithLayout {...props} data={navBars}><Index /></LinkNavWithLayout>} />
+      render={(props) => <LinkNavWithLayout {...props} data={navBars} toHome={this.toHome}><Index /></LinkNavWithLayout>} />
 
      <PrivateRoute
       path='/profile'
       isLoggedIn={isLoggedIn}
       >
-      <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>
+      <LinkNavWithLayout data={navBars} toHome={this.toHome}><Profile /></LinkNavWithLayout>
      </PrivateRoute>
 
      <PrivateRoute
       path='/dashboard'
       isLoggedIn={isLoggedIn}
      >
-      <LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>
+      <LinkNavWithLayout data={navBars} toHome={this.toHome}><Dashboard /></LinkNavWithLayout>
      </PrivateRoute>
 
      <Route
