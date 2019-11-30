@@ -123,7 +123,7 @@ class RegisterForm extends Component {
   render() {
     var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
 
-   console.log("RegisterForm this.props ", this.props);
+   // console.log("RegisterForm this.props ", this.props);
 
     return (<div className='login-form'> {
 
