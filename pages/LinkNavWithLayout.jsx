@@ -14,7 +14,7 @@ import {
 
 import { connect } from 'react-redux'
 
-import { bindActionCreators, compose } from 'redux'
+import { bindActionCreators } from 'redux'
 import { logInUser, logOutUser } from '../store/index'
 
 const getWidth = () => {
@@ -23,20 +23,17 @@ const getWidth = () => {
  return isSSR ? Responsive.onlyTablet.minWidth : window.innerWidth
 }
 
-const logOutMenuItem = (isMobile, isLoggedIn, nav, NavLink, logOutUser, handleSidebarHide) => {
- function mobilelogOutMenuItemHelper(nav, NavLink, logOutUser, handleSidebarHide) {
+const logOutMenuItemHelper = (isMobile, isLoggedIn, nav, NavLink, history, logOutUser, handleSidebarHide) => {
+ function mobilelogOutMenuItemHelper(nav, NavLink, history, logOutUser, handleSidebarHide) {
   if (nav.name === 'Log in') {
    console.log("mobile nav.name ", nav.name);
 
    return (
     <Menu.Item
-     exact
-     key={nav.path}
-     as={NavLink}
-     to={nav.path}
+     key="/logout"
      name='Log out'
-     onClick={() => {
-      logOutUser(); handleSidebarHide()
+     onClick={(event) => {
+      logOutUser(); handleSidebarHide();  history.push('/')
      }}
     >
     </Menu.Item>
@@ -58,20 +55,17 @@ const logOutMenuItem = (isMobile, isLoggedIn, nav, NavLink, logOutUser, handleSi
   }
 
  }
- function desktoplogOutMenuItemHelper(nav, NavLink, logOutUser) {
+ function desktoplogOutMenuItemHelper(nav, NavLink, history, logOutUser ) {
   if (nav.name === 'Log in') {
- console.log("desktop nav.name ", nav.name);
+ // console.log("desktop nav.name ", nav.name);
    return (
     <Menu.Item
-     exact
-     key={nav.path}
-     as={NavLink}
-     to={nav.path}
+     key="/logout"
      name='Log out'
      onClick={() => {
-      console.log("nav ", nav); logOutUser();
+      logOutUser(); history.push('/')
      }}
-    >-+
+    >
     </Menu.Item>
    )
   } else {
@@ -86,15 +80,13 @@ const logOutMenuItem = (isMobile, isLoggedIn, nav, NavLink, logOutUser, handleSi
     </Menu.Item>
    )
   }
-
  }
+
  if (isMobile && isLoggedIn) {
-  return mobilelogOutMenuItemHelper(nav, NavLink, logOutUser, handleSidebarHide)
+  return mobilelogOutMenuItemHelper(nav, NavLink, history, logOutUser, handleSidebarHide)
  }
- return desktoplogOutMenuItemHelper(nav, NavLink, logOutUser)
-
+ return desktoplogOutMenuItemHelper(nav, NavLink, history, logOutUser)
 }
-
 
 class DesktopContainer extends Component {
  state = {}
@@ -105,12 +97,12 @@ class DesktopContainer extends Component {
  logOutUser = () => {
   const { logOutUser } = this.props
   logOutUser()
-
  }
 
  render() {
   const { fixed } = this.state;
-  const { data, children, isLoggedIn } = this.props
+  const { data, history, children, isLoggedIn } = this.props
+  console.log("this.props desktop in LinkNAV ", this.props);
 
   return (
    <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -132,21 +124,14 @@ class DesktopContainer extends Component {
        secondary={!fixed}
        size='large'
       >
-
+       {/* {console.log("isLoggedIn in desktop homecomponent ", isLoggedIn)} */}
        {isLoggedIn ?
         data.filter(function (nav) {
          return (nav.name !== "Register")
         })
          .map(nav => {
           return (
-           <Menu.Item
-            exact
-            key={nav.path}
-            as={NavLink}
-            to={nav.path}
-            name={nav.name}
-           >
-           </Menu.Item>
+           logOutMenuItemHelper(false, isLoggedIn, nav, NavLink, history, this.logOutUser)
           )
          })
         :
@@ -189,9 +174,10 @@ class MobileContainer extends Component {
  }
 
  render() {
-  const { children, data, isLoggedIn } = this.props
+  const { children, data, history, isLoggedIn } = this.props
   const { sidebarOpened } = this.state
 
+ // console.log("this.props inMobile ", this.props);
   return (
    <Responsive
     as={Sidebar.Pushable}
@@ -206,20 +192,14 @@ class MobileContainer extends Component {
      vertical
      visible={sidebarOpened}
     >
+     {/* {console.log("isLoggedIn in desktop homecomponent ", isLoggedIn)} */}
      {isLoggedIn ?
       data.filter(function (nav) {
        return (nav.name !== "Register")
       })
        .map(nav => {
         return (
-         <Menu.Item
-          exact
-          key={nav.path}
-          as={NavLink}
-          to={nav.path}
-          name={nav.name}
-         >
-         </Menu.Item>
+         logOutMenuItemHelper(false, isLoggedIn, nav, NavLink, history, this.logOutUser, this.handleSidebarHide)
         )
        })
       :
@@ -278,12 +258,12 @@ class MobileContainer extends Component {
  }
 }
 
-const LinkNavWithLayout = ({ GenericHeadingComponent, children, data, isLoggedIn, logOutUser }) => (
+const LinkNavWithLayout = ({ GenericHeadingComponent, children, toHome, history, data, isLoggedIn, logOutUser }) => (
  <React.Fragment>
-  <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} data={data} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>
+  <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} toHome={toHome} history={history} data={data} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>
   {children}
   </DesktopContainer>
-  <MobileContainer GenericHeadingComponent={GenericHeadingComponent} data={data} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>
+  <MobileContainer GenericHeadingComponent={GenericHeadingComponent} toHome={toHome} history={history} data={data} isLoggedIn={isLoggedIn} logOutUser={logOutUser}>
    {children}
   </MobileContainer>
  </React.Fragment>
