@@ -55,10 +55,6 @@ class LoginForm extends Component {
  }
 
  handleSubmit(event) {
- var {history} = this.props
-
-
-
 
   this.setState({
    isLoading: true
@@ -66,8 +62,9 @@ class LoginForm extends Component {
 
   var error = false;
   var { username, password, isLoading } = this.state;
-  var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  var { history } = this.props
 
+  var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
   if (!username.match(mailFormat)) {
    this.setState({ usernameError: true });
@@ -87,7 +84,6 @@ class LoginForm extends Component {
    this.setState({ formSuccess: false });
    return;
   }
-
 
   return window.fetch('http://localhost:8016/users/login', {
    method: 'POST',
@@ -114,10 +110,11 @@ class LoginForm extends Component {
      this.setState({
       username: username, password: '', formError: false, formSuccess: true, isLoading: false
      })
+
     } else if (!response.ok) {
      if (response.status === 404) {
-      console.log("response.status ", response.status);
-      { console.log("isLoading 2", isLoading) }
+      // console.log("response.status ", response.status);
+      // { console.log("isLoading 2", isLoading) }
       this.setState({
        formError: true, formSuccess: false, isLoading: false
       });
@@ -132,11 +129,11 @@ class LoginForm extends Component {
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
-  console.log("LoginForm this.props ", this.props);
+  // console.log("LoginForm this.props ", this.props);
 
   var { isLoggedIn } = this.props;
 
-  { console.log('isLoggedIn', isLoggedIn) }
+  // { console.log('isLoggedIn', isLoggedIn) }
   (formSuccess === true) ? isLoggedIn = true : isLoggedIn = false;
 
   return (<div className='login-form'> {

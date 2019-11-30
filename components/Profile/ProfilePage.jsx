@@ -21,7 +21,7 @@ const style = {
 
 const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => (
  <>
- {console.log('Profile Page ', props)}
+ {/* {console.log('Profile Page ', props)} */}
      <Grid container columns={1} relaxed stackable>
       <Grid.Column>
         <MyHeader as='h2' content='Foo' textAlign='left' />
