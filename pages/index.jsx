@@ -48,7 +48,7 @@ class App extends Component {
       ) : (
         <Redirect
          to={{
-          pathname: "/login",
+          pathname: "/",
           state: { from: location }
          }}
         />
@@ -65,20 +65,20 @@ class App extends Component {
       path='/'
       isLoggedIn={isLoggedIn}
       exact
-      render={(props) => <LinkNavWithLayout {...props} data={navBars} toHome={this.toHome}><Index /></LinkNavWithLayout>} />
+      render={(props) => <LinkNavWithLayout {...props} history={history} data={navBars}><Index /></LinkNavWithLayout>} />
 
      <PrivateRoute
       path='/profile'
       isLoggedIn={isLoggedIn}
       >
-      <LinkNavWithLayout data={navBars} toHome={this.toHome}><Profile /></LinkNavWithLayout>
+      <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>
      </PrivateRoute>
 
      <PrivateRoute
       path='/dashboard'
       isLoggedIn={isLoggedIn}
      >
-      <LinkNavWithLayout data={navBars} toHome={this.toHome}><Dashboard /></LinkNavWithLayout>
+      <LinkNavWithLayout data={navBars}><Dashboard /></LinkNavWithLayout>
      </PrivateRoute>
 
      <Route
