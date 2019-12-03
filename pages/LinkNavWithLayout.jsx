@@ -24,6 +24,7 @@ const getWidth = () => {
 
 const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, NavLink, modalStateOn, modalStateOff, handleSidebarHide) => {
  function mobilelogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn, modalStateOff, handleSidebarHide) {
+
   if (nav.name === 'Log in') {
    console.log("mobile nav.name ", nav.name);
 
@@ -56,17 +57,15 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, N
 
  function desktoplogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn,  modalStateOff) {
   if (nav.name === 'Log in') {
- // console.log("desktop nav.name ", nav.name);
-
    return (
     <>
      {modalActive && <Modal history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
      <Menu.Item
       key="/logout"
       name='Log out'
-      onClick={(event) => { modalStateOn(); }}>
+      onClick={(event) => { modalStateOn()}}>
       Log Out
-</Menu.Item>
+     </Menu.Item>
     </>
    )
   } else {
@@ -183,7 +182,6 @@ class MobileContainer extends Component {
      vertical
      visible={sidebarOpened}
     >
-     {/* {console.log("isLoggedIn in desktop homecomponent ", isLoggedIn)} */}
      {isLoggedIn ?
       data.filter(function (nav) {
        return (nav.name !== "Register")
