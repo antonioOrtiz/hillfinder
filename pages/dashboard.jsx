@@ -15,8 +15,8 @@ Dashboard = ({ isLoggedIn, logOutUser }) => (
 
 
 function mapStateToProps(state) {
- const { isLoggedIn, logOutUser } = state
- return { isLoggedIn, logOutUser }
+ const { isLoggedIn } = state
+ return { isLoggedIn }
 }
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logOutUser }, dispatch)
