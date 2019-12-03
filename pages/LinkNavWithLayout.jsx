@@ -13,7 +13,8 @@ import {
 } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
-
+import { bindActionCreators } from 'redux'
+import { modalStateOn, modalStateOff } from '../store/index'
 
 const getWidth = () => {
  const isSSR = typeof window === 'undefined'
@@ -21,19 +22,20 @@ const getWidth = () => {
  return isSSR ? Responsive.onlyTablet.minWidth : window.innerWidth
 }
 
-const logOutMenuItemHelper = (isMobile, isLoggedIn, history, isModalActive, nav, NavLink,  handleClick, handleSidebarHide) => {
- function mobilelogOutMenuItemHelper(history, isModalActive, nav, NavLink, handleClick, handleSidebarHide) {
+const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, NavLink, modalStateOn, modalStateOff, handleSidebarHide) => {
+ function mobilelogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn, modalStateOff, handleSidebarHide) {
   if (nav.name === 'Log in') {
    console.log("mobile nav.name ", nav.name);
 
-   return (
+   return <>
+    {modalActive && <Modal history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
     <Menu.Item
      key="/logout"
-     name='Log out'
-     onClick={(event) => { handleSidebarHide(); handleClick();}}>
-     {isModalActive ? <Modal history={history} isLoggedIn={isLoggedIn} isModalActive={isModalActive} handleClick={handleClick} /> : 'Log Out'}
+     name={'Log out'}
+     onClick={(event) => { modalStateOn(); handleSidebarHide(); }}>
+     Log Out
     </Menu.Item>
-   )
+   </>;
   } else {
    return (
     <Menu.Item
@@ -52,17 +54,20 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, isModalActive, nav,
 
  }
 
- function desktoplogOutMenuItemHelper(history, isModalActive, nav, NavLink, handleClick) {
+ function desktoplogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn,  modalStateOff) {
   if (nav.name === 'Log in') {
  // console.log("desktop nav.name ", nav.name);
 
    return (
-    <Menu.Item
-     key="/logout"
-     name='Log out'
-     onClick={(event) => { handleClick(); }}>
-     {(isModalActive) ? <Modal history={history} isLoggedIn={isLoggedIn} isModalActive={isModalActive} handleClick={handleClick} /> : 'Log Out'}
-    </Menu.Item>
+    <>
+     {modalActive && <Modal history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
+     <Menu.Item
+      key="/logout"
+      name='Log out'
+      onClick={(event) => { modalStateOn(); }}>
+      Log Out
+</Menu.Item>
+    </>
    )
   } else {
    return (
@@ -79,28 +84,20 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, isModalActive, nav,
  }
 
  if (isMobile && isLoggedIn) {
-  return mobilelogOutMenuItemHelper(history, isModalActive, nav, NavLink,  handleClick, handleSidebarHide)
+  return mobilelogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn, modalStateOff, handleSidebarHide)
  }
- return desktoplogOutMenuItemHelper(history, isModalActive, nav, NavLink,  handleClick)
+ return desktoplogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn, modalStateOff)
 }
 
 class DesktopContainer extends Component {
- state = { isModalActive: false }
+ state = {}
 
  hideFixedMenu = () => this.setState({ fixed: false })
-
  showFixedMenu = () => this.setState({ fixed: true })
 
- handleClick = ()=> {
-  this.setState(state => ({
-   isModalActive: !state.isModalActive
-  }));
- }
-
-
  render() {
-  const { fixed, isModalActive } = this.state;
-  const { history, data, children, isLoggedIn } = this.props
+  const { fixed } = this.state;
+  const { history, data, children, isLoggedIn, modalActive, modalStateOn, modalStateOff } = this.props
   console.log("this.props desktop in LinkNAV ", this.props);
 
   return (
@@ -130,7 +127,7 @@ class DesktopContainer extends Component {
         })
          .map(nav => {
           return (
-           logOutMenuItemHelper(false, isLoggedIn, history, isModalActive, nav, NavLink,  this.handleClick)
+           logOutMenuItemHelper(false, isLoggedIn, history, modalActive, nav, NavLink, modalStateOn, modalStateOff)
           )
          })
         :
@@ -161,26 +158,15 @@ class DesktopContainer extends Component {
 }
 
 class MobileContainer extends Component {
- state = { isModalActive: false }
+ state = {}
 
  handleSidebarHide = () => this.setState({ sidebarOpened: false })
 
- handleClick = () => {
-  this.setState(state => ({
-   isModalActive: !state.isModalActive
-  }));
- }
-
  handleToggle = () => this.setState({ sidebarOpened: true })
 
- logOutUser = () => {
-  const { logOutUser } = this.props
-  logOutUser()
- }
-
  render() {
-  const { children, history, data, isLoggedIn } = this.props
-  const { sidebarOpened, isModalActive } = this.state
+  const { children, history, data, isLoggedIn, modalActive, modalStateOn, modalStateOff } = this.props
+  const { sidebarOpened} = this.state
 
  console.log("this.props inMobile ", this.props);
   return (
@@ -204,7 +190,7 @@ class MobileContainer extends Component {
       })
        .map(nav => {
         return (
-         logOutMenuItemHelper(false, isLoggedIn, history, isModalActive, nav, NavLink, this.logOutUser, this.handleClick, this.handleSidebarHide)
+         logOutMenuItemHelper(false, isLoggedIn, history, modalActive, nav, NavLink, modalStateOn, modalStateOff, this.handleSidebarHide)
         )
        })
       :
@@ -243,7 +229,7 @@ class MobileContainer extends Component {
 
          <Button inverted>
           {isLoggedIn
-           ? <Link to="/" onClick={this.logOutUser}>Log out</Link>
+           ? <Link to="/">Log out</Link>
            : <Link to="/login">Log in</Link>
           }
           </Button>
@@ -263,23 +249,25 @@ class MobileContainer extends Component {
  }
 }
 
-const LinkNavWithLayout = ({ GenericHeadingComponent, children, history,  data, isLoggedIn }) => (
+const LinkNavWithLayout = ({ GenericHeadingComponent, children, history, data, modalActive, modalStateOn, modalStateOff, isLoggedIn }) => (
  <React.Fragment>
-  <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} history={history} data={data} isLoggedIn={isLoggedIn}>
+  <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} history={history} data={data} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
    {children}
   </DesktopContainer>
-  <MobileContainer GenericHeadingComponent={GenericHeadingComponent} history={history}  data={data} isLoggedIn={isLoggedIn}>
+  <MobileContainer GenericHeadingComponent={GenericHeadingComponent} history={history} data={data} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
    {children}
   </MobileContainer>
  </React.Fragment>
 )
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
- return { isLoggedIn }
+ const { isLoggedIn, modalActive } = state
+ return { isLoggedIn, modalActive }
 }
 
+const mapDispatchToProps = dispatch =>
+ bindActionCreators({ modalStateOn, modalStateOff }, dispatch)
 
-export default withRouter(connect(mapStateToProps)(LinkNavWithLayout))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LinkNavWithLayout))
 
 
