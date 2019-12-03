@@ -85,7 +85,7 @@ const HomepageLayout = () => (
               </Header>
        <p>
         Extra space for a call to action inside the footer that could help re-engage users.
-              </p>
+       </p>
       </Grid.Column>
      </Grid.Row>
     </Grid>
