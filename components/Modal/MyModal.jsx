@@ -4,18 +4,15 @@ import { Button, Modal, Transition } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { logOutUser } from '../../store/index'
+import { logOutUser, modalStateOn, modalStateOff  } from '../../store/index'
 
 
 
 class MyModal extends Component {
- state = { open: false }
-
- show = (size, dimmer) => () => this.setState({ size, dimmer, open: true })
 
  close = () => {
-  const { handleClick } = this.props
-  handleClick();
+  const { modalStateOff } = this.props
+  modalStateOff();
  }
 
  logOutUser = () => {
@@ -24,29 +21,21 @@ class MyModal extends Component {
  }
 
  render() {
-  const { size, dimmer } = this.state
-  const { isModalActive } = this.props
+  const { modalActive } = this.props
 
   console.log("this.props in Modal ", this.props);
 
-  if (isModalActive){
    return (
     <>
-      <Transition
-       animation="fade"
-       duration={1000000}
-       unmountOnHide={true}
-       visible={true}
-       >
-      <Modal dimmer={'blurring'} size={'mini'} open={isModalActive} onClose={this.close}>
+
+      <Modal dimmer={'blurring'} size={'mini'} open={modalActive} onClose={this.close}>
         <Modal.Header>
          <p>Are you sure you want to log out of your account?</p>
         </Modal.Header>
         <Modal.Actions>
          <Button
           color='black'
-          onClick={() => { this.close }}
-
+         onClick={this.close}
          >
           No
        </Button>
@@ -55,16 +44,12 @@ class MyModal extends Component {
           icon='checkmark'
           labelPosition='right'
           content='Yes'
-          onClick={() => { this.logOutUser() }}
+         onClick={() => { this.close(); this.logOutUser() }}
          />
         </Modal.Actions>
       </Modal>
-      </Transition>
     </>
    )
-  } else {
-   null
-  }
  }
 }
 
@@ -72,10 +57,10 @@ class MyModal extends Component {
 
 
 function mapStateToProps(state) {
- const {logOutUser } = state
- return {logOutUser }
+ const { modalActive } = state
+ return { modalActive }
 }
 const mapDispatchToProps = dispatch =>
- bindActionCreators({ logOutUser }, dispatch)
+ bindActionCreators({ logOutUser, modalStateOn, modalStateOff }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyModal)
