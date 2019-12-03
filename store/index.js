@@ -7,25 +7,37 @@ import { createLogger } from 'redux-logger'
 import thunkMiddleware from 'redux-thunk';
 
 /* initial state */
-const startState = { isLoggedIn: false }
+const startState = { isLoggedIn: false, modalActive: false }
 
 /* action types */
 export const actionTypes = {
     IS_LOGGED_IN: 'IS_LOGGED_IN',
-    IS_LOGGED_OUT: 'IS_LOGGED_OUT'
+    IS_LOGGED_OUT: 'IS_LOGGED_OUT',
+    MODAL_ACTIVE: 'MODAL_ACTIVE',
+    MODAL_INACTIVE: 'MODAL_INACTIVE',
+
+
 }
 
 /* reducer(s) */
 export const reducer = (state = startState, action) => {
     switch (action.type) {
         case actionTypes.IS_LOGGED_IN:
-            return Object.assign({}, state, {
-                isLoggedIn: true,
-            });
+          return Object.assign({}, state, {
+            isLoggedIn: true,
+          });
         case actionTypes.IS_LOGGED_OUT:
-            return Object.assign({}, state, {
-                isLoggedIn: false,
-            });
+          return Object.assign({}, state, {
+            isLoggedIn: false,
+          });
+        case actionTypes.MODAL_ACTIVE:
+          return Object.assign({}, state, {
+            modalActive: true
+          });
+        case actionTypes.MODAL_INACTIVE:
+          return Object.assign({}, state, {
+            modalActive: false
+      });
         default:
             return state
     }
@@ -38,10 +50,15 @@ export const logInUser = () => {
 export const logOutUser = () => {
     return { type: actionTypes.IS_LOGGED_OUT }
 }
+export const modalStateOn = () => {
+ return { type: actionTypes.MODAL_ACTIVE, modalActive: true}
+}
+
+export const modalStateOff = () => {
+ return { type: actionTypes.MODAL_INACTIVE, modalActive: false }
+}
 
 
-
-// export let persistedReducer = persistReducer(persistConfig, reducer);
 
 
 export default () => {
@@ -53,7 +70,7 @@ export default () => {
   const persistConfig = {
    key: 'primary',
    storage,
-   whitelist: ['isLoggedIn'], // place to select which state you want to persist
+   whitelist: ['isLoggedIn', 'modalActive'], // place to select which state you want to persist
 
   }
   store = createStore(
@@ -79,12 +96,3 @@ export default () => {
 };
 
 
-
-// create a store
-// export function initializeStore(initialState = startState) {
-//     return createStore(
-//         persistedReducer,
-//         initialState,
-
-//     )
-// }
