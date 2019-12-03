@@ -38,7 +38,7 @@ class MyModal extends Component {
           icon='checkmark'
           labelPosition='right'
           content='Yes'
-         onClick={() => { this.close(); this.logOutUser() }}
+          onClick={() => { this.close(); this.logOutUser() }}
          />
         </Modal.Actions>
       </Modal>
