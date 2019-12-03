@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types'
 import { Button, Modal, Transition } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { logOutUser, modalStateOn, modalStateOff  } from '../../store/index'
-
-
 
 class MyModal extends Component {
 
@@ -23,11 +20,8 @@ class MyModal extends Component {
  render() {
   const { modalActive } = this.props
 
-  console.log("this.props in Modal ", this.props);
-
    return (
     <>
-
       <Modal dimmer={'blurring'} size={'mini'} open={modalActive} onClose={this.close}>
         <Modal.Header>
          <p>Are you sure you want to log out of your account?</p>
