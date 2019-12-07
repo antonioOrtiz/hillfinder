@@ -17,38 +17,20 @@ const HomepageLayout = () => (
    style={{ minHeight: 'auto', padding: '4.5em 0em 5em' }}
    vertical
   >
-  <MyHeader H1HeaderContent="foo" H2HeaderContent="bar" />
+  <MyHeader content="Welcome to Hillfinder!" textAlign={'center'}/>
+   <p style={{ fontSize: '1.33em' }}>
+    An app on the decline! <br/>er about finding declines...
+    Register!
+   </p>
   </Segment>
 
-  <Segment style={{ padding: '0em' }} vertical>
-   <Grid celled='internally' columns='equal' stackable>
-    <Grid.Row textAlign='center'>
-     <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-      <Header as='h3' style={{ fontSize: '2em' }}>
-       "What a Company"
-            </Header>
-      <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p>
-     </Grid.Column>
-     <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-      <Header as='h3' style={{ fontSize: '2em' }}>
-       "I shouldn't have gone with their competitor."
-            </Header>
-      <p style={{ fontSize: '1.33em' }}>
-       <b>Nan</b> Chief Fun Officer Acme Toys
-            </p>
-     </Grid.Column>
-    </Grid.Row>
-   </Grid>
-  </Segment>
   <Segment style={{ padding: '8em 0em' }} vertical>
    <Container text>
     <Header as='h3' style={{ fontSize: '2em' }}>
-     Breaking The Grid, Grabs Your Attention
+     "Is it an app to find a hill to eventually build a hobbit home in a shire"?
         </Header>
     <p style={{ fontSize: '1.33em' }}>
-     Instead of focusing on content creation and hard work, we have learned how to master the
-     art of doing nothing by providing massive amounts of whitespace and generic content that
-     can seem massive, monolithic and worth your attention.
+     No. Essentiialy Hillfinder is a directions app, except all endpoints of your journey try to be on lowers position in elavation than you started from.
         </p>
     <Button as='a' size='large'>
      Read More
@@ -64,10 +46,7 @@ const HomepageLayout = () => (
       <Grid.Column width={3}>
        <Header inverted as='h4' content='About' />
        <List link inverted>
-        <List.Item as='a'>Sitemap</List.Item>
         <List.Item as='a'>Contact Us</List.Item>
-        <List.Item as='a'>Religious Ceremonies</List.Item>
-        <List.Item as='a'>Gazebo Plans</List.Item>
        </List>
       </Grid.Column>
       <Grid.Column width={3}>
