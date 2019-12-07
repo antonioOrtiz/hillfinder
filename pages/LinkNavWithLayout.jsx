@@ -28,15 +28,18 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, N
   if (nav.name === 'Log in') {
    console.log("mobile nav.name ", nav.name);
 
-   return <>
-    {modalActive && <Modal history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
-    <Menu.Item
-     key="/logout"
-     name={'Log out'}
-     onClick={(event) => { modalStateOn(); handleSidebarHide(); }}>
-     Log Out
-    </Menu.Item>
-   </>;
+   return (
+    <React.Fragment key={"modalForMobile"}>
+     {modalActive && <Modal
+      history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
+     <Menu.Item
+      key={"modalForMobile"}
+      name='Log out'
+      onClick={(event) => { modalStateOn(); handleSidebarHide(); }}>
+      Log Out
+     </Menu.Item>
+    </React.Fragment >
+   )
   } else {
    return (
     <Menu.Item
@@ -58,15 +61,15 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, N
  function desktoplogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn,  modalStateOff) {
   if (nav.name === 'Log in') {
    return (
-    <>
+    <React.Fragment key={"modalForDesktop"}>
      {modalActive && <Modal history={history} isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
      <Menu.Item
-      key="/logout"
+      key={"modalForDesktop"}
       name='Log out'
       onClick={(event) => { modalStateOn()}}>
       Log Out
      </Menu.Item>
-    </>
+    </React.Fragment>
    )
   } else {
    return (
