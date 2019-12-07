@@ -15,8 +15,6 @@ export const actionTypes = {
     IS_LOGGED_OUT: 'IS_LOGGED_OUT',
     MODAL_ACTIVE: 'MODAL_ACTIVE',
     MODAL_INACTIVE: 'MODAL_INACTIVE',
-
-
 }
 
 /* reducer(s) */
@@ -51,11 +49,10 @@ export const logOutUser = () => {
     return { type: actionTypes.IS_LOGGED_OUT }
 }
 export const modalStateOn = () => {
-    return { type: actionTypes.MODAL_ACTIVE, modalActive: true }
+    return { type: actionTypes.MODAL_ACTIVE }
 }
-
 export const modalStateOff = () => {
-    return { type: actionTypes.MODAL_INACTIVE, modalActive: false }
+    return { type: actionTypes.MODAL_INACTIVE }
 }
 
 export default () => {
