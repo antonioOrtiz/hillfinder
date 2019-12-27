@@ -1,6 +1,8 @@
 import { Button, Card, Feed, Icon, Image, Segment, Grid, Divider, Message, Container, Header } from 'semantic-ui-react'
 
 import MyHeader from '../Header/Header.jsx'
+import ImageUploader from '../ImageUploader/ImageUploader.jsx';
+import React, { useState } from 'react';
 
 const style = {
   h1: {
@@ -18,10 +20,16 @@ const style = {
   },
 }
 
-
-const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => (
- <>
- {/* {console.log('Profile Page ', props)} */}
+const ProfilePage = ({ history, isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => {
+  const [isProfileImageLoaded, setProfileImageState] = useState(false);
+  
+  function handleImageUpload() {
+   setProfileImage(true);
+  }
+  
+ return (
+  <>
+ {console.log('Profile Page ', props)}
      <Grid container columns={1} relaxed stackable>
       <Grid.Column>
         <MyHeader as='h2' content='Foo' textAlign='left' />
@@ -33,6 +41,7 @@ const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => (
         <Segment>
          <Card fluid>
           <Image src='static/profile-avatars/charly_desktop.jpg' wrapped ui={false} />
+          <ImageUploader history={history}/>
           <Card.Content>
             <Card.Header>Charly</Card.Header>
             <Card.Meta>
@@ -226,7 +235,8 @@ const ProfilePage = ({ isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => (
    </Segment>
    <Segment inverted vertical style={{ padding: '5em 0em' }}></Segment>
  </>
+ )
 
-)
+ }
 
 export default ProfilePage

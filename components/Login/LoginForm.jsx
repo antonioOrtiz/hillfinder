@@ -5,7 +5,7 @@ import { login } from 'next-authentication'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { logInUser } from '../../store'
+import { logInUser } from '../../store/reducers/users/index'
 
 class LoginForm extends Component {
  constructor(props) {
@@ -125,6 +125,7 @@ class LoginForm extends Component {
     return response;
    })
    .catch(err => console.dir(err))
+
  }
 
  render() {
@@ -133,6 +134,7 @@ class LoginForm extends Component {
 
   var { isLoggedIn } = this.props;
 
+ // console.log("isLoggedIn ", isLoggedIn);
   // { console.log('isLoggedIn', isLoggedIn) }
   (formSuccess === true) ? isLoggedIn = true : isLoggedIn = false;
 
@@ -249,7 +251,11 @@ class LoginForm extends Component {
 }
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
+ console.log("state ", state);
+ const { users } = state
+ console.log("users ", users);
+ const { isLoggedIn } = users
+  console.log("isLoggedIn ", isLoggedIn);
  return { isLoggedIn }
 }
 const mapDispatchToProps = dispatch =>

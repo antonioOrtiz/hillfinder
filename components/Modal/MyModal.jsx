@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
-import { Button, Modal, Transition } from 'semantic-ui-react'
+import { Button, Modal } from 'semantic-ui-react'
+import PropTypes from 'prop-types'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { logOutUser, modalStateOn, modalStateOff  } from '../../store/index'
+import { logOutUser  } from '../../store/reducers/users/index'
+import { modalStateOn, modalStateOff  } from '../../store/reducers/ui/index'
+
 
 class MyModal extends Component {
 
@@ -18,28 +21,38 @@ class MyModal extends Component {
  }
 
  render() {
-  const { modalActive } = this.props
+  const { modalActive, isAlertModal } = this.props
 
    return (
     <>
-      <Modal dimmer={'blurring'} size={'mini'} open={modalActive} onClose={this.close}>
+      <Modal dimmer={'blurring'} centered={true} size={'mini'} open={modalActive} onClose={this.close}>
         <Modal.Header>
-         <p>Are you sure you want to log out of your account?</p>
+         <p>{this.props.message}</p>
         </Modal.Header>
         <Modal.Actions>
+         {isAlertModal ?
          <Button
           color='black'
-         onClick={this.close}
-         >
-          No
-       </Button>
-         <Button
-          positive
-          icon='checkmark'
-          labelPosition='right'
-          content='Yes'
-          onClick={() => { this.close(); this.logOutUser() }}
+          onClick={this.close}
+          content={this.props.affirmativeUsed}
          />
+         :
+        <>
+         <Button
+           color='black'
+           onClick={this.close}
+          >
+           No
+          </Button>
+          <Button
+           positive
+           icon='checkmark'
+           labelPosition='right'
+           content={this.props.affirmativeUsed}
+           onClick={() => { this.close(); this.logOutUser() }}
+          />
+        </>
+         }
         </Modal.Actions>
       </Modal>
     </>
@@ -47,11 +60,15 @@ class MyModal extends Component {
  }
 }
 
-
-
+MyModal.propTypes = {
+ message: PropTypes.string,
+ affirmativeUsed: PropTypes.string
+}
 
 function mapStateToProps(state) {
- const { modalActive } = state
+ const { ui } = state
+ const { modalActive } = ui
+
  return { modalActive }
 }
 const mapDispatchToProps = dispatch =>

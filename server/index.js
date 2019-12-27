@@ -79,6 +79,7 @@ async function start() {
             console.error(err)
         })
 
+    server.use('/uploads', express.static(__dirname + '/uploads'))
     server.use(bodyParser.json())
     server.use(bodyParser.urlencoded({ extended: true }))
     server.use(morgan('dev'))
@@ -98,6 +99,7 @@ async function start() {
 
     server.use(cors())
     server.use('/users', require('./users'))
+    server.use('/images', require('./images'))
 
     // Redirect all requests to main entrypoint pages/index.js
     server.get('/*', async(req, res, next) => {

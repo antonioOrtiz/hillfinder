@@ -1,7 +1,7 @@
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { logOutUser } from '../store'
+import { logOutUser } from '../store/reducers/users/index'
 import { withRouter } from "react-router-dom";
 
 let Dashboard;
@@ -15,7 +15,8 @@ Dashboard = ({ isLoggedIn, logOutUser }) => (
 
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
+  const { users } = state
+  const { isLoggedIn } = users
  return { isLoggedIn }
 }
 const mapDispatchToProps = dispatch =>

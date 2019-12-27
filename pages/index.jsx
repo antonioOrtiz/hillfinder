@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { logInUser, logOutUser } from '../store/index'
+import { logInUser, logOutUser } from '../store/reducers/users/index'
 import { bindActionCreators } from 'redux'
 
 import {
@@ -18,8 +18,10 @@ import Login from './login'
 import Register from './register'
 
 class App extends Component {
- static getInitialProps({ store, isLoggedIn, logInUser, logOutUser }) {
-  return { store, isLoggedIn, logInUser, logOutUser }
+ static getInitialProps({  store, isLoggedIn, logInUser, logOutUser }) {
+  console.log("store", store);
+
+  return {  store, isLoggedIn, logInUser, logOutUser }
  }
 
  constructor(props) {
@@ -29,7 +31,9 @@ class App extends Component {
  render(){
  const { isLoggedIn } = this.props;
 
- console.log("pages/index this.props ", this.props);
+
+ console.log("this.props ", this.props);
+
   let navBars = [
    { name: "Home", path: "/"},
    { name: "Profile", path: "/profile"},
@@ -99,12 +103,11 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
- const { isLoggedIn } = state
+ const { users } = state
+ const { isLoggedIn } = users
  return { isLoggedIn }
 }
-
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App))
-
