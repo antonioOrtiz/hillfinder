@@ -6,15 +6,16 @@ var bcrypt = require('bcrypt') // hashing function dedicated for passwords
 const SALT_ROUNDS = 12
 
 var UserSchema = new mongoose.Schema({
-    username_email: {
+    username: {
         type: String,
         required: true,
+        trim: true,
         lowercase: true,
         index: { unique: true },
         validate: {
             validator: emailValidator.validate,
-            message: props => `${props.value} is not a valid email address`
-        }
+            message: props => `${props.value} is not a valid email address!`,
+        },
     },
     password: {
         type: String,
@@ -28,20 +29,19 @@ var UserSchema = new mongoose.Schema({
 })
 
 UserSchema.pre('save', async function preSave(next) {
-    var user = this
-    var hash
-    if (!user.isModified('password')) return next()
+    const user = this;
+    if (!user.isModified('password')) return next();
     try {
-        hash = await bcrypt.hash(user.password, SALT_ROUNDS)
-        user.password = hash
-        return next()
+        const hash = await bcrypt.hash(user.password, SALT_ROUNDS);
+        user.password = hash;
+        return next();
     } catch (err) {
-        return next(err)
+        return next(err);
     }
-})
+});
 
 UserSchema.methods.comparePassword = async function comparePassword(candidate) {
-    return bcrypt.compare(candidate, this.password)
+    return bcrypt.compare(candidate, this.password);
 };
 
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema);

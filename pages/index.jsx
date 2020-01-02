@@ -69,7 +69,7 @@ class App extends Component {
       path='/'
       isLoggedIn={isLoggedIn}
       exact
-      render={(props) => <LinkNavWithLayout {...props} history={history} data={navBars}><Index /></LinkNavWithLayout>} />
+      render={(props) => <LinkNavWithLayout {...props} data={navBars}><Index /></LinkNavWithLayout>} />
 
      <PrivateRoute
       path='/profile'
@@ -92,7 +92,7 @@ class App extends Component {
 
      <Route
       path='/register'
-      render={() => <Register />}
+      render={(props) => <Register {...props}/>}
      />
 
      <Route component={({ location }) => <p>Sorry but the page <h1>{location.pathname.substring(1)} </h1> Page, Could Not be found</p>} />

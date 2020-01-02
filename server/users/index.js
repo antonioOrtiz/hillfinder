@@ -1,13 +1,29 @@
 var router = require('express').Router();
-var UserModel = require('../models/UserModel');
 var passport = require('passport');
+var UserModel = require('../models/UserModel');
 var { check, body, validationResult } = require('express-validator');
 
 router.route('/login')
-    .post(passport.authenticate('local', {
-        successRedirect: '/profile',
-        failureRedirect: '/users/login?error=true',
-    }))
+    .get(function(req, res) {
+        UserModel.find({}, (err, users) => {
+            if (err) res.status(404).send({ error: req.query.error })
+            res.json(users)
+        })
+    })
+    .post((req, res, next) => {
+        console.log('/login, req.body: ');
+       
+        console.log(req.body)
+        next()
+    },  passport.authenticate('local'),
+    (req, res) => {
+        console.log('logged in', req.user);
+        var userInfo = {
+            username: req.user.username
+        };
+        res.send(userInfo);
+    })
+
 
 router.route('/registration')
     .get(function(req, res) {
@@ -17,8 +33,8 @@ router.route('/registration')
         })
 
     })
-    .post(body('username_email').custom(value => {
-        return UserModel.findOne({ 'username_email': value }).then(user => { // Return Promise
+    .post(body('username').custom(value => {
+        return UserModel.findOne({ 'username': value }).then(user => { // Return Promise
             if (user) {
                 return Promise.reject('E-mail already in use');
             }

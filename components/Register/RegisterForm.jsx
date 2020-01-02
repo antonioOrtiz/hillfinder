@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
-import Link from 'next/link';
-import Router from 'next/router'
-import { login } from 'next-authentication'
 import { connect } from 'react-redux'
+import { Link } from "react-router-dom";
 
 
 class RegisterForm extends Component {
@@ -30,6 +28,13 @@ class RegisterForm extends Component {
   componentDidMount() {
     this.setState({isLoading: false})
   }
+
+  // componentDidUpdate(prevProps, nextProps) {
+  //  if (this.props.location.pathname !== nextProps.props.location.pathname){
+  //   this.props.location.pathname
+  //  }
+  // }
+
 
   handleChange(event) {
     var { name, value } = event.target;
@@ -58,7 +63,9 @@ class RegisterForm extends Component {
 
     var error = false;
 
-  var { username, password} = this.state
+    var { username, password} = this.state
+
+    var { history } = this.props
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -85,19 +92,12 @@ class RegisterForm extends Component {
     return window.fetch('http://localhost:8016/users/registration', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username_email: username, password: password })
+      body: JSON.stringify({ username: username, password: password })
     })
      .then((response)=>{
       if (response.ok) {
-       const { token } = response.clone();
-
-       const loginOptions = {
-        token,
-        cookieOptions: { expires: 1 },
-        callback: () => Router.push('/login')
-       }
        setTimeout(() => {
-        login(loginOptions)
+         history.push('/login')
        }, 5000)
 
        this.setState({
@@ -123,7 +123,7 @@ class RegisterForm extends Component {
   render() {
     var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
 
-   // console.log("RegisterForm this.props ", this.props);
+   console.log("RegisterForm this.props ", this.props);
 
     return (<div className='login-form'> {
 
@@ -227,8 +227,8 @@ class RegisterForm extends Component {
               animation='scale'
               duration={1000}>
               <Message>
-                <Link href="/login">
-                  <a>Login</a>
+                <Link to="/login">
+                  Login
                 </Link> </Message>
             </Transition>
             : null
