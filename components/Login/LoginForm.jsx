@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
-import Link from 'next/link';
+// import Link from 'next/link';
+import axios from 'axios'
 import { login } from 'next-authentication'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { logInUser } from '../../store/reducers/users/index'
+import { Link } from "react-router-dom";
 
 class LoginForm extends Component {
  constructor(props) {
@@ -55,7 +57,7 @@ class LoginForm extends Component {
  }
 
  handleSubmit(event) {
-
+  event.preventDefault();
   this.setState({
    isLoading: true
   })
@@ -85,57 +87,40 @@ class LoginForm extends Component {
    return;
   }
 
-  return window.fetch('http://localhost:8016/users/login', {
-   method: 'POST',
-   headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-   body: JSON.stringify({ username, password })
-  })
-   .then((response) => {
-    if (response.ok) {
-
-     const { token } = response.clone();
-
-     const loginOptions = {
-      token,
-      cookieOptions: { expires: 1 },
-      callback: () => history.push('/profile')
-     }
-
-     setTimeout(() => {
-      this.props.logInUser()
-
-      login(loginOptions);
-     }, 5000)
-
-     this.setState({
-      username: username, password: '', formError: false, formSuccess: true, isLoading: false
-     })
-
-    } else if (!response.ok) {
-     if (response.status === 404) {
-      // console.log("response.status ", response.status);
-      // { console.log("isLoading 2", isLoading) }
-      this.setState({
-       formError: true, formSuccess: false, isLoading: false
-      });
-      return;
-     }
-    }
-
-    return response;
+  axios.post('http://localhost:8016/users/login', {
+    username: username,
+    password: password
    })
-   .catch(err => console.dir(err))
-
+  .then(response =>{
+   console.log('response', response)
+   if (response.status === 200) {
+    setTimeout(() => {
+     this.props.logInUser()
+      history.push('/profile')
+    }, 5000)
+    this.setState({
+     username: '', password: '', formError: false, formSuccess: true, isLoading: false
+    })
+   }
+  })
+  .catch(function (error) {
+    console.log(error);
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      this.setState({formError: true, formSuccess: false, isLoading: false});
+    }
+  }.bind(this));
  }
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
-  // console.log("LoginForm this.props ", this.props);
+  console.log("LoginForm this.props ", this.props);
 
   var { isLoggedIn } = this.props;
 
- // console.log("isLoggedIn ", isLoggedIn);
-  // { console.log('isLoggedIn', isLoggedIn) }
+ console.log("isLoggedIn ", isLoggedIn);
   (formSuccess === true) ? isLoggedIn = true : isLoggedIn = false;
 
   return (<div className='login-form'> {
@@ -239,8 +224,8 @@ class LoginForm extends Component {
        animation='scale'
        duration={1000}>
        <Message>
-        <Link href="/register">
-         <a>Register</a>
+        <Link to="/register">
+         Register
         </Link> </Message>
       </Transition>
       : null
@@ -265,3 +250,7 @@ export default connect(
  mapStateToProps,
  mapDispatchToProps
 )(LoginForm)
+
+
+
+
