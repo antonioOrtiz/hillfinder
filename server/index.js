@@ -20,15 +20,17 @@ function NODE_ENVSetter(ENV) {
         environments = {
             'production': () => {
                 environment = process.env.PRODUCTION_DB_DSN;
+                console.log(`We are currently in the production environment: ${environment}`);
                 return environment;
             },
             'test': () => {
                 environment = process.env.TEST_DB_DSN;
+                console.log(`We are currently in the test environment: ${environment}`);
                 return environment;
             },
             'default': () => {
                 environment = process.env.DEVELOPMENT_DB_DSN;
-                console.log("environment ", environment);
+                console.log(`We are currently in the development environment: ${environment}`);
                 return environment;
             },
         };
@@ -80,15 +82,15 @@ async function start() {
         })
 
     server.use('/uploads', express.static(__dirname + '/uploads'))
+    server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json())
-    server.use(bodyParser.urlencoded({ extended: true }))
     server.use(morgan('dev'))
 
     server.use(cookieParser())
 
     server.use(session({
         secret: 'very secret 12345',
-        resave: true,
+        resave: false,
         saveUninitialized: false,
         store: new MongoStore({ mongooseConnection: mongoose.connection })
     }));
@@ -96,6 +98,8 @@ async function start() {
     server.use(auth.initialize);
     server.use(auth.session);
     server.use(auth.setUser);
+    console.log("auth.setUser ", auth.setUser);
+
 
     server.use(cors())
     server.use('/users', require('./users'))
@@ -154,7 +158,7 @@ async function start() {
 
     server.listen(PORT, err => {
         if (err) throw err;
-        console.log(`> Ready on http://localhost:${PORT}`)
+        console.log(`> Ready and listening on http://localhost:${PORT}`)
     });
 }
 
