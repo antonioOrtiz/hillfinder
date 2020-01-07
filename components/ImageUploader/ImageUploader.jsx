@@ -1,41 +1,47 @@
 import React, { Component } from 'react';
 import './ImageUploader.css';
-import Modal from '../Modal/MyModal.jsx'
-
+import ImageModal from '../Modal/MyModal.jsx'
+import axios from 'axios';
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { loadAvatar } from '../../store/reducers/users/index'
 import { modalStateOn, modalStateOff } from '../../store/reducers/ui/index'
 
-
-// base api url being used
-const API_URL = "http://localhost:8016";
-
 class ImageUploader extends Component {
  constructor(props) {
   super(props);
+    this.uploadImage = this.uploadImage.bind(this);
  }
 
- componentDidMount() {
-  this.setDefaultImage()
+ componentDidUpdate(previousProps, previousState) {
+  if (previousProps.userAvatar !== this.props.userAvatar) {
+  console.log("this.props.userAvatar in componentDidUpdate", this.props.userAvatar);
+   loadAvatarImage(this.props.userAvatar)
+  }
+ }
+ componentWillUnmount(){
+  var { modalStateOff } = this.props
+  modalStateOff()
  }
 
  setDefaultImage(){
-   var defaultImage =  '../../static/profile-avatars/assets/default-img.jpg';
-   var { loadAvatarImage } = this.props;
-    this.loadAvatarImage(defaultImage)
+  var defaultImage =  '../../static/profile-avatars/assets/default-img.jpg';
+  this.loadAvatarImage(defaultImage)
  }
 
  loadAvatarImage(img) {
-    var { loadAvatar } = this.props;
-     loadAvatar(img)
+  var { loadAvatar } = this.props;
+  loadAvatar(img)
  }
- // function to upload image once it has been captured
- // includes multer and firebase methods
- uploadImage(e, method) {
 
-  let imageObj = {};
+ uploadImage(e, method) {
+  e.stopPropagation();
+
+
+
+  const { modalStateOn } = this.props
+  console.log('this.props in ImageUploader uploadImageFunction', this.props)
 
   if (method === "multer") {
 
@@ -46,36 +52,27 @@ class ImageUploader extends Component {
 
    this.loadAvatarImage(window.URL.createObjectURL(e.target.files[0]))
 
-
-   return window.fetch('http://localhost:8016/images/uploadmulter', {
-    method: 'POST',
-    // body: e.target.files[0]
-    body: imageFormObj
-   })
-    .then((response) => {
-     if (response.status === 200){
-      response.json()
-     } else if (response.status === 413) {
-      this.setDefaultImage();
+   var config = { headers: { 'content-type': 'multipart/form-data' }}
+   axios.post(`http://localhost:8016/images/uploadmulter`, imageFormObj, config )
+    .then((data) => {
+     if (data.data.success) {
+      console.log("data ", data);
+      modalStateOn();
      }
     })
-    .then((data) => {
-     console.log("data!", data);
-    })
     .catch((err) => {
-     console.log('error', err);
-     this.setDefaultImage();
+     alert("Error while uploading image using multer");
+      this.setDefaultImage();
     });
   }
- } // end upload function
+ }
 
  render() {
-  // var {imageUploaded} = this.state;
-  var { history, userAvatar, isLoggedIn, modalActive, modalStateOn, modalStateOff } = this.props
-  console.log('userAvatar', userAvatar)
+  var {  userAvatar, modalActive } = this.props;
 
   return (
    <>
+
     <div className="main-container">
      <h3 className="main-heading">Image Upload App</h3>
 
@@ -84,12 +81,20 @@ class ImageUploader extends Component {
        <h4 className="process__heading">Process: Using Multer</h4>
        <p className="process__details">Upload image to a node server, connected to a MongoDB database, with the help of multer</p>
        <form action="/uploadmulter" method="post" encType="multipart/form-data" >
-        <input type="file" name="avatar" className="process__upload-btn" onChange={(e) => this.uploadImage(e, "multer")} />
-        <img src={userAvatar || `/server/uploads/ ${userAvatar}`} alt="upload-image" className="process__image" />
+        <input type="file" name="avatar" className="process__upload-btn"
+         onChange={(e) => {
+          this.uploadImage(e, "multer");
+        }} />
+        <img src={userAvatar} alt="upload-image" className="process__image" />
        </form>
       </div>
      </div>
     </div>
+    {modalActive && <ImageModal
+     isAlertModal={true}
+     affirmativeUsed="OK!"
+     message="Your image has been uploaded succesfully"
+    />}
   </>
   );
  }
@@ -97,13 +102,13 @@ class ImageUploader extends Component {
 
 function mapStateToProps(state) {
  const { ui, users } = state
- const { isLoggedIn, userAvatar } = users
+ const { userAvatar } = users
  const { modalActive } = ui
 
- return { isLoggedIn, userAvatar, modalActive }
+ return { userAvatar, modalActive }
 }
 
 const mapDispatchToProps = dispatch =>
- bindActionCreators({ loadAvatar, modalStateOn, modalStateOff }, dispatch)
+ bindActionCreators({ loadAvatar, modalStateOn, modalStateOff  }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(ImageUploader)
