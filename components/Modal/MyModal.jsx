@@ -30,7 +30,7 @@ class MyModal extends Component {
          <p>{this.props.message}</p>
         </Modal.Header>
         <Modal.Actions>
-         {isAlertModal ?
+         {this.props.isAlertModal ?
          <Button
           color='black'
           onClick={this.close}

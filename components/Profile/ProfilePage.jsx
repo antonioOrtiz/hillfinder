@@ -1,8 +1,13 @@
-import { Button, Card, Feed, Icon, Image, Segment, Grid, Divider, Message, Container, Header } from 'semantic-ui-react'
+import { Button, Card, Feed, Icon, Image, Segment, Grid, Divider, Container, Header } from 'semantic-ui-react'
 
 import MyHeader from '../Header/Header.jsx'
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
 import React, { useState } from 'react';
+
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { loadAvatar } from '../../store/reducers/users/index'
+
 
 const style = {
   h1: {
@@ -20,16 +25,11 @@ const style = {
   },
 }
 
-const ProfilePage = ({ history, isLoggedIn, logOutUser, isMobileFromSSR, ...props }) => {
-  const [isProfileImageLoaded, setProfileImageState] = useState(false);
-  
-  function handleImageUpload() {
-   setProfileImage(true);
-  }
-  
+const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
+  var {userAvatar} = props
  return (
   <>
- {console.log('Profile Page ', props)}
+ {console.log('Profile Page!! ', props)}
      <Grid container columns={1} relaxed stackable>
       <Grid.Column>
         <MyHeader as='h2' content='Foo' textAlign='left' />
@@ -41,7 +41,7 @@ const ProfilePage = ({ history, isLoggedIn, logOutUser, isMobileFromSSR, ...prop
         <Segment>
          <Card fluid>
           <Image src='static/profile-avatars/charly_desktop.jpg' wrapped ui={false} />
-          <ImageUploader history={history}/>
+          <ImageUploader userAvatar={userAvatar} history={history} />
           <Card.Content>
             <Card.Header>Charly</Card.Header>
             <Card.Meta>
@@ -239,4 +239,14 @@ const ProfilePage = ({ history, isLoggedIn, logOutUser, isMobileFromSSR, ...prop
 
  }
 
-export default ProfilePage
+function mapStateToProps(state) {
+ const {  users } = state
+ const { userAvatar } = users
+
+ return { userAvatar }
+}
+
+// const mapDispatchToProps = dispatch =>
+//  bindActionCreators({ modalStateOn, modalStateOff, loadAvatar }, dispatch)
+
+export default connect(mapStateToProps)(ProfilePage)

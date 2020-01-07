@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './ImageUploader.css';
 import ImageModal from '../Modal/MyModal.jsx'
 import axios from 'axios';
-
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { loadAvatar } from '../../store/reducers/users/index'

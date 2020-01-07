@@ -116,7 +116,7 @@ class LoginForm extends Component {
 
  render() {
   var { username, password, usernameError, passwordError, formSuccess, formError, duration, isLoading } = this.state;
-  console.log("LoginForm this.props ", this.props);
+
 
   var { isLoggedIn } = this.props;
 

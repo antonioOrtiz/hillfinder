@@ -81,9 +81,17 @@ async function start() {
             console.error(err)
         })
 
+    // server.use((req, res, next) => {
+    //     res.setHeader('Access-Control-Allow-Origin', '*');
+    //     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    //     res.header('Access-Control-Allow-Credentials', true);
+    //     res.header('Access-Control-Allow-Methods', '*'); // enables all the methods to take place
+    //     return next();
+    // });
+
     server.use('/uploads', express.static(__dirname + '/uploads'))
-    server.use(bodyParser.urlencoded({ extended: false }))
-    server.use(bodyParser.json())
+    server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }))
+    server.use(bodyParser.json({ limit: '50mb' }));
     server.use(morgan('dev'))
 
     server.use(cookieParser())
@@ -147,14 +155,29 @@ async function start() {
         }
     });
 
+    // server.use(function(req, res, next) {
+    //     res.status(404).send('404 - Not Found!');
+    // });
+
+    // // eslint-disable-next-line func-names
+    // server.use(errorHandler, function(error, req, res, next) {
+    //     res.json({ message: error.message })
+    // })
+    // catch 404 and forward to error handler
     server.use(function(req, res, next) {
-        res.status(404).send('404 - Not Found!');
+        next(createError(404));
     });
 
-    // eslint-disable-next-line func-names
-    server.use(errorHandler, function(error, req, res, next) {
-        res.json({ message: error.message })
-    })
+    // error handler
+    server.use(function(err, req, res, next) {
+        // set locals, only providing error in development
+        res.locals.message = err.message;
+        res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+        // render the error page
+        res.status(err.status || 500);
+        res.render('error');
+    });
 
     server.listen(PORT, err => {
         if (err) throw err;

@@ -46,7 +46,7 @@ class App extends Component {
    return (
     <Route
      {...rest}
-     render={({ location }) =>
+     render={({ location, props }) =>
       isLoggedIn ? (
        children
       ) : (
@@ -75,7 +75,7 @@ class App extends Component {
       path='/profile'
       isLoggedIn={isLoggedIn}
       >
-      <LinkNavWithLayout data={navBars}><Profile /></LinkNavWithLayout>
+      <LinkNavWithLayout data={navBars}><Profile user/></LinkNavWithLayout>
      </PrivateRoute>
 
      <PrivateRoute
@@ -104,8 +104,8 @@ class App extends Component {
 
 function mapStateToProps(state) {
  const { users } = state
- const { isLoggedIn } = users
- return { isLoggedIn }
+ const { isLoggedIn, userAvatar } = users
+ return { isLoggedIn, userAvatar }
 }
 const mapDispatchToProps = dispatch =>
  bindActionCreators({ logInUser, logOutUser }, dispatch)

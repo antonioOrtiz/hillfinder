@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Link, NavLink, withRouter } from 'react-router-dom'
+import React, { Component, createRef } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import Modal from '../components/Modal/MyModal.jsx'
 import {
   Container,
@@ -15,6 +15,7 @@ import {
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index'
+import { loadAvatar } from '../store/reducers/users/index'
 
 const getWidth = () => {
  const isSSR = typeof window === 'undefined'
@@ -31,7 +32,7 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, N
    return (
     <React.Fragment key={"modalForMobile"}>
      {modalActive && <Modal
-      isAlertModal={false} history={history} affirmativeUsed="Yes" message="Are you sure you want to log out of your account?" isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
+      isAlertModal={false} history={history} affirmativeUsed="Si" message="Mobile Are you sure you want to log out of your account?"  modalActive={modalActive} />}
      <Menu.Item
       key={"modalForMobile"}
       name='Log out'
@@ -62,7 +63,7 @@ const logOutMenuItemHelper = (isMobile, isLoggedIn, history, modalActive, nav, N
   if (nav.name === 'Log in') {
    return (
     <React.Fragment key={"modalForDesktop"}>
-     {modalActive && <Modal isAlertModal={false} history={history} affirmativeUsed="Yes" message="Are you sure you want to log out of your account?" isLoggedIn={isLoggedIn} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} />}
+     {modalActive && <Modal isAlertModal={false} history={history} affirmativeUsed="Si" message="DT Are you sure you want to log out of your account?" modalActive={modalActive} />}
      <Menu.Item
       key={"modalForDesktop"}
       name='Log out'
@@ -248,12 +249,12 @@ class MobileContainer extends Component {
  }
 }
 
-const LinkNavWithLayout = ({ GenericHeadingComponent, children, history, data, modalActive, modalStateOn, modalStateOff, isLoggedIn }) => (
+const LinkNavWithLayout = ({ children, history, data, userAvatar, modalActive, modalStateOn, modalStateOff, isLoggedIn }) => (
  <React.Fragment>
-  <DesktopContainer GenericHeadingComponent={GenericHeadingComponent} history={history} data={data} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
+  <DesktopContainer history={history} data={data} userAvatar={userAvatar} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
    {children}
   </DesktopContainer>
-  <MobileContainer GenericHeadingComponent={GenericHeadingComponent} history={history} data={data} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
+  <MobileContainer history={history} data={data} userAvatar={userAvatar} modalActive={modalActive} modalStateOn={modalStateOn} modalStateOff={modalStateOff} isLoggedIn={isLoggedIn}>
    {children}
   </MobileContainer>
  </React.Fragment>
@@ -261,15 +262,15 @@ const LinkNavWithLayout = ({ GenericHeadingComponent, children, history, data, m
 
 function mapStateToProps(state) {
  const { ui, users } = state
- const { isLoggedIn } = users
+ const { isLoggedIn, userAvatar } = users
  const { modalActive } = ui
 
- return { isLoggedIn, modalActive }
+ return { isLoggedIn, userAvatar, modalActive }
 }
 
 const mapDispatchToProps = dispatch =>
- bindActionCreators({ modalStateOn, modalStateOff }, dispatch)
+ bindActionCreators({ modalStateOn, modalStateOff, loadAvatar}, dispatch)
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LinkNavWithLayout))
+export default connect(mapStateToProps, mapDispatchToProps)(LinkNavWithLayout)
 
 
