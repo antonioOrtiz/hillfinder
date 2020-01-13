@@ -34,8 +34,7 @@ const HomepageLayout = () => (
         </p>
     <Button as='a' size='large'>
      Read More
-        </Button>
-
+    </Button>
 
    </Container>
   </Segment>
