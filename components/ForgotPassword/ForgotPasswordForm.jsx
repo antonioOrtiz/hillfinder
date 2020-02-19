@@ -16,7 +16,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { logInUser } from '../../store/reducers/users/index';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 class ForgotPasswordForm extends Component {
   constructor(props) {
@@ -51,7 +51,6 @@ class ForgotPasswordForm extends Component {
   handleBlur() {
     var { username } = this.state;
     var error = false;
-
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (!username.match(mailFormat) || !username) {
@@ -78,13 +77,6 @@ class ForgotPasswordForm extends Component {
       this.setState({ usernameError: false });
     }
 
-    if (password.length < 8) {
-      this.setState({ passwordError: true });
-      error = true;
-    } else {
-      this.setState({ passwordError: false });
-    }
-
     if (error) {
       this.setState({ formSuccess: false });
       return;
@@ -97,10 +89,6 @@ class ForgotPasswordForm extends Component {
       .then(response => {
         console.log('response', response);
         if (response.status === 200) {
-          setTimeout(() => {
-            this.props.logInUser();
-            history.push('/profile');
-          }, 5000);
           this.setState({
             username: '',
             formError: false,
@@ -208,8 +196,7 @@ class ForgotPasswordForm extends Component {
                   ) : (
                     <Message
                       success
-                      header="You will now be taken to reset your passowrd"
-                      // content="Welcome to Hillfinder!"
+                      header="You will recieve an email shortly to reset password."
                     />
                   )}
                 </Transition>
