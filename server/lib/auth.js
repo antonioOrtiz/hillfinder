@@ -18,11 +18,12 @@ const UserModel = require('../models/UserModel');
 //   }
 // }));
 
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
+passport.use(
+  new LocalStrategy(function(username, password, done) {
     UserModel.findOne({ username: username }, function(err, user) {
-      if (err) { return done(err); }
+      if (err) {
+        return done(err);
+      }
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
@@ -31,8 +32,8 @@ passport.use(new LocalStrategy(
       }
       return done(null, user);
     });
-  }
-));
+  })
+);
 
 // eslint-disable-next-line no-underscore-dangle
 passport.serializeUser((user, done) => done(null, user._id));
@@ -52,5 +53,5 @@ module.exports = {
   setUser: (req, res, next) => {
     res.locals.user = req.user;
     return next();
-  },
+  }
 };
