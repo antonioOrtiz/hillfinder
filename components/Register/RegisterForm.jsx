@@ -1,12 +1,21 @@
-import React, { Component } from 'react'
-import { Loader, Dimmer, Transition, Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
-import { connect } from 'react-redux'
-import { Link } from "react-router-dom";
-
+import React, { Component } from 'react';
+import {
+  Loader,
+  Dimmer,
+  Transition,
+  Button,
+  Form,
+  Grid,
+  Header,
+  Message,
+  Segment
+} from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 class RegisterForm extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       fadeUp: 'fade up',
@@ -19,28 +28,21 @@ class RegisterForm extends Component {
       formError: false,
       userNameDup: false,
       isLoading: true
-    }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    this.setState({isLoading: false})
+    this.setState({ isLoading: false });
   }
-
-  // componentDidUpdate(prevProps, nextProps) {
-  //  if (this.props.location.pathname !== nextProps.props.location.pathname){
-  //   this.props.location.pathname
-  //  }
-  // }
-
 
   handleChange(event) {
     var { name, value } = event.target;
     this.setState({
       [name]: value
-    })
+    });
   }
 
   handleBlur() {
@@ -49,26 +51,24 @@ class RegisterForm extends Component {
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if ((!username.match(mailFormat)) || (!username)) {
+    if (!username.match(mailFormat) || !username) {
       error = true;
       this.setState({ usernameError: true });
     } else {
-      this.setState({ usernameError: false, });
+      this.setState({ usernameError: false });
     }
   }
-
 
   handleSubmit(event) {
     event.preventDefault();
 
     var error = false;
 
-    var { username, password} = this.state
+    var { username, password } = this.state;
 
-    var { history } = this.props
+    var { history } = this.props;
 
-    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
+    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (!username.match(mailFormat)) {
       this.setState({ usernameError: true });
@@ -81,7 +81,7 @@ class RegisterForm extends Component {
       this.setState({ passwordError: true });
       error = true;
     } else {
-      this.setState({ passwordError: false })
+      this.setState({ passwordError: false });
     }
 
     if (error) {
@@ -89,159 +89,185 @@ class RegisterForm extends Component {
       return;
     }
 
-    return window.fetch('http://localhost:8016/users/registration', {
-      method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
-    })
-     .then((response)=>{
-      if (response.ok) {
-       setTimeout(() => {
-         history.push('/login')
-       }, 5000)
+    return window
+      .fetch('http://localhost:8016/users/registration', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      })
+      .then(response => {
+        if (response.ok) {
+          setTimeout(() => {
+            history.push('/login');
+          }, 5000);
 
-       this.setState({
-        username: '', password: '', userNameDup: false, formError: false, formSuccess: true, isLoading:false
-       })
+          this.setState({
+            username: '',
+            password: '',
+            userNameDup: false,
+            formError: false,
+            formSuccess: true,
+            isLoading: false
+          });
 
-       return response.json();
-      } else if (!response.ok) {
-       if (response.status === 409) {
-        this.setState({
-         userNameDup: true, formError: true, formSuccess: false, isLoading:false
-        });
-        return;
-       }
-      }
-      return response;
-     })
-    .catch(function (error) {
+          return response.json();
+        } else if (!response.ok) {
+          if (response.status === 409) {
+            this.setState({
+              userNameDup: true,
+              formError: true,
+              formSuccess: false,
+              isLoading: false
+            });
+            return;
+          }
+        }
+        return response;
+      })
+      .catch(function(error) {
         console.log(error);
       });
   }
 
   render() {
-    var { username, password, usernameError, passwordError, formSuccess, formError, userNameDup, duration, isLoading } = this.state;
+    var {
+      username,
+      password,
+      usernameError,
+      passwordError,
+      formSuccess,
+      formError,
+      userNameDup,
+      duration,
+      isLoading
+    } = this.state;
 
-   console.log("RegisterForm this.props ", this.props);
+    console.log('RegisterForm this.props ', this.props);
 
-    return (<div className='login-form'> {
+    return (
+      <div className="login-form">
+        {' '}
+        {}
+        <style>
+          {`body > div, body > div > div, body > div > div > div.login-form { height: 100%;}`}{' '}
+        </style>
+        <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
+          <Grid.Column style={{ maxWidth: 450 }}>
+            <Header as="h2" color="teal" textAlign="center">
+              Register for an account
+              {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
+            </Header>
 
-    }<style>{`body > div, body > div > div, body > div > div > div.login-form { height: 100%;}`} </style>
+            {console.log('formSuccess 1', formSuccess)}
+            <Form
+              size="large"
+              onSubmit={this.handleSubmit}
+              error={userNameDup || formError}
+            >
+              {console.log('formSuccess 2', formSuccess)}
 
-      <Grid textAlign='center'
-        style={{ height: '100%' }}
-        verticalAlign='middle' >
-        <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as='h2'
-            color='teal'
-            textAlign='center'>
-            Register for an account
-            {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
-          </Header>
+              <Segment stacked>
+                <Form.Input
+                  fluid
+                  icon="user"
+                  iconPosition="left"
+                  placeholder="E-mail address, e.g. joe@schmoe.com"
+                  name="username"
+                  value={username}
+                  onBlur={this.handleBlur}
+                  onChange={this.handleChange}
+                  error={usernameError}
+                />
 
-            {console.log("formSuccess 1", formSuccess)}
-          <Form size='large'
-            onSubmit={this.handleSubmit}
-            error={userNameDup || formError}>
-            {console.log("formSuccess 2", formSuccess)}
+                <Transition visible={usernameError} animation="scale" duration={duration}>
+                  <Message
+                    error
+                    content="username_Email is in incorrect format e.g. joe@schmoe.com"
+                  />
+                </Transition>
 
+                <Form.Input
+                  fluid
+                  icon="lock"
+                  iconPosition="left"
+                  placeholder="Password"
+                  name="password"
+                  value={password}
+                  onBlur={this.handleBlur}
+                  onChange={this.handleChange}
+                  error={passwordError}
+                />
 
-            <Segment stacked>
-              <Form.Input fluid icon='user'
-                iconPosition='left'
-                placeholder='E-mail address, e.g. joe@schmoe.com'
-                name='username'
-                value={username}
-                onBlur={this.handleBlur}
-                onChange={this.handleChange}
-                error={usernameError}
-              />
+                <Transition visible={passwordError} animation="scale" duration={duration}>
+                  <Message
+                    error
+                    content="Password needs to be greater than eight characters."
+                  />
+                </Transition>
 
-              <Transition visible={usernameError}
-                animation='scale'
-                duration={duration}>
-                <Message error content='username_Email is in incorrect format e.g. joe@schmoe.com' />
+                <Button color="teal" fluid size="large" disabled={!username || !password}>
+                  Register
+                </Button>
+
+                <Transition
+                  visible={userNameDup || formError}
+                  unmountOnHide={true}
+                  animation="scale"
+                  duration={duration}
+                >
+                  {isLoading ? (
+                    <Dimmer active inverted>
+                      <Loader />
+                    </Dimmer>
+                  ) : (
+                    <Message
+                      error
+                      centered="true"
+                      header="This email exists."
+                      content="Please re-enter another email address."
+                    />
+                  )}
+                </Transition>
+
+                <Transition
+                  visible={formSuccess}
+                  unmountOnHide={true}
+                  animation="scale"
+                  duration={duration}
+                >
+                  {isLoading ? (
+                    <Dimmer active inverted>
+                      <Loader />
+                    </Dimmer>
+                  ) : (
+                    <Message
+                      success
+                      header="Your user registration was successful."
+                      content="You may now log-in with the username you have chosen."
+                    />
+                  )}
+                </Transition>
+              </Segment>
+            </Form>
+
+            {formSuccess ? (
+              <Transition visible={formSuccess} animation="scale" duration={1000}>
+                <Message>
+                  <Link to="/login">Login</Link>{' '}
+                </Message>
               </Transition>
-
-              <Form.Input fluid icon='lock'
-                iconPosition='left'
-                placeholder='Password'
-                name='password'
-                value={password}
-                onBlur={this.handleBlur}
-                onChange={this.handleChange}
-                error={passwordError}
-              />
-
-              <Transition visible={passwordError}
-                animation='scale'
-                duration={duration}>
-                <Message error content='Password needs to be greater than eight characters.' />
-              </Transition>
-
-              <Button color='teal'
-                fluid size='large'
-                disabled={!username || !password}>
-                Register
-              </Button>
-
-              <Transition visible={userNameDup || formError}
-                unmountOnHide={true}
-                animation='scale'
-                duration={duration}>
-
-               {isLoading ?
-                <Dimmer active inverted>
-                  <Loader />
-                </Dimmer>
-                :
-                <Message
-                  error
-                  centered="true" header='This email exists.'
-                  content='Please re-enter another email address.' />
-               }
-              </Transition>
-
-              <Transition visible={formSuccess}
-                unmountOnHide={true}
-                animation='scale'
-                duration={duration}>
-                {isLoading ?
-                <Dimmer active inverted>
-                 <Loader />
-                </Dimmer>
-                :
-                <Message
-                  success
-                  header='Your user registration was successful.'
-                  content='You may now log-in with the username you have chosen.' />
-               }
-              </Transition>
-
-            </Segment>
-          </Form>
-
-          {formSuccess ?
-            <Transition visible={formSuccess}
-              animation='scale'
-              duration={1000}>
-              <Message>
-                <Link to="/login">
-                  Login
-                </Link> </Message>
-            </Transition>
-            : null
-          }
-        </Grid.Column> </Grid> </div>
-    )
+            ) : null}
+          </Grid.Column>{' '}
+        </Grid>{' '}
+      </div>
+    );
   }
 }
 
 const mapStateToProps = state => {
- return {
-  state
- }
-}
+  return {
+    state
+  };
+};
 
-export default connect(mapStateToProps)(RegisterForm)
+export default connect(mapStateToProps)(RegisterForm);
