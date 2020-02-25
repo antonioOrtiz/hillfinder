@@ -1,7 +1,7 @@
 /* eslint-disable no-var */
 var mongoose = require('mongoose');
 
-var TokenSchema = new mongoose.Schema({
+const TokenSchema = new mongoose.Schema({
   _userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
   token: { type: String, required: true },
   createdAt: { type: Date, required: true, default: Date.now, expires: 43200 }

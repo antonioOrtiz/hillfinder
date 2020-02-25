@@ -25,7 +25,9 @@ var UserSchema = new mongoose.Schema(
       index: { unique: true },
       minlength: 8
     },
-    resetPassword: String,
+    roles: [{ type: 'String' }],
+    isVerified: { type: Boolean, default: false },
+    passwordResetToken: String,
     resetPasswordExpires: Date
   },
   {
