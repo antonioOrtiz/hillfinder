@@ -32,7 +32,8 @@ class LoginForm extends Component {
       passwordError: false,
       formSuccess: false,
       formError: false,
-      isLoading: true
+      isLoading: true,
+      userVerifyedEmail: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -59,9 +60,9 @@ class LoginForm extends Component {
 
     if (!username.match(mailFormat) || !username) {
       error = true;
-      this.setState({ usernameError: true });
+      this.setState({ usernameError: true, userVerifyedEmail: false });
     } else {
-      this.setState({ usernameError: false });
+      this.setState({ usernameError: false, userVerifyedEmail: false });
     }
   }
 
@@ -120,11 +121,16 @@ class LoginForm extends Component {
       .catch(
         function(error) {
           console.log(error);
+
           if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-            this.setState({ formError: true, formSuccess: false, isLoading: false });
+            if (error.response.status === 401) {
+              this.setState({
+                userVerifyedEmail: true,
+                isLoading: false
+              });
+            }
+            console.log('error.response.data', error.response.data);
+            console.log('error.response.headers', error.response.headers);
           }
         }.bind(this)
       );
@@ -143,8 +149,9 @@ class LoginForm extends Component {
     } = this.state;
 
     var { isLoggedIn } = this.props;
+    var { userVerifyedEmail } = this.state;
+    console.log('userVerifyedEmail ', userVerifyedEmail);
 
-    console.log('isLoggedIn ', isLoggedIn);
     formSuccess === true ? (isLoggedIn = true) : (isLoggedIn = false);
 
     return (
@@ -199,6 +206,25 @@ class LoginForm extends Component {
                 <br />
                 <Link to="/forgot_password">Forgot password?</Link>
                 <Transition
+                  visible={userVerifyedEmail}
+                  unmountOnHide={true}
+                  animation="scale"
+                  duration={duration}
+                >
+                  {isLoading ? (
+                    <Dimmer active inverted>
+                      <Loader />
+                    </Dimmer>
+                  ) : (
+                    <Message
+                      warning
+                      centered="true"
+                      header="It appears you have not registerd..."
+                      content="Check your email for a confirmation link."
+                    />
+                  )}
+                </Transition>
+                <Transition
                   visible={formError}
                   unmountOnHide={true}
                   animation="scale"
@@ -217,6 +243,7 @@ class LoginForm extends Component {
                     />
                   )}
                 </Transition>
+
                 <Transition
                   visible={formSuccess}
                   unmountOnHide={true}
