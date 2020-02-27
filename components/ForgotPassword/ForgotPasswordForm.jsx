@@ -83,7 +83,7 @@ class ForgotPasswordForm extends Component {
     }
 
     axios
-      .post('http://localhost:8016/users/forgot-password', {
+      .post('http://localhost:8016/users/forgot_password', {
         username: username
       })
       .then(response => {
@@ -101,10 +101,18 @@ class ForgotPasswordForm extends Component {
         function(error) {
           console.log(error);
           if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-            this.setState({ formError: true, formSuccess: false, isLoading: false });
+            if (response.status === 404) {
+              this.setState({
+                formError: true,
+                formSuccess: false,
+                isLoading: false
+              });
+
+              return;
+            }
+
+            console.log('error.response.data', error.response.data);
+            console.log('error.response.headers', error.response.headers);
           }
         }.bind(this)
       );
@@ -134,9 +142,13 @@ class ForgotPasswordForm extends Component {
         </style>
         <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="teal" textAlign="center">
-              Reset your password
+            <Header as="h2" color="green" textAlign="center">
+              Forgot yee password?
             </Header>
+            <Message color="olive">
+              Not a problem. Just enter your email address below. If it's registered with
+              Hillfinder, we'll send you a link to reset your password.{' '}
+            </Message>
 
             <Form size="large" onSubmit={this.handleSubmit} error={formError}>
               <Segment stacked>
@@ -159,8 +171,8 @@ class ForgotPasswordForm extends Component {
                   />
                 </Transition>
 
-                <Button color="teal" fluid size="large" disabled={!username}>
-                  Reset password
+                <Button color="green" fluid size="large" disabled={!username}>
+                  Yes, send a link
                 </Button>
 
                 <Transition
@@ -196,7 +208,7 @@ class ForgotPasswordForm extends Component {
                   ) : (
                     <Message
                       success
-                      header="You will recieve an email shortly to reset password."
+                      header="You will recieve an email shortly to reset your password."
                     />
                   )}
                 </Transition>
