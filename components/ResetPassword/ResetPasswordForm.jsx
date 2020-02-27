@@ -16,7 +16,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { logInUser } from '../../store/reducers/users/index';
-import { Link } from 'react-router-dom';
+import { validate } from 'indicative/validator';
 
 class ResetPassword extends Component {
   constructor(props) {
@@ -25,15 +25,19 @@ class ResetPassword extends Component {
     this.state = {
       fadeUp: 'fade up',
       duration: 500,
-      username: '',
-      usernameError: false,
+      password: '',
+      confirmPassword: '',
+      passwordError: false,
+      confirmPasswordError: false,
       formSuccess: false,
       formError: false,
       isLoading: true
     };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
+    this.validateInputs = this.validateInputs.bind(this);
+
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -41,56 +45,83 @@ class ResetPassword extends Component {
     this.setState({ isLoading: false });
   }
 
-  handleChange(event) {
-    var { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleBlur() {
-    var { username } = this.state;
+  handlePasswordChange(event) {
     var error = false;
-    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if (!username.match(mailFormat) || !username) {
+    if (this.validateInputs(event)) {
       error = true;
-      this.setState({ usernameError: true });
+      this.setState({ passwordError: true });
     } else {
-      this.setState({ usernameError: false });
-    }
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-
-    var error = false;
-    var { username, isLoading } = this.state;
-    var { history } = this.props;
-
-    var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (!username.match(mailFormat)) {
-      this.setState({ usernameError: true });
-      error = true;
-    } else {
-      this.setState({ usernameError: false });
+      this.setState({ passwordError: false });
     }
 
     if (error) {
       this.setState({ formSuccess: false });
       return;
     }
+  }
+
+  handleConfirmPassword(event) {
+    var error = false;
+
+    if (this.validateInputs(event)) {
+      error = true;
+      this.setState({ confirmPasswordError: true });
+    } else {
+      this.setState({ confirmPasswordError: false });
+    }
+
+    if (error) {
+      this.setState({ formSuccess: false });
+      return;
+    }
+  }
+
+  validateInputs(event) {
+    var { password, confirmPassword } = this.state;
+    var { name, value } = event.target;
+
+    var data = {
+      password,
+      confirmPassword
+    };
+
+    var rules = {};
+    rules[name] = 'required|min:4|max:10';
+
+    if (rules['confirmPassword']) {
+      rules.confirmPassword = rules['confirmPassword'].concat(`|name:password`);
+    }
+    var messages = {
+      'password.min': 'Password is too short.',
+      'password.max': 'Password is too long.',
+      'confirmPassword.min': 'Password is too short.',
+      'confirmPassword.max': 'Password is too long.'
+    };
+
+    validate(data, rules, messages)
+      .then(feedback => console.log(feedback))
+      .catch(errors => console.log('foo', errors));
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    var { password } = this.state;
 
     axios
       .post('http://localhost:8016/users/reset_password', {
-        username: username
+        password: password
       })
       .then(response => {
         console.log('response', response);
         if (response.status === 200) {
           this.setState({
-            username: '',
+            password: '',
             formError: false,
             formSuccess: true,
             isLoading: false
@@ -120,8 +151,10 @@ class ResetPassword extends Component {
 
   render() {
     var {
-      username,
-      usernameError,
+      password,
+      confirmPassword,
+      passwordError,
+      confirmPasswordError,
       formSuccess,
       formError,
       duration,
@@ -143,11 +176,11 @@ class ResetPassword extends Component {
         <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
             <Header as="h2" color="green" textAlign="center">
-              Forgot yee password?
+              Update your password
             </Header>
             <Message color="olive">
-              Not a problem. Just enter your email address below. If it's registered with
-              Hillfinder, we'll send you a link to reset your password.{' '}
+              Create a new password for your account and sign in. For your security,
+              choose a password you haven't used before
             </Message>
 
             <Form size="large" onSubmit={this.handleSubmit} error={formError}>
@@ -156,44 +189,38 @@ class ResetPassword extends Component {
                   fluid
                   icon="user"
                   iconPosition="left"
-                  placeholder="E-mail address, e.g. joe@schmoe.com"
-                  name="username"
-                  value={username}
-                  onBlur={this.handleBlur}
-                  onChange={this.handleChange}
-                  error={usernameError}
+                  placeholder="New password, 6 - 16 characters"
+                  name="password"
+                  value={password}
+                  onChange={this.handlePasswordChange}
+                  error={passwordError}
                 />
-
-                <Transition visible={usernameError} animation="scale" duration={duration}>
-                  <Message
-                    error
-                    content="username_Email is in incorrect format e.g. joe@schmoe.com"
-                  />
+                <Transition visible={passwordError} animation="scale" duration={duration}>
+                  <Message error content="Passwords must be greater than 3 characters" />
                 </Transition>
 
-                <Button color="green" fluid size="large" disabled={!username}>
-                  Reset password
-                </Button>
+                <Form.Input
+                  fluid
+                  icon="user"
+                  iconPosition="left"
+                  placeholder="Confirm new password"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={this.handleConfirmPassword}
+                  error={confirmPasswordError}
+                />
 
                 <Transition
-                  visible={formError}
-                  unmountOnHide={true}
+                  visible={confirmPasswordError}
                   animation="scale"
                   duration={duration}
                 >
-                  {isLoading ? (
-                    <Dimmer active inverted>
-                      <Loader />
-                    </Dimmer>
-                  ) : (
-                    <Message
-                      error
-                      centered="true"
-                      header="This email does not exist..."
-                      content="Please re-enter another email address, or click the link below to register."
-                    />
-                  )}
+                  <Message error content="Passwords must match!" />
                 </Transition>
+
+                <Button color="green" fluid size="large" disabled={!password}>
+                  Update password
+                </Button>
 
                 <Transition
                   visible={formSuccess}
@@ -208,20 +235,12 @@ class ResetPassword extends Component {
                   ) : (
                     <Message
                       success
-                      header="You will recieve an email shortly to reset password."
+                      header="You have successfully changed your password; You will recieve a confirmation email shortly"
                     />
                   )}
                 </Transition>
               </Segment>
             </Form>
-
-            {formError ? (
-              <Transition visible={formError} animation="scale" duration={1000}>
-                <Message>
-                  <Link to="/register">Register</Link>{' '}
-                </Message>
-              </Transition>
-            ) : null}
           </Grid.Column>{' '}
         </Grid>{' '}
       </div>
