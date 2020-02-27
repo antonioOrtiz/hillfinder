@@ -10,6 +10,7 @@ import Index from './home';
 import Profile from './profile';
 import Dashboard from './dashboard';
 import ForgotPassword from './forgotPassword';
+import ResetPassword from './resetPassword';
 import Login from './login';
 
 import Register from './register';
@@ -90,6 +91,8 @@ class App extends Component {
             path="/forgot_password"
             render={props => <ForgotPassword {...props} />}
           />
+
+          <Route path="/reset_password" render={props => <ResetPassword {...props} />} />
 
           <Route path="/register" render={props => <Register {...props} />} />
 
