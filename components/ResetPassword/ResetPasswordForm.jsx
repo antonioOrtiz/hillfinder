@@ -90,7 +90,7 @@ class ResetPassword extends Component {
     rules[name] = 'required|min:4|max:10';
 
     if (rules['confirmPassword']) {
-      rules.confirmPassword = rules['confirmPassword'].concat(`|name:password`);
+      rules.confirmPassword = rules['confirmPassword'].concat(`|same:password`);
     }
     var messages = {
       'password.min': 'Password is too short.',
