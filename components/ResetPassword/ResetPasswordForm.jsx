@@ -31,13 +31,14 @@ class ResetPassword extends Component {
       confirmPasswordError: false,
       formSuccess: false,
       formError: false,
-      isLoading: true
+      isLoading: true,
+      disableButton: true
     };
 
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
+    // this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    // this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
     this.validateInputs = this.validateInputs.bind(this);
-
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -45,40 +46,15 @@ class ResetPassword extends Component {
     this.setState({ isLoading: false });
   }
 
-  handlePasswordChange(event) {
-    var error = false;
-
-    if (this.validateInputs(event)) {
-      error = true;
-      this.setState({ passwordError: true });
-    } else {
-      this.setState({ passwordError: false });
-    }
-
-    if (error) {
-      this.setState({ formSuccess: false });
-      return;
-    }
-  }
-
-  handleConfirmPassword(event) {
-    var error = false;
-
-    if (this.validateInputs(event)) {
-      error = true;
-      this.setState({ confirmPasswordError: true });
-    } else {
-      this.setState({ confirmPasswordError: false });
-    }
-
-    if (error) {
-      this.setState({ formSuccess: false });
-      return;
-    }
+  handleChange(event) {
+    var { name, value } = event.target;
+    this.setState({
+      [name]: value
+    });
   }
 
   validateInputs(event) {
-    var { password, confirmPassword } = this.state;
+    var { password, passwordError, confirmPassword, confirmPasswordError } = this.state;
     var { name, value } = event.target;
 
     var data = {
@@ -87,32 +63,80 @@ class ResetPassword extends Component {
     };
 
     var rules = {};
-    rules[name] = 'required|min:4|max:10';
+    rules[name] = 'required|min:4|max:11|same:password';
 
-    if (rules['confirmPassword']) {
-      rules.confirmPassword = rules['confirmPassword'].concat(`|same:password`);
-    }
     var messages = {
-      'password.min': 'Password is too short.',
-      'password.max': 'Password is too long.',
-      'confirmPassword.min': 'Password is too short.',
-      'confirmPassword.max': 'Password is too long.'
+      required: 'Make sure to enter the field value',
+      min: 'Password is too short.',
+      max: 'Password is too long.',
+      same: 'Password must be the same.'
     };
 
     validate(data, rules, messages)
-      .then(feedback => console.log(feedback))
-      .catch(errors => console.log('foo', errors));
+      .then(success => {
+        console.log('success ', success);
+        this.setState({
+          passwordError: false,
+          passwordFeedback: '',
+          confirmPasswordError: false,
+          confirmPasswordFeedback: '',
+          formError: false,
+          formSuccess: true
+        });
+        if (success.password === success.confirmPassword) {
+          this.setState({ disableButton: false });
+        } else {
+          this.setState({ disableButton: true });
+        }
+      })
+      .catch(errors => {
+        console.log('errors ', errors);
+        if (
+          (errors[0].validation === 'min' ||
+            errors[0].validation === 'max' ||
+            errors[0].validation === 'required' ||
+            errors[0].validation === 'same') &&
+          errors[0].field == 'password'
+        ) {
+          this.setState({
+            passwordError: true,
+            passwordFeedback: errors[0].message,
+            formError: true,
+            formSuccess: false,
+            disableButton: true
+          });
+        }
+        if (
+          (errors[0].validation === 'min' ||
+            errors[0].validation === 'max' ||
+            errors[0].validation === 'required' ||
+            errors[0].validation === 'same') &&
+          errors[0].field == 'confirmPassword'
+        ) {
+          this.setState({
+            confirmPasswordError: true,
+            confirmPasswordFeedback: errors[0].message,
+            formSuccess: false,
+            formError: true,
+            disableButton: true
+          });
+        }
+      });
 
     this.setState({
       [name]: value
     });
+
+    console.log('passwordError ', passwordError);
+
+    console.log('confirmPasswordError ', confirmPasswordError);
   }
 
   handleSubmit(event) {
     event.preventDefault();
 
     var { password } = this.state;
-
+    console.log('submitted');
     axios
       .post('http://localhost:8016/users/reset_password', {
         password: password
@@ -154,17 +178,17 @@ class ResetPassword extends Component {
       password,
       confirmPassword,
       passwordError,
+      passwordFeedback,
       confirmPasswordError,
+      confirmPasswordFeedback,
       formSuccess,
       formError,
       duration,
+      disableButton,
       isLoading
     } = this.state;
 
     var { isLoggedIn } = this.props;
-
-    console.log('isLoggedIn ', isLoggedIn);
-    formSuccess === true ? (isLoggedIn = true) : (isLoggedIn = false);
 
     return (
       <div className="login-form">
@@ -192,11 +216,12 @@ class ResetPassword extends Component {
                   placeholder="New password, 6 - 16 characters"
                   name="password"
                   value={password}
-                  onChange={this.handlePasswordChange}
+                  onChange={this.handleChange}
+                  onBlur={this.validateInputs}
                   error={passwordError}
                 />
                 <Transition visible={passwordError} animation="scale" duration={duration}>
-                  <Message error content="Passwords must be greater than 3 characters" />
+                  <Message error content={passwordFeedback} />
                 </Transition>
 
                 <Form.Input
@@ -206,7 +231,8 @@ class ResetPassword extends Component {
                   placeholder="Confirm new password"
                   name="confirmPassword"
                   value={confirmPassword}
-                  onChange={this.handleConfirmPassword}
+                  onChange={this.handleChange}
+                  onBlur={this.validateInputs}
                   error={confirmPasswordError}
                 />
 
@@ -215,15 +241,15 @@ class ResetPassword extends Component {
                   animation="scale"
                   duration={duration}
                 >
-                  <Message error content="Passwords must match!" />
+                  <Message error content={confirmPasswordFeedback} />
                 </Transition>
 
-                <Button color="green" fluid size="large" disabled={!password}>
+                <Button color="green" fluid size="large" disabled={disableButton}>
                   Update password
                 </Button>
 
                 <Transition
-                  visible={formSuccess}
+                  visible={formSuccess && formError}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}

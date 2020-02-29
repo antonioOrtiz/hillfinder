@@ -48,13 +48,17 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
 
 router.route('/login').post((req, res, next) => {
   passport.authenticate('local', (err, user) => {
-    console.log('user ', user);
+    if (!user) {
+      res.status(404).send({ msg: 'We were unable to find this user.' });
+      return;
+    }
 
     if (user.isVerified === false) {
-      res.status(401).send({ msg: req.error });
+      res.status(401).send({ msg: 'Your username has not been verified!' });
       return;
     } else {
       res.status(200).send({ msg: 'Your username/email has been verified!' });
+      return;
     }
   })(req, res, next);
 });
