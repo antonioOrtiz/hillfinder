@@ -12,12 +12,12 @@ import {
 } from 'semantic-ui-react';
 // import Link from 'next/link';
 import axios from 'axios';
-import { login } from 'next-authentication';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { logInUser } from '../../store/reducers/users/index';
 import { Link } from 'react-router-dom';
+import { validate } from 'indicative/validator';
 
 class LoginForm extends Component {
   constructor(props) {
@@ -26,6 +26,7 @@ class LoginForm extends Component {
     this.state = {
       fadeUp: 'fade up',
       duration: 500,
+
       username: '',
       password: '',
       usernameError: false,
@@ -33,7 +34,8 @@ class LoginForm extends Component {
       formSuccess: false,
       formError: false,
       isLoading: true,
-      userVerifyedEmail: false
+      userDidNotVerifyEmail: false,
+      responseMessage: {}
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -60,7 +62,7 @@ class LoginForm extends Component {
 
     if (!username.match(mailFormat) || !username) {
       error = true;
-      this.setState({ usernameError: true, userVerifyedEmail: false });
+      this.setState({ usernameError: true, userDidNotVerifyEmail: false });
     } else {
       this.setState({ usernameError: false, userVerifyedEmail: false });
     }
@@ -120,12 +122,18 @@ class LoginForm extends Component {
       })
       .catch(
         function(error) {
-          console.log(error);
-
           if (error.response) {
             if (error.response.status === 401) {
               this.setState({
-                userVerifyedEmail: true,
+                userDidNotVerifyEmail: true,
+                responseMessage: error.response.data.msg,
+                isLoading: false
+              });
+            }
+            if (error.response.status === 404) {
+              this.setState({
+                formError: true,
+                responseMessage: error.response.data.msg,
                 isLoading: false
               });
             }
@@ -145,12 +153,13 @@ class LoginForm extends Component {
       formSuccess,
       formError,
       duration,
-      isLoading
+      isLoggedIn,
+      isLoading,
+      responseMessage,
+      userDidNotVerifyEmail
     } = this.state;
 
-    var { isLoggedIn } = this.props;
-    var { userVerifyedEmail } = this.state;
-    console.log('userVerifyedEmail ', userVerifyedEmail);
+    console.log('userDidNotVerifyEmail ', userDidNotVerifyEmail);
 
     formSuccess === true ? (isLoggedIn = true) : (isLoggedIn = false);
 
@@ -163,7 +172,7 @@ class LoginForm extends Component {
         </style>
         <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="teal" textAlign="center">
+            <Header as="h2" color="green" textAlign="center">
               Log-in to your account
             </Header>
 
@@ -200,13 +209,19 @@ class LoginForm extends Component {
                 <Transition visible={passwordError} animation="scale" duration={duration}>
                   <Message error content="Password is incorrect, please try again." />
                 </Transition>
-                <Button color="teal" fluid size="large" disabled={!username || !password}>
+                <Button
+                  color="green"
+                  fluid
+                  size="large"
+                  disabled={!username || !password}
+                >
                   Log-in
                 </Button>
                 <br />
                 <Link to="/forgot_password">Forgot password?</Link>
+
                 <Transition
-                  visible={userVerifyedEmail}
+                  visible={userDidNotVerifyEmail}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -219,11 +234,12 @@ class LoginForm extends Component {
                     <Message
                       warning
                       centered="true"
-                      header="It appears you have not registerd..."
-                      content="Check your email for a confirmation link."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
+
                 <Transition
                   visible={formError}
                   unmountOnHide={true}
@@ -238,8 +254,8 @@ class LoginForm extends Component {
                     <Message
                       error
                       centered="true"
-                      header="This email does not exist..."
-                      content="Please re-enter another email address, or  click the link below to register."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
