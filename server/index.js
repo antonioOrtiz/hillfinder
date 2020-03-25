@@ -1,188 +1,184 @@
 const express = require('express');
 
-require('dotenv').config()
+require('dotenv').config();
 
 const nextJS = require('next');
-var cookieParser = require('cookie-parser')
-var session = require('express-session')
-var MongoStore = require('connect-mongo')(session)
-var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+var bodyParser = require('body-parser');
 var auth = require('./lib/auth');
-var cors = require('cors')
-var morgan = require('morgan')
-var HttpStatus = require('http-status-codes')
-var PORT = process.env.PORT || 8016
+var cors = require('cors');
+var morgan = require('morgan');
+var HttpStatus = require('http-status-codes');
+var PORT = process.env.PORT || 8016;
 
 const { isBlockedPage, isInternalUrl } = require('next-server/dist/server/utils');
 
 function NODE_ENVSetter(ENV) {
-    var environment,
-        environments = {
-            'production': () => {
-                environment = process.env.PRODUCTION_DB_DSN;
-                console.log(`We are currently in the production environment: ${environment}`);
-                return environment;
-            },
-            'test': () => {
-                environment = process.env.TEST_DB_DSN;
-                console.log(`We are currently in the test environment: ${environment}`);
-                return environment;
-            },
-            'default': () => {
-                environment = process.env.DEVELOPMENT_DB_DSN;
-                console.log(`We are currently in the development environment: ${environment}`);
-                return environment;
-            },
-        };
-    (environments[ENV] || environments['default'])();
+  var environment,
+    environments = {
+      production: () => {
+        environment = process.env.PRODUCTION_DB_DSN;
+        console.log(`We are currently in the production environment: ${environment}`);
+        return environment;
+      },
+      test: () => {
+        environment = process.env.TEST_DB_DSN;
+        console.log(`We are currently in the test environment: ${environment}`);
+        return environment;
+      },
+      default: () => {
+        environment = process.env.DEVELOPMENT_DB_DSN;
+        console.log(`We are currently in the development environment: ${environment}`);
+        return environment;
+      }
+    };
+  (environments[ENV] || environments['default'])();
 
-    return environment
+  return environment;
 }
 
-var db = NODE_ENVSetter('development')
-var mongoose = require('mongoose')
+var db = NODE_ENVSetter('development');
+var mongoose = require('mongoose');
 
 function errorHandler(err, req, res, next) {
-    // Set locals, only providing error in development
-    res.locals.message = err.message
-    res.locals.error = req.app.get('env') === 'development' ? err : {}
+  // Set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // Log error
-    console.error(err.stack)
+  // Log error
+  console.error(err.stack);
 
-    // Render the error page
-    res.status(err.status || 500)
+  // Render the error page
+  res.status(err.status || 500);
 
-    // Default error message by HTTP code
-    res.render('error', {
-        title: HttpStatus.getStatusText(err.status),
-        message: HttpStatus.getStatusText(err.status)
-    })
+  // Default error message by HTTP code
+  res.render('error', {
+    title: HttpStatus.getStatusText(err.status),
+    message: HttpStatus.getStatusText(err.status)
+  });
 }
 
 async function start() {
-    const dev = process.env.NODE_ENV !== 'production';
-    const app = nextJS({ dev });
-    const server = express();
-    await app.prepare()
-        .then(() => {
-            mongoose.connect(db, { useNewUrlParser: true })
-            mongoose.Promise = global.Promise
+  const dev = process.env.NODE_ENV !== 'production';
+  const app = nextJS({ dev });
+  const server = express();
+  await app
+    .prepare()
+    .then(() => {
+      mongoose.connect(db, { useNewUrlParser: true });
+      mongoose.Promise = global.Promise;
 
-            mongoose.connection
-                .on('connected', () => {
-                    console.log(`Mongoose connection open on ${db}`)
-                })
-                .on('error', err => {
-                    console.log(`Connection error: ${err.message}`)
-                });
+      mongoose.connection
+        .on('connected', () => {
+          console.log(`Mongoose connection open on ${db}`);
         })
-        .catch(err => {
-            console.error(err)
-        })
-
-    // server.use((req, res, next) => {
-    //     res.setHeader('Access-Control-Allow-Origin', '*');
-    //     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    //     res.header('Access-Control-Allow-Credentials', true);
-    //     res.header('Access-Control-Allow-Methods', '*'); // enables all the methods to take place
-    //     return next();
-    // });
-
-    server.use('/uploads', express.static(__dirname + '/uploads'))
-    server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }))
-    server.use(bodyParser.json({ limit: '50mb' }));
-    server.use(morgan('dev'))
-
-    server.use(cookieParser())
-
-    server.use(session({
-        secret: 'very secret 12345',
-        resave: false,
-        saveUninitialized: false,
-        store: new MongoStore({ mongooseConnection: mongoose.connection })
-    }));
-
-    server.use(auth.initialize);
-    server.use(auth.session);
-    server.use(auth.setUser);
-    console.log("auth.setUser ", auth.setUser);
-
-
-    server.use(cors())
-    server.use('/users', require('./users'))
-    server.use('/images', require('./images'))
-
-    // Redirect all requests to main entrypoint pages/index.js
-    server.get('/*', async(req, res, next) => {
-        try {
-            // @NOTE code duplication from here
-            // https://github.com/zeit/next.js/blob/cc6fe5fdf92c9c618a739128fbd5192a6d397afa/packages/next-server/server/next-server.ts#L405
-            const pathName = req.originalUrl;
-            if (isInternalUrl(req.url)) {
-                return app.handleRequest(req, res, req.originalUrl)
-            }
-
-            if (isBlockedPage(pathName)) {
-                return app.render404(req, res, req.originalUrl)
-            }
-
-            // Provide react-router static router with a context object
-            // https://reacttraining.com/react-router/web/guides/server-rendering
-            req.locals = {};
-            req.locals.context = {};
-            const html = await app.renderToHTML(req, res, '/', {});
-
-            // Handle client redirects
-            const context = req.locals.context;
-            if (context.url) {
-                return res.redirect(context.url)
-            }
-
-            // Handle client response statuses
-            if (context.status) {
-                return res.status(context.status).send();
-            }
-
-            // Request was ended by the user
-            if (html === null) {
-                return;
-            }
-
-            app.sendHTML(req, res, html);
-        } catch (e) {
-            next(e);
-        }
+        .on('error', err => {
+          console.log(`Connection error: ${err.message}`);
+        });
+    })
+    .catch(err => {
+      console.error(err);
     });
 
-    // server.use(function(req, res, next) {
-    //     res.status(404).send('404 - Not Found!');
-    // });
+  server.set('view engine', 'html');
 
-    // // eslint-disable-next-line func-names
-    // server.use(errorHandler, function(error, req, res, next) {
-    //     res.json({ message: error.message })
-    // })
-    // catch 404 and forward to error handler
-    server.use(function(req, res, next) {
-        next(createError(404));
-    });
+  server.use('/uploads', express.static(__dirname + '/uploads'));
+  server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+  server.use(bodyParser.json({ limit: '50mb' }));
+  server.use(morgan('dev'));
 
-    // error handler
-    server.use(function(err, req, res, next) {
-        // set locals, only providing error in development
-        res.locals.message = err.message;
-        res.locals.error = req.app.get('env') === 'development' ? err : {};
+  server.use(cookieParser());
 
-        // render the error page
-        res.status(err.status || 500);
-        res.render('error');
-    });
+  server.use(
+    session({
+      secret: 'very secret 12345',
+      resave: false,
+      saveUninitialized: false,
+      store: new MongoStore({ mongooseConnection: mongoose.connection })
+    })
+  );
 
-    server.listen(PORT, err => {
-        if (err) throw err;
-        console.log(`> Ready and listening on http://localhost:${PORT}`)
-    });
+  server.use(auth.initialize);
+  server.use(auth.session);
+  server.use(auth.setUser);
+  console.log('auth.setUser ', auth.setUser);
+
+  server.use(cors());
+  server.use('/users', require('./users'));
+  server.use('/images', require('./images'));
+
+  // Redirect all requests to main entrypoint pages/index.js
+  server.get('/*', async (req, res, next) => {
+    try {
+      // @NOTE code duplication from here
+      // https://github.com/zeit/next.js/blob/cc6fe5fdf92c9c618a739128fbd5192a6d397afa/packages/next-server/server/next-server.ts#L405
+      const pathName = req.originalUrl;
+      if (isInternalUrl(req.url)) {
+        return app.handleRequest(req, res, req.originalUrl);
+      }
+
+      if (isBlockedPage(pathName)) {
+        return app.render404(req, res, req.originalUrl);
+      }
+
+      // Provide react-router static router with a context object
+      // https://reacttraining.com/react-router/web/guides/server-rendering
+      req.locals = {};
+      req.locals.context = {};
+      const html = await app.renderToHTML(req, res, '/', {});
+
+      // Handle client redirects
+      const context = req.locals.context;
+      if (context.url) {
+        return res.redirect(context.url);
+      }
+
+      // Handle client response statuses
+      if (context.status) {
+        return res.status(context.status).send();
+      }
+
+      // Request was ended by the user
+      if (html === null) {
+        return;
+      }
+
+      app.sendHTML(req, res, html);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // server.use(function(req, res, next) {
+  //     res.status(404).send('404 - Not Found!');
+  // });
+
+  // // eslint-disable-next-line func-names
+  // server.use(errorHandler, function(error, req, res, next) {
+  //     res.json({ message: error.message })
+  // })
+  // catch 404 and forward to error handler
+  server.use(function(req, res, next) {
+    next(createError(404));
+  });
+
+  // error handler
+  server.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // render the error page
+    res.status(res.locals.message);
+    res.json('error');
+  });
+
+  server.listen(PORT, err => {
+    if (err) throw err;
+    console.log(`> Ready and listening on http://localhost:${PORT}`);
+  });
 }
 
 start();
