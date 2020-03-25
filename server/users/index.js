@@ -2,6 +2,10 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = require('../models/UserModel');
 var Token = require('../models/TokenSchema');
+import { hasBeenVerified } from '../../store/reducers/users/index';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 var crypto = require('crypto');
 require('dotenv').config();
@@ -34,7 +38,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
       from: '17antonio.ortiz@gmail.com',
       to: `${user.username}`,
       subject: subjectField,
-      text: textField
+      text: `${textField}/${token.token}`
     };
 
     transporter.sendMail(mailOptions, function(err) {
@@ -49,12 +53,22 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
 router.route('/login').post((req, res, next) => {
   passport.authenticate('local', (err, user) => {
     if (!user) {
-      res.status(404).send({ msg: 'We were unable to find this user.' });
+      res.status(404).send({
+        msg: [
+          'We were unable to find this user.',
+          'Please re-enter another email address, or click the link below to register.'
+        ]
+      });
       return;
     }
 
     if (user.isVerified === false) {
-      res.status(401).send({ msg: 'Your username has not been verified!' });
+      res.status(401).send({
+        msg: [
+          'Your username has not been verified!',
+          'Check your email for a confirmation link.'
+        ]
+      });
       return;
     } else {
       res.status(200).send({ msg: 'Your username/email has been verified!' });
@@ -70,8 +84,10 @@ router.route('/registration').post((req, res, next) => {
       console.log('user ', user);
       if (user)
         return res.status(409).send({
-          msg:
-            'The email address you have entered is already associated with another account.'
+          msg: [
+            'The email address you have entered is already associated with another account.',
+            'Please re-enter another email address.'
+          ]
         });
 
       // Create and save the user
@@ -86,11 +102,19 @@ router.route('/registration').post((req, res, next) => {
         }
         nodeMailerFunc(
           user,
-          `Account Verification Token`,
-          `Hello, Please verify your account by clicking the link:
-          http://${req.headers.host}/users/confirmation/${token.token}`,
+          `Account Verification`,
+          `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+            req.headers.host
+          }/confirmed`,
           'verification email'
         );
+      });
+
+      return res.status(200).send({
+        msg: [
+          'Your user registration was successful.',
+          'Please check your email to complete your registration!'
+        ]
       });
     } catch (err) {
       return next(err);
@@ -99,35 +123,34 @@ router.route('/registration').post((req, res, next) => {
 });
 
 router.route('/confirmation/:token').get((req, res, next) => {
+  var usersToken = req.params.token;
   try {
-    Token.findOne({ token: req.params.token }, function(err, token) {
-      if (err)
+    Token.findOne({ token: usersToken }, function(err, token) {
+      if (token === null)
         return res.status(404).send({
-          type: 'not-verified',
-          msg: 'We were unable to find a valid token. Your token my have expired.'
+          msg: ['We were unable to find a valid token. Your token my have expired.']
         });
       // If we found a token, find a matching user
       User.findOne({ _id: token._userId, email: req.body.username }, function(err, user) {
-        if (err)
+        if (!user)
           return res
             .status(404)
-            .send({ msg: 'We were unable to find a user for this token.' });
+            .send({ msg: ['We were unable to find a user for this token.'] });
         if (user.isVerified)
           return res.status(400).send({
-            type: 'already-verified',
-            msg: 'This user has already been verified.'
+            msg: ['This user has already been verified.']
           });
 
         // Verify and save the user
         user.isVerified = true;
         user.save(function(err) {
           if (err) {
-            return res.status(500).send({ msg: err.message });
+            return res.status(500).send({ msg: [err.message] });
           }
-          return res
-            .status(200)
-            .send({ msg: 'The account has been verified. Please log in.' });
         });
+        return res
+          .status(200)
+          .send({ msg: ['The account has been verified. Please log in.'] });
       });
     });
   } catch (err) {
@@ -197,4 +220,7 @@ router.route('/reset_password/:token').get((req, res, next) => {
   }
 });
 
+const mapDispatchToProps = dispatch => bindActionCreators({ hasBeenVerified }, dispatch);
+
+connect(mapDispatchToProps);
 module.exports = router;
