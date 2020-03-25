@@ -11,21 +11,21 @@ import withReactRouter from '../with-react-router/with-react-router'
 
 
 class MyApp extends App {
-    static async getInitialProps({ Component, ctx }) {
-        const pageProps = Component.getInitialProps ?
-            await Component.getInitialProps(ctx) : {};
-        return { pageProps };
-    }
-    render() {
-        const { Component, pageProps, store } = this.props;
-        return (
-         <Provider store = { store } >
-          <PersistGate persistor={store.__PERSISTOR} loading={null}>
-           <Component {...pageProps }/>
-          </PersistGate>
-         </Provider>
-        );
-    }
+  static async getInitialProps({ Component, ctx }) {
+    const pageProps = Component.getInitialProps ?
+      await Component.getInitialProps(ctx) : {};
+    return { pageProps };
+  }
+  render() {
+    const { Component, pageProps, store } = this.props;
+    return (
+      <Provider store={store} >
+        <PersistGate persistor={store.__PERSISTOR} loading={null}>
+          <Component {...pageProps} />
+        </PersistGate>
+      </Provider>
+    );
+  }
 }
 
 export default withRedux(reduxStore)(withReactRouter(MyApp));
