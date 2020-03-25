@@ -2,10 +2,6 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = require('../models/UserModel');
 var Token = require('../models/TokenSchema');
-import { hasBeenVerified } from '../../store/reducers/users/index';
-
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 var crypto = require('crypto');
 require('dotenv').config();
@@ -220,7 +216,4 @@ router.route('/reset_password/:token').get((req, res, next) => {
   }
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ hasBeenVerified }, dispatch);
-
-connect(mapDispatchToProps);
 module.exports = router;
