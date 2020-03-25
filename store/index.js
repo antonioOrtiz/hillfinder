@@ -1,8 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 
-/* imported initialStates */
-// import { usersStartState } from './reducers/users/index'
-// import { uiStartState } from './reducers/ui/index'
+
 
 /* imported reducers */
 import ui from './reducers/ui/index'
@@ -17,42 +15,42 @@ import thunkMiddleware from 'redux-thunk'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
 var rootReducer = combineReducers({
-    users: users,
-    ui: ui
+  users: users,
+  ui: ui
 })
 
 // var startState = Object.assign({}, uiStartState, usersStartState)
 
 export default () => {
-    let store;
-    const isClient = typeof window !== 'undefined';
-    if (isClient) {
-        const { persistReducer } = require('redux-persist');
-        const storage = require('redux-persist/lib/storage').default;
-        const persistConfig = {
-            key: 'root',
-            storage,
-            stateReconciler: autoMergeLevel2,
+  let store;
+  const isClient = typeof window !== 'undefined';
+  if (isClient) {
+    const { persistReducer } = require('redux-persist');
+    const storage = require('redux-persist/lib/storage').default;
+    const persistConfig = {
+      key: 'root',
+      storage,
+      stateReconciler: autoMergeLevel2,
 
-            whitelist: ['users', 'ui'], // place to select which state you want to persist
+      whitelist: ['users', 'ui'], // place to select which state you want to persist
 
-        }
-        store = createStore(
-            persistReducer(persistConfig, rootReducer),
-            composeWithDevTools(applyMiddleware(
-                thunkMiddleware,
-                createLogger({ collapsed: false })
-            ))
-        );
-        store.__PERSISTOR = persistStore(store);
-    } else {
-        store = createStore(
-            rootReducer,
-            composeWithDevTools(applyMiddleware(
-                thunkMiddleware,
-                createLogger({ collapsed: false })
-            ))
-        );
     }
-    return store;
+    store = createStore(
+      persistReducer(persistConfig, rootReducer),
+      composeWithDevTools(applyMiddleware(
+        thunkMiddleware,
+        createLogger({ collapsed: false })
+      ))
+    );
+    store.__PERSISTOR = persistStore(store);
+  } else {
+    store = createStore(
+      rootReducer,
+      composeWithDevTools(applyMiddleware(
+        thunkMiddleware,
+        createLogger({ collapsed: false })
+      ))
+    );
+  }
+  return store;
 };
