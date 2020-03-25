@@ -12,14 +12,22 @@ import Dashboard from './dashboard';
 import ForgotPassword from './forgotPassword';
 import ResetPassword from './resetPassword';
 import Login from './login';
+import Confirmation from './confirmation';
+import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 
 import Register from './register';
 
 class App extends Component {
-  static getInitialProps({ store, isLoggedIn, logInUser, logOutUser }) {
+  static getInitialProps({
+    store,
+    isAccountVerified,
+    isLoggedIn,
+    logInUser,
+    logOutUser
+  }) {
     console.log('store', store);
 
-    return { store, isLoggedIn, logInUser, logOutUser };
+    return { store, isAccountVerified, isLoggedIn, logInUser, logOutUser };
   }
 
   constructor(props) {
@@ -27,7 +35,8 @@ class App extends Component {
   }
 
   render() {
-    const { isLoggedIn } = this.props;
+    const { isLoggedIn, isAccountVerified } = this.props;
+    console.log('isAccountVerified ', isAccountVerified);
 
     console.log('this.props ', this.props);
 
@@ -43,9 +52,9 @@ class App extends Component {
       return (
         <Route
           {...rest}
-          render={({ location, props }) =>
-            isLoggedIn ? (
-              children
+          render={({ location }) =>
+            isLoggedIn || isAccountVerified ? (
+              { ...children }
             ) : (
               <Redirect
                 to={{
@@ -94,14 +103,21 @@ class App extends Component {
 
           <Route path="/reset_password" render={props => <ResetPassword {...props} />} />
 
+          <PrivateRoute
+            path="/confirmed/:token"
+            isAccountVerified={isAccountVerified}
+            component={Confirmation}
+          />
+
           <Route path="/register" render={props => <Register {...props} />} />
 
           <Route
             component={({ location }) => (
-              <p>
-                Sorry but the page <h1>{location.pathname.substring(1)} </h1> Page, Could
-                Not be found
-              </p>
+              <h1>
+                Sorry but the page{' '}
+                <p style={{ fontWeight: 'strong' }}>{location.pathname.substring(1)} </p>{' '}
+                Page, Could Not be found
+              </h1>
             )}
           />
         </Switch>
@@ -111,12 +127,13 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-  const { users } = state;
-  const { isLoggedIn, userAvatar } = users;
-  return { isLoggedIn, userAvatar };
+  const { ui, users } = state;
+  const { isLoggedIn, userAvatar, isAccountVerified } = users;
+  const { modalActive } = ui;
+  return { isLoggedIn, isAccountVerified, userAvatar, modalActive };
 }
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ logInUser, logOutUser }, dispatch);
+  bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);
 
 export default withRouter(
   connect(
