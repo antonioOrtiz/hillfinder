@@ -10,6 +10,8 @@ import {
   Message,
   Segment
 } from 'semantic-ui-react';
+import axios from 'axios';
+
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -27,6 +29,7 @@ class RegisterForm extends Component {
       formSuccess: false,
       formError: false,
       userNameDup: false,
+      responseMessage: {},
       isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
@@ -64,7 +67,7 @@ class RegisterForm extends Component {
 
     var error = false;
 
-    var { username, password } = this.state;
+    var { username, password, formError, userNameDup } = this.state;
 
     var { history } = this.props;
 
@@ -79,7 +82,6 @@ class RegisterForm extends Component {
 
     if (password.length < 8) {
       this.setState({ passwordError: true });
-      error = true;
     } else {
       this.setState({ passwordError: false });
     }
@@ -89,14 +91,14 @@ class RegisterForm extends Component {
       return;
     }
 
-    return window
-      .fetch('http://localhost:8016/users/registration', {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password })
+    axios
+      .post('http://localhost:8016/users/registration', {
+        username: username,
+        password: password
       })
       .then(response => {
-        if (response.ok) {
+        console.log('response', response);
+        if (response.status === 200) {
           setTimeout(() => {
             history.push('/login');
           }, 5000);
@@ -104,29 +106,34 @@ class RegisterForm extends Component {
           this.setState({
             username: '',
             password: '',
+            responseMessage: response.data.msg,
             userNameDup: false,
             formError: false,
             formSuccess: true,
             isLoading: false
           });
-
-          return response.json();
-        } else if (!response.ok) {
-          if (response.status === 409) {
+        }
+      })
+      .catch(
+        function(error) {
+          if (error.response.status === 409) {
             this.setState({
               userNameDup: true,
+              responseMessage: error.response.data.msg,
               formError: true,
               formSuccess: false,
               isLoading: false
             });
+            console.log('userNameDup in error ', userNameDup);
+            console.log('formError in error', formError);
+            console.log('Error in registration', error);
+
+            // console.log('error.response.data', error.response.data);
+            // console.log('error.response.headers', error.response.headers);
             return;
           }
-        }
-        return response;
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+        }.bind(this)
+      );
   }
 
   render() {
@@ -138,11 +145,15 @@ class RegisterForm extends Component {
       formSuccess,
       formError,
       userNameDup,
+      responseMessage,
+
       duration,
       isLoading
     } = this.state;
 
     console.log('RegisterForm this.props ', this.props);
+    console.log('userNameDup ', userNameDup);
+    console.log('formError ', formError);
 
     return (
       <div className="login-form">
@@ -153,7 +164,7 @@ class RegisterForm extends Component {
         </style>
         <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="teal" textAlign="center">
+            <Header as="h2" color="green" textAlign="center">
               Register for an account
               {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
             </Header>
@@ -205,7 +216,12 @@ class RegisterForm extends Component {
                   />
                 </Transition>
 
-                <Button color="teal" fluid size="large" disabled={!username || !password}>
+                <Button
+                  color="green"
+                  fluid
+                  size="large"
+                  disabled={!username || !password}
+                >
                   Register
                 </Button>
 
@@ -223,8 +239,8 @@ class RegisterForm extends Component {
                     <Message
                       error
                       centered="true"
-                      header="This email exists."
-                      content="Please re-enter another email address."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
@@ -242,8 +258,8 @@ class RegisterForm extends Component {
                   ) : (
                     <Message
                       success
-                      header="Your user registration was successful."
-                      content="You may now log-in with the username you have chosen."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
