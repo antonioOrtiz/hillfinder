@@ -1,5 +1,5 @@
 import { Responsive } from 'semantic-ui-react';
-import { validate } from 'indicative/validator';
+import { sanitize, validateAll } from 'indicative/validator';
 
 export function getWidthFactory(isMobileFromSSR) {
   return function() {
@@ -11,88 +11,76 @@ export function getWidthFactory(isMobileFromSSR) {
   };
 }
 
-export function validateInputs(event, state, setState) {
-  var { password, passwordError, confirmPassword, confirmPasswordError } = state;
-
-  console.log('setState ', setState);
-  var { name, value } = event.target;
+export function validateInputs(state, component) {
+  var { password, password_confirmation } = state;
 
   var data = {
-    password,
-    confirmPassword
+    password: password,
+    password_confirmation: password_confirmation
   };
 
-  var rules = {};
-  rules[name] = 'required|min:4|max:11|same:password';
+  console.log('data ', data);
+
+  var schema = {
+    password: 'required|min:4|max:11|string',
+    password_confirmation: 'required|min:4|max:11|string|same:password'
+  };
 
   var messages = {
     required: 'Make sure to enter the field value',
     min: 'Password is too short.',
     max: 'Password is too long.',
-    same: 'Password must be the same.'
+    same: 'Password must match.'
   };
 
-  if (rules.field.password) {
-    rules.field.password = 'required|email|min:4|max:11|same:password';
-  }
-
-  validate(data, rules, messages)
+  validateAll(data, schema, messages)
     .then(success => {
       console.log('success ', success);
-      setState({
-        passwordError: false,
-        passwordFeedback: '',
-        confirmPasswordError: false,
-        confirmPasswordFeedback: '',
-        formError: false,
-        formSuccess: true
-      });
-      if (success.password === success.confirmPassword) {
-        setState({ disableButton: false });
-      } else {
-        setState({ disableButton: true });
+      if (success.password === success.password_confirmation) {
+        component.setState({
+          disableButton: false,
+          formSuccess: true,
+          formError: false,
+          passwordError: false,
+          password_confirmationError: false
+        });
       }
-      return true;
     })
     .catch(errors => {
       console.log('errors ', errors);
-      if (
-        (errors[0].validation === 'min' ||
-          errors[0].validation === 'max' ||
-          errors[0].validation === 'required' ||
-          errors[0].validation === 'same') &&
-        errors[0].field == 'password'
-      ) {
-        setState({
+      var { error } = errors[0];
+      if (errors[0].field === 'password') {
+        component.setState({
           passwordError: true,
           passwordFeedback: errors[0].message,
-          formError: true,
+          disableButton: true,
           formSuccess: false,
-          disableButton: true
+          formError: true
         });
       }
-      if (
-        (errors[0].validation === 'min' ||
-          errors[0].validation === 'max' ||
-          errors[0].validation === 'required' ||
-          errors[0].validation === 'same') &&
-        errors[0].field == 'confirmPassword'
-      ) {
-        setState({
-          confirmPasswordError: true,
-          confirmPasswordFeedback: errors[0].message,
+
+      if (errors[0].field !== 'password') {
+        component.setState({
+          passwordError: false,
+          passwordFeedback: ''
+        });
+      }
+
+      if (errors[0].field === 'password_confirmation') {
+        component.setState({
+          password_confirmationError: true,
+          password_confirmationFeedback: errors[0].message,
+          disableButton: true,
           formSuccess: false,
-          formError: true,
-          disableButton: true
+          formError: true
+        });
+      }
+
+      if (errors[0].field !== 'password_confirmation') {
+        component.setState({
+          password_confirmationError: false,
+          password_confirmationFeedback: ''
         });
       }
     });
-
-  setState({
-    [name]: value
-  });
-
-  console.log('passwordError ', passwordError);
-
-  console.log('confirmPasswordError ', confirmPasswordError);
 }
