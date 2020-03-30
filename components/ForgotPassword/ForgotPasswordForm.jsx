@@ -29,7 +29,8 @@ class ForgotPasswordForm extends Component {
       usernameError: false,
       formSuccess: false,
       formError: false,
-      isLoading: true
+      isLoading: true,
+      responseMessage: {}
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -87,10 +88,10 @@ class ForgotPasswordForm extends Component {
         username: username
       })
       .then(response => {
-        console.log('response', response);
         if (response.status === 200) {
           this.setState({
             username: '',
+            responseMessage: response.data.msg,
             formError: false,
             formSuccess: true,
             isLoading: false
@@ -101,8 +102,9 @@ class ForgotPasswordForm extends Component {
         function(error) {
           console.log(error);
           if (error.response) {
-            if (response.status === 404) {
+            if (error.response.status === 404) {
               this.setState({
+                responseMessage: error.response.data.msg,
                 formError: true,
                 formSuccess: false,
                 isLoading: false
@@ -124,6 +126,8 @@ class ForgotPasswordForm extends Component {
       usernameError,
       formSuccess,
       formError,
+      responseMessage,
+
       duration,
       isLoading
     } = this.state;
@@ -189,8 +193,8 @@ class ForgotPasswordForm extends Component {
                     <Message
                       error
                       centered="true"
-                      header="This email does not exist..."
-                      content="Please re-enter another email address, or click the link below to register."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
@@ -208,7 +212,8 @@ class ForgotPasswordForm extends Component {
                   ) : (
                     <Message
                       success
-                      header="You will recieve an email shortly to reset your password."
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
