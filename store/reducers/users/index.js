@@ -1,6 +1,6 @@
 /* initial state */
 export var usersStartState = {
-  isAccountVerified: false,
+  accountVerified: null,
   isLoggedIn: false,
   error: true,
   userAvatar: ''
@@ -8,7 +8,9 @@ export var usersStartState = {
 
 /* action types */
 export const actionTypes = {
-  IS_ACCOUNT_VERIFIED: 'IS_ACCOUNT_VERIFIED',
+  RESET_USER_ACCOUNT_IS_VERIFIED: 'RESET_USER_ACCOUNT_IS_VERIFIED',
+  USER_ACCOUNT_IS_VERIFIED: 'USER_ACCOUNT_IS_VERIFIED',
+  USER_ACCOUNT_NOT_VERIFIED: 'USER_ACCOUNT_NOT_VERIFIED',
   IS_LOGGED_IN: 'IS_LOGGED_IN',
   IS_LOGGED_OUT: 'IS_LOGGED_OUT',
   LOAD_USER_AVATAR: 'LOAD_USER_AVATAR',
@@ -18,8 +20,14 @@ export const actionTypes = {
 /* reducer(s) */
 export default function users(state = usersStartState, action) {
   switch (action.type) {
-    case actionTypes.IS_ACCOUNT_VERIFIED:
-      return Object.assign({}, state, { isAccountVerified: true });
+    case actionTypes.RESET_USER_ACCOUNT_IS_VERIFIED:
+      return Object.assign({}, state, { accountVerified: null });
+
+    case actionTypes.USER_ACCOUNT_IS_VERIFIED:
+      return Object.assign({}, state, { accountVerified: true });
+
+    case actionTypes.USER_ACCOUNT_NOT_VERIFIED:
+      return Object.assign({}, state, { accountVerified: false });
 
     case actionTypes.IS_LOGGED_IN:
       return Object.assign({}, state, { isLoggedIn: true });
@@ -39,8 +47,16 @@ export default function users(state = usersStartState, action) {
 }
 
 /* actions */
-export const hasBeenVerified = () => {
-  return { type: actionTypes.IS_ACCOUNT_VERIFIED };
+export const resetCountNotVerified = () => {
+  return { type: actionTypes.RESET_USER_ACCOUNT_IS_VERIFIED };
+};
+
+export const userHasBeenVerified = () => {
+  return { type: actionTypes.USER_ACCOUNT_IS_VERIFIED };
+};
+
+export const userHasNotBeenVerified = () => {
+  return { type: actionTypes.USER_ACCOUNT_NOT_VERIFIED };
 };
 
 export const logInUser = () => {
