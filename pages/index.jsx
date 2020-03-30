@@ -18,16 +18,10 @@ import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 import Register from './register';
 
 class App extends Component {
-  static getInitialProps({
-    store,
-    isAccountVerified,
-    isLoggedIn,
-    logInUser,
-    logOutUser
-  }) {
+  static getInitialProps({ store, accountVerified, isLoggedIn, logInUser, logOutUser }) {
     console.log('store', store);
 
-    return { store, isAccountVerified, isLoggedIn, logInUser, logOutUser };
+    return { store, accountVerified, isLoggedIn, logInUser, logOutUser };
   }
 
   constructor(props) {
@@ -35,8 +29,8 @@ class App extends Component {
   }
 
   render() {
-    const { isLoggedIn, isAccountVerified } = this.props;
-    console.log('isAccountVerified ', isAccountVerified);
+    const { isLoggedIn, accountVerified } = this.props;
+    console.log('accountVerified ', accountVerified);
 
     console.log('this.props ', this.props);
 
@@ -53,7 +47,7 @@ class App extends Component {
         <Route
           {...rest}
           render={({ location }) =>
-            isLoggedIn || isAccountVerified ? (
+            isLoggedIn && accountVerified ? (
               { ...children }
             ) : (
               <Redirect
@@ -94,18 +88,21 @@ class App extends Component {
             </LinkNavWithLayout>
           </PrivateRoute>
 
-          <Route path="/login" render={props => <Login {...props} />} />
+          <Route
+            path="/login"
+            render={props => <Login accountVerified={accountVerified} {...props} />}
+          />
 
           <Route
             path="/forgot_password"
             render={props => <ForgotPassword {...props} />}
           />
 
-          <Route path="/reset_password" render={props => <ResetPassword {...props} />} />
+          <PrivateRoute path="/update_password/:token" component={ResetPassword} />
 
           <PrivateRoute
             path="/confirmed/:token"
-            isAccountVerified={isAccountVerified}
+            accountVerified={accountVerified}
             component={Confirmation}
           />
 
@@ -128,9 +125,9 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar, isAccountVerified } = users;
+  const { isLoggedIn, userAvatar, accountVerified } = users;
   const { modalActive } = ui;
-  return { isLoggedIn, isAccountVerified, userAvatar, modalActive };
+  return { isLoggedIn, accountVerified, userAvatar, modalActive };
 }
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);
