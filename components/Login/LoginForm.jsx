@@ -15,7 +15,12 @@ import axios from 'axios';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { logInUser } from '../../store/reducers/users/index';
+import {
+  logInUser,
+  resetCountNotVerified,
+  userHasNotBeenVerified,
+  userHasBeenVerified
+} from '../../store/reducers/users/index';
 import { Link } from 'react-router-dom';
 import { validate } from 'indicative/validator';
 
@@ -26,7 +31,6 @@ class LoginForm extends Component {
     this.state = {
       fadeUp: 'fade up',
       duration: 500,
-
       username: '',
       password: '',
       usernameError: false,
@@ -34,7 +38,6 @@ class LoginForm extends Component {
       formSuccess: false,
       formError: false,
       isLoading: true,
-      userDidNotVerifyEmail: false,
       responseMessage: {}
     };
 
@@ -44,11 +47,13 @@ class LoginForm extends Component {
   }
 
   componentDidMount() {
+    this.props.resetCountNotVerified();
     this.setState({ isLoading: false });
   }
 
   handleChange(event) {
     var { name, value } = event.target;
+
     this.setState({
       [name]: value
     });
@@ -56,15 +61,16 @@ class LoginForm extends Component {
 
   handleBlur() {
     var { username } = this.state;
+
     var error = false;
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (!username.match(mailFormat) || !username) {
       error = true;
-      this.setState({ usernameError: true, userDidNotVerifyEmail: false });
+      this.setState({ usernameError: true });
     } else {
-      this.setState({ usernameError: false, userVerifyedEmail: false });
+      this.setState({ usernameError: false });
     }
   }
 
@@ -107,6 +113,7 @@ class LoginForm extends Component {
       .then(response => {
         console.log('response', response);
         if (response.status === 200) {
+          this.props.userHasBeenVerified();
           setTimeout(() => {
             this.props.logInUser();
             history.push('/profile');
@@ -116,7 +123,8 @@ class LoginForm extends Component {
             password: '',
             formError: false,
             formSuccess: true,
-            isLoading: false
+            isLoading: false,
+            responseMessage: response.data.msg
           });
         }
       })
@@ -124,16 +132,24 @@ class LoginForm extends Component {
         function(error) {
           if (error.response) {
             if (error.response.status === 401) {
+              this.props.userHasNotBeenVerified();
               this.setState({
-                userDidNotVerifyEmail: true,
                 responseMessage: error.response.data.msg,
+                username: '',
+                password: '',
+                formError: false,
+                formSuccess: false,
                 isLoading: false
               });
             }
             if (error.response.status === 404) {
+              this.props.resetCountNotVerified();
               this.setState({
-                formError: true,
                 responseMessage: error.response.data.msg,
+                username: '',
+                password: '',
+                formError: true,
+                formSuccess: false,
                 isLoading: false
               });
             }
@@ -153,16 +169,15 @@ class LoginForm extends Component {
       formSuccess,
       formError,
       duration,
-      isLoggedIn,
       isLoading,
-      responseMessage,
-      userDidNotVerifyEmail
+      responseMessage
     } = this.state;
+    var { accountVerified } = this.props;
+    // formSuccess === true ? (isLoggedIn = true) : (isLoggedIn = false);
 
-    console.log('userDidNotVerifyEmail ', userDidNotVerifyEmail);
-
-    formSuccess === true ? (isLoggedIn = true) : (isLoggedIn = false);
-
+    console.log('this.props ', this.props);
+    console.log('accountVerified ', accountVerified);
+    console.log('responseMessage ', responseMessage);
     return (
       <div className="login-form">
         {' '}
@@ -201,6 +216,7 @@ class LoginForm extends Component {
                   iconPosition="left"
                   placeholder="Password"
                   name="password"
+                  type="password"
                   value={password}
                   onBlur={this.handleBlur}
                   onChange={this.handleChange}
@@ -221,7 +237,7 @@ class LoginForm extends Component {
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={userDidNotVerifyEmail}
+                  visible={accountVerified === false ? true : false}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -232,7 +248,7 @@ class LoginForm extends Component {
                     </Dimmer>
                   ) : (
                     <Message
-                      warning
+                      color="yellow"
                       centered="true"
                       header={responseMessage[0]}
                       content={responseMessage[1]}
@@ -273,8 +289,8 @@ class LoginForm extends Component {
                   ) : (
                     <Message
                       success
-                      header="Your have successfully logged in."
-                      content="Welcome to Hillfinder!"
+                      header={responseMessage[0]}
+                      content={responseMessage[1]}
                     />
                   )}
                 </Transition>
@@ -283,9 +299,15 @@ class LoginForm extends Component {
 
             {formError ? (
               <Transition visible={formError} animation="scale" duration={1000}>
-                <Message>
-                  <Link to="/register">Register</Link>{' '}
-                </Message>
+                {isLoading ? (
+                  <Dimmer active inverted>
+                    <Loader />
+                  </Dimmer>
+                ) : (
+                  <Message>
+                    <Link to="/register">Register</Link>{' '}
+                  </Message>
+                )}
               </Transition>
             ) : null}
           </Grid.Column>{' '}
@@ -296,14 +318,17 @@ class LoginForm extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log('state ', state);
   const { users } = state;
-  console.log('users ', users);
-  const { isLoggedIn } = users;
-  console.log('isLoggedIn ', isLoggedIn);
-  return { isLoggedIn };
+  const { isLoggedIn, accountVerified } = users;
+
+  return { isLoggedIn, accountVerified };
 }
-const mapDispatchToProps = dispatch => bindActionCreators({ logInUser }, dispatch);
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { logInUser, resetCountNotVerified, userHasNotBeenVerified, userHasBeenVerified },
+    dispatch
+  );
 
 export default connect(
   mapStateToProps,
