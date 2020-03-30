@@ -167,12 +167,14 @@ async function start() {
   // error handler
   server.use(function(err, req, res, next) {
     // set locals, only providing error in development
-    res.locals.message = err.message;
+    res.locals.errorStatus = err.status;
+    res.locals.errorMessage = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // render the error page
-    res.status(res.locals.message);
-    res.json('error');
+
+    console.log('err.status ', err.status);
+    res.status(err.status).send(err.message);
   });
 
   server.listen(PORT, err => {
