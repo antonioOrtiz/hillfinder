@@ -9,6 +9,11 @@ var nodemailer = require('nodemailer');
 
 var { body, sanitizeBody, validationResult } = require('express-validator');
 
+function redirectIfLoggedIn(req, res, next) {
+  if (req.user) return res.redirect('/profile');
+  return next();
+}
+
 function nodeMailerFunc(user, subjectField, textField, emailType) {
   var token = new Token({
     _userId: user._id,
@@ -30,11 +35,16 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
       }
     });
 
+    function outputTokenInEmail(emailType) {
+      if (emailType !== 'change of password') return `/${token.token}`;
+      else return '';
+    }
+
     var mailOptions = {
       from: '17antonio.ortiz@gmail.com',
       to: `${user.username}`,
       subject: subjectField,
-      text: `${textField}/${token.token}`
+      text: `${textField}${outputTokenInEmail(emailType)}`
     };
 
     transporter.sendMail(mailOptions, function(err) {
@@ -67,7 +77,9 @@ router.route('/login').post((req, res, next) => {
       });
       return;
     } else {
-      res.status(200).send({ msg: 'Your username/email has been verified!' });
+      res.status(200).send({
+        msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
+      });
       return;
     }
   })(req, res, next);
@@ -75,6 +87,7 @@ router.route('/login').post((req, res, next) => {
 
 router.route('/registration').post((req, res, next) => {
   // Checks for errors in validation
+
   passport.authenticate('local', (err, user) => {
     try {
       console.log('user ', user);
@@ -120,6 +133,8 @@ router.route('/registration').post((req, res, next) => {
 
 router.route('/confirmation/:token').get((req, res, next) => {
   var usersToken = req.params.token;
+
+  console.log('usersToken ', usersToken);
   try {
     Token.findOne({ token: usersToken }, function(err, token) {
       if (token === null)
@@ -159,21 +174,34 @@ router.route('/forgot_password').post((req, res) => {
   console.log('req ', req.body);
   try {
     User.findOne({ username: req.body.username }, function(err, user) {
-      if (err) return res.status(404).send({ msg: 'We were unable to find a user.' });
+      if (!user)
+        return res.status(404).send({
+          msg: [
+            'We were unable to find this user.',
+            'Please re-enter another email address, or click the link below to register. Or you may'
+          ]
+        });
 
       user.generatePasswordReset();
-
+      user.isVerified = false;
       user.save(err => {
         if (err) {
           return res.status(500).send({ msg: err.message });
         }
         nodeMailerFunc(
           user,
-          `Your passowrd has been reset`,
-          `Click the following link to reset your password:
-          http://${req.headers.host}/reset_password/${token}`,
-          'email to reset your password'
+          `Your password has been reset`,
+          `Click the following link to reset your password:\nhttp://${
+            req.headers.host
+          }/update_password`,
+          'email to update your password'
         );
+      });
+      return res.status(200).send({
+        msg: [
+          'Your password has been reset!',
+          'Please check your email for the link which will allow you to reset your password!'
+        ]
       });
     });
   } catch (err) {
@@ -181,16 +209,19 @@ router.route('/forgot_password').post((req, res) => {
   }
 });
 
-router.route('/reset_password/:token').get((req, res, next) => {
+router.route('/reset_password/:token').post((req, res, next) => {
+  console.log('req.params ', req.params);
+  console.log('req.body ', req.body);
+
   try {
     User.findOne({
-      resetPasswordToken: req.params.token,
+      resetPasswordToken: req.body.token,
       resetPasswordExpires: { $gt: Date.now() }
     }).then(user => {
       if (!user)
-        return res
-          .status(401)
-          .json({ message: 'Password reset token is invalid or has expired.' });
+        return res.status(401).send({
+          msg: ['Password reset token is invalid or has expired.']
+        });
 
       //Set the new password
       user.password = req.body.password;
@@ -204,11 +235,13 @@ router.route('/reset_password/:token').get((req, res, next) => {
 
         nodeMailerFunc(
           user,
-          `Your passowrd has been changed`,
-          `Click the following link to reset your password:
-          http://${req.headers.host}/reset_password/${token}`,
-          'email to reset your password'
+          `Your password has been changed!`,
+          `You may now login with your new password ${req.body.password} `,
+          'change of password'
         );
+      });
+      return res.status(200).send({
+        msg: ['Your password has been changed!']
       });
     });
   } catch (err) {
