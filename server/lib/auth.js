@@ -2,37 +2,28 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const UserModel = require('../models/UserModel');
 
-// passport.use(new LocalStrategy({ usernameField: 'username', passwordField: 'password' }, async (username, password, done) => {
-//   try {
-//     const user = await UserModel.findOne({ username: username }).exec();
-//     if (!user) {
-//       return done(null, false, { message: 'Invalid username or password' });
-//     }
-//     const passwordOK = await user.comparePassword(password);
-//     if (!passwordOK) {
-//       return done(null, false, { message: 'Invalid username or password' });
-//     }
-//     return done(null, user);
-//   } catch (err) {
-//     return done(err);
-//   }
-// }));
-
 passport.use(
-  new LocalStrategy(function(username, password, done) {
-    UserModel.findOne({ username: username }, function(err, user) {
-      if (err) {
+  new LocalStrategy(
+    { usernameField: 'username', passwordField: 'password' },
+    async (username, password, done) => {
+      try {
+        const user = await UserModel.findOne({ username: username }).exec();
+        if (!user) {
+          return done(null, false, { message: 'Invalid username!' });
+        }
+        const passwordOk = await user.comparePassword(password);
+
+        if (!passwordOk) {
+          return done(null, false, {
+            message: 'Invalid password!'
+          });
+        }
+        return done(null, user);
+      } catch (err) {
         return done(err);
       }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.comparePassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  })
+    }
+  )
 );
 
 // eslint-disable-next-line no-underscore-dangle

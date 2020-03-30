@@ -48,7 +48,9 @@ UserSchema.pre('save', async function preSave(next) {
 });
 
 UserSchema.methods.generatePasswordReset = function() {
-  this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = require('crypto')
+    .randomBytes(20)
+    .toString('hex');
   this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
 };
 
