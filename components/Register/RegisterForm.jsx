@@ -69,7 +69,8 @@ class RegisterForm extends Component {
 
     var { username, password, formError, userNameDup } = this.state;
 
-    var { history } = this.props;
+    var { history, userHasNotBeenVerified } = this.props;
+    console.log('history, userHasNotBeenVerified ', history, userHasNotBeenVerified);
 
     var mailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -112,10 +113,13 @@ class RegisterForm extends Component {
             formSuccess: true,
             isLoading: false
           });
+
+          return;
         }
       })
       .catch(
         function(error) {
+          console.log('error ', error);
           if (error.response.status === 409) {
             this.setState({
               userNameDup: true,
@@ -146,14 +150,9 @@ class RegisterForm extends Component {
       formError,
       userNameDup,
       responseMessage,
-
       duration,
       isLoading
     } = this.state;
-
-    console.log('RegisterForm this.props ', this.props);
-    console.log('userNameDup ', userNameDup);
-    console.log('formError ', formError);
 
     return (
       <div className="login-form">
@@ -203,6 +202,7 @@ class RegisterForm extends Component {
                   iconPosition="left"
                   placeholder="Password"
                   name="password"
+                  type="password"
                   value={password}
                   onBlur={this.handleBlur}
                   onChange={this.handleChange}
