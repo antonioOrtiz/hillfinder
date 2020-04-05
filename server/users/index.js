@@ -61,8 +61,9 @@ router.route('/login').post((req, res, next) => {
     if (!user) {
       res.status(404).send({
         msg: [
-          'We were unable to find this user.',
-          'Please re-enter another email address, or click the link below to register.'
+          `We were unable to find this user.`,
+          `This email and password combo may be incorrect.
+          Please confirm "Forgot password" link above!`
         ]
       });
       return;
@@ -178,7 +179,7 @@ router.route('/forgot_password').post((req, res) => {
         return res.status(404).send({
           msg: [
             'We were unable to find this user.',
-            'Please re-enter another email address, or click the link below to register. Or you may'
+            'Please re-enter another email address, or click the link below to register.'
           ]
         });
 
