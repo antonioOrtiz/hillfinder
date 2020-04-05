@@ -10,7 +10,7 @@ import Index from './home';
 import Profile from './profile';
 import Dashboard from './dashboard';
 import ForgotPassword from './forgotPassword';
-import ResetPassword from './resetPassword';
+import UpdatePassword from './updatePassword';
 import Login from './login';
 import Confirmation from './confirmation';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
@@ -98,7 +98,7 @@ class App extends Component {
             render={props => <ForgotPassword {...props} />}
           />
 
-          <PrivateRoute path="/update_password/:token" component={ResetPassword} />
+          <PrivateRoute path="/update_password/:token" component={UpdatePassword} />
 
           <PrivateRoute
             path="/confirmed/:token"

@@ -1,10 +1,10 @@
 import 'semantic-ui-css/semantic.min.css';
-import ConfirmationPage from '../components/Confirmation/Confirmation.jsx';
+import ConfirmationPage from '../components/FormComponent/FormComponent.jsx';
 import { withRouter } from 'react-router-dom';
 
 const Confirmation = props => (
   <>
-    <ConfirmationPage {...props} />
+    <ConfirmationPage formType="Confirmation" {...props} />
   </>
 );
 

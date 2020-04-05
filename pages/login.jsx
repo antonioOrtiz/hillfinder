@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 const Login = props => (
   <>
-    <LoginForm formType={'Login'} {...props} />
+    <LoginForm formType="Login" {...props} />
   </>
 );
 
