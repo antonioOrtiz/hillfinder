@@ -1,5 +1,7 @@
 import { Responsive } from 'semantic-ui-react';
-import { sanitize, validateAll } from 'indicative/validator';
+import { sanitize } from 'indicative/sanitizer';
+
+import { extend, validate, validateAll } from 'indicative/validator';
 
 export function getWidthFactory(isMobileFromSSR) {
   return function() {
@@ -11,76 +13,211 @@ export function getWidthFactory(isMobileFromSSR) {
   };
 }
 
-export function validateInputs(state, component) {
-  var { password, password_confirmation } = state;
+export function validateInputs(
+  formType,
+  username,
+  setUsernameError,
+  setUsernameFeedback,
+  password,
+  password_confirmation,
+  setPasswordConfirmationError,
+  setPasswordConfirmationFeedback,
+  setPasswordError,
+  setPasswordFeedback,
+  setDisableButton
+) {
+  function getFormValidation(formType) {
+    function isLoginOrRegistration() {
+      var data = {
+        username: username,
+        password: password
+      };
 
-  var data = {
-    password: password,
-    password_confirmation: password_confirmation
-  };
+      var schema = {
+        username: 'email',
+        password: 'min:7|max:11'
+      };
+      var messages = {
+        required: 'Make sure to enter the field value',
+        email: 'Enter valid email address',
+        min: 'The value is too short',
+        max: 'The value is too long'
+      };
 
-  console.log('data ', data);
+      // sanitize(data, sanitizeSchema);
 
-  var schema = {
-    password: 'required|min:4|max:11|string',
-    password_confirmation: 'required|min:4|max:11|string|same:password'
-  };
+      validate(data, schema, messages)
+        .then(success => {
+          if (success.username) {
+            console.log('success.username ', success.username);
+            setUsernameError(false);
+          }
 
-  var messages = {
-    required: 'Make sure to enter the field value',
-    min: 'Password is too short.',
-    max: 'Password is too long.',
-    same: 'Password must match.'
-  };
+          if (success.password) {
+            console.log('success.password ', success.password);
+            setPasswordError(false);
+            setDisableButton(false);
+          }
+        })
+        .catch(errors => {
+          console.log('errors ', errors);
+          if (errors[0].field === 'username') {
+            setUsernameError(true);
+            setDisableButton(true);
+            setUsernameFeedback(errors[0].message);
+          }
+          if (errors[0].field !== 'username') {
+            setUsernameError(false);
+          }
 
-  validateAll(data, schema, messages)
-    .then(success => {
-      console.log('success ', success);
-      if (success.password === success.password_confirmation) {
-        component.setState({
-          disableButton: false,
-          formSuccess: true,
-          formError: false,
-          passwordError: false,
-          password_confirmationError: false
+          if (errors[0].field === 'password') {
+            setPasswordError(true);
+            setDisableButton(true);
+            setPasswordFeedback(errors[0].message);
+          }
         });
-      }
-    })
-    .catch(errors => {
-      console.log('errors ', errors);
-      var { error } = errors[0];
-      if (errors[0].field === 'password') {
-        component.setState({
-          passwordError: true,
-          passwordFeedback: errors[0].message,
-          disableButton: true,
-          formSuccess: false,
-          formError: true
-        });
-      }
+    }
+    function isConfirmation() {
+      validate(data, schema, messages)
+        .then(success => {
+          console.log('success ', success);
+          if (success.password === success.password_confirmation) {
+            setDisableButton(false),
+              setFormSuccess(true),
+              setFormError(false),
+              setPasswordError(false),
+              setPassword_confirmationError(false);
+          }
+        })
+        .catch(errors => {
+          console.log('errors ', errors);
+          if (errors[0].field === 'password') {
+            setPasswordError(true);
+            setPasswordFeedBack(errors[0].message);
+            setDisableButton(true);
+            setFormSuccess(false);
+            setFormError(true);
+          }
 
-      if (errors[0].field !== 'password') {
-        component.setState({
-          passwordError: false,
-          passwordFeedback: ''
-        });
-      }
+          if (errors[0].field !== 'password') {
+            setPasswordError(false);
+            setPasswordFeedBack('');
+          }
 
-      if (errors[0].field === 'password_confirmation') {
-        component.setState({
-          password_confirmationError: true,
-          password_confirmationFeedback: errors[0].message,
-          disableButton: true,
-          formSuccess: false,
-          formError: true
-        });
-      }
+          if (errors[0].field === 'password_confirmation') {
+            setPasswordConfirmationError(false);
+            setPasswordConfirmationFeedback(errors[0].message);
+            setDisableButton(true);
+            setFormSuccess(false);
+            setFormError(true);
+          }
 
-      if (errors[0].field !== 'password_confirmation') {
-        component.setState({
-          password_confirmationError: false,
-          password_confirmationFeedback: ''
+          if (errors[0].field !== 'password_confirmation') {
+            setPasswordConfirmationError(false);
+            setPasswordConfirmationFeedback('');
+          }
         });
-      }
-    });
+    }
+
+    function isForgotPassword() {
+      var data = {
+        username: username
+      };
+      var sanitizeSchema = {
+        username: 'normalize_email'
+      };
+      var schema = {
+        username: 'email'
+      };
+      var messages = {
+        required: 'Make sure to enter the field value',
+        email: 'Enter valid email address'
+      };
+      validate(data, schema, messages)
+        .then(success => {
+          if (success.username) {
+            console.log('success.username ', success.username);
+            setUsernameError(false);
+            setDisableButton(false);
+          }
+        })
+        .catch(errors => {
+          console.log('errors ', errors);
+          if (errors[0].validation === 'email') {
+            const { message } = errors[0];
+            setUsernameError(true);
+            setDisableButton(true);
+            setUsernameFeedback(message);
+          }
+        });
+    }
+
+    function isUpdatePassword() {
+      var data = {
+        password: password,
+        password_confirmation: password_confirmation
+      };
+      var schema = {
+        password: 'min:4|max:11|string',
+        password_confirmation: 'required|min:4|max:11|string|same:password'
+      };
+      var messages = {
+        required: 'Make sure to enter the field value',
+        min: 'Password is too short.',
+        max: 'Password is too long.',
+        same: 'Password must match.'
+      };
+      // extend('username', {
+      //   async: true
+      // });
+
+      validate(data, schema, messages)
+        .then(success => {
+          console.log('success ', success);
+          // if (success.password) {
+          //   setPasswordError(false);
+          //   // if (success.password_confirmation) {
+          //   //   setPasswordConfirmationError(false);
+          //   // }
+
+          //   if (success.password === success.password_confirmation) {
+          //     console.log('success.username ', success.username);
+          //     setPasswordConfirmationError(false);
+          //     setDisableButton(false);
+          //     setPasswordConfirmationError(false);
+          //   }
+          // }
+        })
+        .catch(errors => {
+          console.log('errors ', errors);
+          if (errors[0].field === 'password') {
+            setPasswordError(true);
+            setPasswordFeedback(errors[0].message);
+            setDisableButton(true);
+          }
+
+          if (errors[0].field === 'password_confirmation') {
+            setPasswordConfirmationError(true);
+            setPasswordConfirmationFeedback(errors[0].message);
+            setDisableButton(true);
+          }
+        });
+    }
+
+    var Forms = {
+      Login: isLoginOrRegistration,
+      Registration: isLoginOrRegistration,
+      ForgotPassword: isForgotPassword,
+      UpdatePassword: isUpdatePassword
+    };
+
+    try {
+      //  setFormError(false);
+      Forms[formType]();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return getFormValidation(formType);
 }
