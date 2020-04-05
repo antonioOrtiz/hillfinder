@@ -47,7 +47,7 @@ export default function users(state = usersStartState, action) {
 }
 
 /* actions */
-export const resetCountNotVerified = () => {
+export const resetUserAcoountVerified = () => {
   return { type: actionTypes.RESET_USER_ACCOUNT_IS_VERIFIED };
 };
 
