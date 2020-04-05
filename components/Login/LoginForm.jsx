@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
   logInUser,
-  resetCountNotVerified,
+  resetUserAcoountVerified,
   userHasNotBeenVerified,
   userHasBeenVerified
 } from '../../store/reducers/users/index';
@@ -47,7 +47,7 @@ class LoginForm extends Component {
   }
 
   componentDidMount() {
-    this.props.resetCountNotVerified();
+    this.props.resetUserAcoountVerified();
     this.setState({ isLoading: false });
   }
 
@@ -143,7 +143,7 @@ class LoginForm extends Component {
               });
             }
             if (error.response.status === 404) {
-              this.props.resetCountNotVerified();
+              this.props.resetUserAcoountVerified();
               this.setState({
                 responseMessage: error.response.data.msg,
                 username: '',
@@ -326,7 +326,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { logInUser, resetCountNotVerified, userHasNotBeenVerified, userHasBeenVerified },
+    { logInUser, resetUserAcoountVerified, userHasNotBeenVerified, userHasBeenVerified },
     dispatch
   );
 
