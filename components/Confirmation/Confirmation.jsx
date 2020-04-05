@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Loader, Dimmer, Transition, Message } from 'semantic-ui-react';
 import axios from 'axios';
 
-// import { confirmUser } from '../../utils/index';
 import {
   userHasBeenVerified,
   userHasNotBeenVerified,
-  resetCountNotVerified
+  resetUserAcoountVerified
 } from '../../store/reducers/users/index';
 
 import { connect } from 'react-redux';
@@ -17,13 +16,11 @@ function Confirmation({
   match,
   accountVerified,
   userHasBeenVerified,
-  resetCountNotVerified
+  resetUserAcoountVerified
 }) {
   var [duration, setDuration] = useState(500);
   var [responseMessage, setResponseMessage] = useState({});
   var [error, setError] = useState(false);
-
-  var ResponseComponent;
 
   useEffect(() => {
     axios
@@ -37,7 +34,7 @@ function Confirmation({
       .catch(function(error) {
         if (error.response.status === 404) {
           // Token not in database
-          resetCountNotVerified();
+          resetUserAcoountVerified();
           setResponseMessage(error.response.data.msg);
           setError(true);
         }
@@ -91,7 +88,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { userHasBeenVerified, userHasNotBeenVerified, resetCountNotVerified },
+    { userHasBeenVerified, userHasNotBeenVerified, resetUserAcoountVerified },
     dispatch
   );
 
