@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   Loader,
@@ -18,7 +18,7 @@ import {
   logInUser,
   userHasBeenVerified,
   userHasNotBeenVerified,
-  resetCountNotVerified
+  resetUserAcoountVerified
 } from '../../store/reducers/users/index';
 
 import { Link } from 'react-router-dom';
@@ -30,11 +30,41 @@ import { bindActionCreators } from 'redux';
 function FormComponent({
   formType,
   match,
-  isLoggedIn,
+  history,
+  logInUser,
   accountVerified,
   userHasBeenVerified,
-  resetCountNotVerified
+  userHasNotBeenVerified,
+  resetUserAcoountVerified
 }) {
+  var Forms = {
+    Confirmation: [isConfirmationForm],
+    ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit, isGenericUseEffect],
+    Login: [isLoginForm, loginSubmit, isGenericUseEffect],
+    Registration: [isRegisterForm, registerSubmit, isGenericUseEffect],
+    UpdatePassword: [isUpdatePasswordForm, updatePasswordSubmit, isGenericUseEffect]
+  };
+
+  var [duration, setDuration] = useState(500);
+  var [username, setUsername] = useState('');
+  var [usernameFeedback, setUsernameFeedback] = useState('');
+  var [usernameError, setUsernameError] = useState(false);
+  var [userNameDup, setUserNameDup] = useState(false);
+  var [password, setPassword] = useState('');
+  var [passwordFeedback, setPasswordFeedback] = useState('');
+  var [passwordError, setPasswordError] = useState(false);
+  var [password_confirmation, setPasswordConfirmation] = useState('');
+  var [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
+  var [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
+  var [formSuccess, setFormSuccess] = useState(false);
+  var [formError, setFormError] = useState(false);
+  var [disableButton, setDisableButton] = useState(true);
+  var [isLoading, setIsLoading] = useState(false);
+  var [responseMessage, setResponseMessage] = useState({});
+  var [tokenExpired, setTokenExpired] = useState(false);
+  var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
+  var [error, setError] = useState(false);
+
   function isConfirmationForm() {
     useEffect(() => {
       axios
@@ -43,12 +73,15 @@ function FormComponent({
           if (response.status === 200) {
             setError(false);
             setResponseMessage(response.data.msg);
+            // setTimeout(() => {
+            //   userHasBeenVerified();
+            // }, 1000);
           }
         })
         .catch(function(error) {
           if (error.response.status === 404) {
             // Token not in database
-            resetCountNotVerified();
+            resetUserAcoountVerified();
             setResponseMessage(error.response.data.msg);
             setError(true);
           }
@@ -125,13 +158,10 @@ function FormComponent({
                 />
 
                 <Transition visible={usernameError} animation="scale" duration={duration}>
-                  <Message
-                    error
-                    content="username_Email is in incorrect format e.g. joe@schmoe.com"
-                  />
+                  <Message error content={usernameFeedback} />
                 </Transition>
 
-                <Button color="green" fluid size="large" disabled={!username}>
+                <Button color="green" fluid size="large" disabled={disableButton}>
                   Yes, send a link
                 </Button>
 
@@ -216,14 +246,10 @@ function FormComponent({
                   placeholder="E-mail address, e.g. joe@schmoe.com"
                   name="username"
                   value={username}
-                  onChange={handleChange}
-                  error={usernameError}
+                  onChange={e => handleChange(e)}
                 />
                 <Transition visible={usernameError} animation="scale" duration={duration}>
-                  <Message
-                    error
-                    content="username_Email is in incorrect format e.g. joe@schmoe.com"
-                  />
+                  <Message error content={usernameFeedback} />
                 </Transition>
                 <Form.Input
                   fluid
@@ -234,24 +260,18 @@ function FormComponent({
                   type="password"
                   value={password}
                   onChange={e => handleChange(e)}
-                  error={passwordError}
                 />
                 <Transition visible={passwordError} animation="scale" duration={duration}>
-                  <Message error content="Password is incorrect, please try again." />
+                  <Message error content={passwordFeedback} />
                 </Transition>
-                <Button
-                  color="green"
-                  fluid
-                  size="large"
-                  disabled={!username || !password}
-                >
+                <Button color="green" fluid size="large" disabled={disableButton}>
                   Log-in
                 </Button>
                 <br />
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={accountVerified === false ? true : false}
+                  visible={accountVerified === false}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -262,6 +282,7 @@ function FormComponent({
                     </Dimmer>
                   ) : (
                     <Message
+                      warning
                       color="yellow"
                       centered="true"
                       header={responseMessage[0]}
@@ -310,7 +331,6 @@ function FormComponent({
                 </Transition>
               </Segment>
             </Form>
-
             {formError ? (
               <Transition visible={formError} animation="scale" duration={1000}>
                 {isLoading ? (
@@ -345,14 +365,11 @@ function FormComponent({
               {/* {isLoggedIn ? `Register for an account` : ` Log-in to your account`} */}
             </Header>
 
-            {console.log('formSuccess 1', formSuccess)}
             <Form
               size="large"
               onSubmit={e => handleSubmit(e, formType)}
               error={userNameDup || formError}
             >
-              {console.log('formSuccess 2', formSuccess)}
-
               <Segment stacked>
                 <Form.Input
                   fluid
@@ -366,10 +383,7 @@ function FormComponent({
                 />
 
                 <Transition visible={usernameError} animation="scale" duration={duration}>
-                  <Message
-                    error
-                    content="username_Email is in incorrect format e.g. joe@schmoe.com"
-                  />
+                  <Message error content={usernameFeedback} />
                 </Transition>
 
                 <Form.Input
@@ -385,18 +399,10 @@ function FormComponent({
                 />
 
                 <Transition visible={passwordError} animation="scale" duration={duration}>
-                  <Message
-                    error
-                    content="Password needs to be greater than eight characters."
-                  />
+                  <Message error content={passwordFeedback} />
                 </Transition>
 
-                <Button
-                  color="green"
-                  fluid
-                  size="large"
-                  disabled={!username || !password}
-                >
+                <Button color="green" fluid size="large" disabled={disableButton}>
                   Register
                 </Button>
 
@@ -455,6 +461,7 @@ function FormComponent({
   }
 
   function isUpdatePasswordForm() {
+    console.log('disableButton ', disableButton);
     return (
       <div className="login-form">
         {' '}
@@ -502,15 +509,15 @@ function FormComponent({
                   type="password"
                   value={password_confirmation}
                   onChange={e => handleChange(e)}
-                  error={password_confirmationError}
+                  error={passwordConfirmationError}
                 />
 
                 <Transition
-                  visible={password_confirmationError}
+                  visible={passwordConfirmationError}
                   animation="scale"
                   duration={duration}
                 >
-                  <Message error content={password_confirmationFeedback} />
+                  <Message error content={passwordConfirmationFeedback} />
                 </Transition>
 
                 <Button color="green" fluid size="large" disabled={disableButton}>
@@ -573,277 +580,201 @@ function FormComponent({
     );
   }
 
-  var Forms = {
-    Confirmation: isConfirmationForm,
-    ForgotPassword: isForgotPasswordForm,
-    Login: isLoginForm,
-    Register: isRegisterForm,
-    UpdatePassword: isUpdatePasswordForm
-  };
+  function forgotPasswordSubmit() {
+    axios
+      .post('http://localhost:8016/users/forgot_password', {
+        username: username
+      })
+      .then(response => {
+        if (response.status === 200) {
+          setUsername('');
+          setResponseMessage(response.data.msg);
+          setFormError(false);
+          setFormSuccess(true);
+          setIsLoading(false);
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error.response) {
+          if (error.response.status === 404) {
+            setResponseMessage(error.response.data.msg);
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+          }
 
-  var [fadeUp, setFadeUp] = useState('fade up');
-  var [duration, setDuration] = useState(500);
-  var [name, setName] = useState('');
-  var [username, setUsername] = useState('');
-  var [usernameError, setUsernameError] = useState(false);
-  var [userNameDup, setUserNameDup] = useState(false);
-  var [password, setPassword] = useState('');
-  var [passwordFeedback, setPasswordFeedBack] = useState('');
-  var [passwordError, setPasswordError] = useState(false);
-  var [password_confirmation, setPasswordConfirmation] = useState('');
-  var [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
-  var [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
-  var [formSuccess, setFormSuccess] = useState(false);
-  var [formError, setFormError] = useState(false);
-  var [disableButton, setDisableButton] = useState(true);
-  var [isLoading, setIsLoading] = useState(false);
-  var [responseMessage, setResponseMessage] = useState({});
-  var [tokenExpired, setTokenExpired] = useState(false);
-  var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
-  var [error, setError] = useState(false);
+          console.log('error.response.data', error.response.data);
+          console.log('error.response.headers', error.response.headers);
+        }
+      });
+  }
+
+  function loginSubmit() {
+    axios
+      .post('http://localhost:8016/users/login', {
+        username: username,
+        password: password
+      })
+      .then(response => {
+        console.log('response', response);
+        if (response.status === 200) {
+          setTimeout(() => {
+            logInUser();
+            history.push('/profile');
+          }, 5000);
+
+          setUsername('');
+          setPassword('');
+          setFormError(false);
+          setFormSuccess(true);
+          setIsLoading(false);
+          setResponseMessage(response.data.msg);
+          userHasBeenVerified();
+        }
+      })
+      .catch(function(error) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            userHasNotBeenVerified();
+            setUsername('');
+            setPassword('');
+            setFormError(false);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setResponseMessage(error.response.data.msg);
+          }
+          if (error.response.status === 404) {
+            resetUserAcoountVerified();
+            setUsername('');
+            setPassword('');
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setResponseMessage(error.response.data.msg);
+          }
+          console.log('error.response.data', error.response.data);
+          console.log('error.response.headers', error.response.headers);
+        }
+      });
+  }
+
+  function registerSubmit() {
+    axios
+      .post('http://localhost:8016/users/registration', {
+        username: username,
+        password: password
+      })
+      .then(response => {
+        console.log('response', response);
+        if (response.status === 200) {
+          setTimeout(() => {
+            history.push('/login');
+          }, 5000);
+          setUsername('');
+          setPassword('');
+          setResponseMessage(response.data.msg);
+          setUserNameDup(false);
+          setFormError(false);
+          setFormSuccess(true);
+          setIsLoading(false);
+        }
+      })
+      .catch(function(error) {
+        console.log('error ', error);
+        if (error.response.status === 409) {
+          setUserNameDup(true);
+          setResponseMessage(error.response.data.msg);
+
+          setFormError(true);
+          setIsLoading(false);
+
+          console.log('userNameDup in error ', userNameDup);
+          console.log('formError in error', formError);
+          console.log('Error in registration', error);
+        }
+      });
+  }
+
+  function updatePasswordSubmit() {
+    var { token } = match.params;
+    axios
+      .post(`http://localhost:8016/users/reset_password/${token}`, {
+        password: password
+      })
+      .then(response => {
+        console.log('response', response);
+        if (response.status === 200) {
+          setPassword('');
+          setPasswordConfirmation('');
+          setFormError(false);
+          setFormSuccess(true);
+          setIsLoading(false);
+          setResponseCodeSuccess(true);
+          setResponseMessage(response.data.msg);
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error.response) {
+          if (error.response.status === 401) {
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setTokenExpired(true);
+            setResponseMessage(error.response.data.msg);
+          }
+        }
+      });
+  }
+
+  var isGenericUseEffect = useEffect(() => {
+    validateInputs(
+      formType,
+      username,
+      setUsernameError,
+      setUsernameFeedback,
+      password,
+      password_confirmation,
+      setPasswordConfirmationError,
+      setPasswordConfirmationFeedback,
+      setPasswordError,
+      setPasswordFeedback,
+      setDisableButton
+    );
+  }, [formType, accountVerified, username, password, usernameError, passwordError]);
 
   function handleChange(e) {
-    var { name, value } = e.target;
-    if (name === username) {
-      setUsername(value);
+    console.log('e ', e);
+    e.persist();
+    setFormError(false);
+    setDisableButton(true);
+    console.log('resetUserAcoountVerified fired!');
+    resetUserAcoountVerified();
+    console.log('resetUserAcoountVerified fired!');
+    setUserNameDup(false);
+
+    if (e.target.name === 'username') {
+      console.log('username', e.target.name);
+      setUsername(e.target.value);
     }
-    if (name === password) {
-      setPassword(value);
+
+    if (e.target.name === 'password') {
+      console.log('password', e.target.name);
+      setPassword(e.target.value);
     }
-    validateInputs(
-      fadeUp,
-      setFadeUp,
-      duration,
-      setDuration,
-      name,
-      setName,
-      username,
-      setUsername,
-      password,
-      history,
-      setPassword,
-      usernameError,
-      setUsernameError,
-      passwordError,
-      setPasswordError,
-      passwordConfirmationError,
-      setPasswordConfirmationError,
-      passwordConfirmationFeedback,
-      setPasswordConfirmationFeedback,
-      passwordFeedback,
-      setPasswordFeedBack,
-      formSuccess,
-      setFormSuccess,
-      formError,
-      setFormError,
-      disableButton,
-      setDisableButton,
-      isLoading,
-      setIsLoading,
-      responseMessage,
-      setResponseMessage,
-      error,
-      setError,
-      logInUser,
-      isLoading,
-      history,
-      userHasBeenVerified,
-      userHasNotBeenVerified,
-      resetCountNotVerified
-    );
+
+    if (e.target.name === 'password_confirmation') {
+      console.log('password_confirmation', e.target.name);
+      setPasswordConfirmation(e.target.value);
+    }
   }
 
   function handleSubmit(event, formType) {
     event.preventDefault();
-    var Forms = {
-      Confirmation: loginSubmit,
-      ForgotPassword: forgotPasswordSubmit,
-      Login: loginSubmit,
-      Register: registerSubmit,
-      UpdatePassword: updatePasswordSubmit
-    };
-    function forgotPasswordSubmit() {
-      var { token } = match.params;
-      axios
-        .post(`http://localhost:8016/users/reset_password/${token}`, {
-          password: password
-        })
-        .then(response => {
-          console.log('response', response);
-          if (response.status === 200) {
-            setPassword('');
-            setPasswordConfirmation('');
-            setFormError(false);
-            setFormSuccess(true);
-            setIsLoading(false);
-            setResponseCodeSuccess(true);
-            setResponseMessage(response.data.msg);
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-          if (error.response) {
-            if (error.response.status === 401) {
-              setFormError(true);
-              setFormSuccess(false);
-              setIsLoading(false);
-              setTokenExpired(true);
-              setResponseMessage(error.response.data.msg);
-            }
-          }
-        });
-
-      axios
-        .post('http://localhost:8016/users/forgot_password', {
-          username: username
-        })
-        .then(response => {
-          if (response.status === 200) {
-            setUsername('');
-            setResponseMessage(response.data.msg);
-            setFormError(false);
-            setFormSuccess(true);
-            setIsLoading(false);
-          }
-        })
-        .catch(
-          function(error) {
-            console.log(error);
-            if (error.response) {
-              if (error.response.status === 404) {
-                setResponseMessage(error.response.data.msg);
-                setFormError(true);
-                setFormSuccess(false);
-                setIsLoading(false);
-              }
-
-              console.log('error.response.data', error.response.data);
-              console.log('error.response.headers', error.response.headers);
-            }
-          }.bind(this)
-        );
-    }
-
-    function loginSubmit() {
-      axios
-        .post('http://localhost:8016/users/login', {
-          username: username,
-          password: password
-        })
-        .then(response => {
-          console.log('response', response);
-          if (response.status === 200) {
-            userHasBeenVerified();
-            setTimeout(() => {
-              logInUser();
-              history.push('/profile');
-            }, 5000);
-            setUsername('');
-            setPassword('');
-            setFormError(false);
-            setFormSuccess(true);
-            setIsLoading(false);
-            setResponseMessage(response.data.msg);
-          }
-        })
-        .catch(function(error) {
-          if (error.response) {
-            if (error.response.status === 401) {
-              userHasNotBeenVerified();
-              setUsername('');
-              setPassword('');
-              setFormError(false);
-              setFormSuccess(true);
-              setIsLoading(false);
-              setResponseMessage(error.response.data.msg);
-            }
-            if (error.response.status === 404) {
-              resetCountNotVerified();
-              setUsername('');
-              setPassword('');
-              setFormError(true);
-              setFormSuccess(false);
-              setIsLoading(false);
-              setResponseMessage(error.response.data.msg);
-            }
-            console.log('error.response.data', error.response.data);
-            console.log('error.response.headers', error.response.headers);
-          }
-        });
-    }
-    function registerSubmit() {
-      axios
-        .post('http://localhost:8016/users/registration', {
-          username: username,
-          password: password
-        })
-        .then(response => {
-          console.log('response', response);
-          if (response.status === 200) {
-            setTimeout(() => {
-              history.push('/login');
-            }, 5000);
-            setUsername('');
-            setPassword('');
-            setResponseMessage(response.data.msg);
-            setUserNameDup(false);
-            setFormError(false);
-            setFormSuccess(true);
-            setIsLoading(false);
-          }
-        })
-        .catch(function(error) {
-          console.log('error ', error);
-          if (error.response.status === 409) {
-            setUserNameDup(true);
-            setResponseMessage(error.response.data.msg);
-
-            setFormError(true);
-            setFormSuccess(true);
-            setIsLoading(false);
-
-            console.log('userNameDup in error ', userNameDup);
-            console.log('formError in error', formError);
-            console.log('Error in registration', error);
-          }
-        });
-    }
-    function updatePasswordSubmit() {
-      var { token } = match.params;
-      axios
-        .post(`http://localhost:8016/users/reset_password/${token}`, {
-          password: password
-        })
-        .then(response => {
-          console.log('response', response);
-          if (response.status === 200) {
-            setPassword('');
-            setPasswordConfirmation('');
-            setFormError(false);
-            setFormSuccess(true);
-            setIsLoading(false);
-            setResponseCodeSuccess(true);
-            setResponseMessage(response.data.msg);
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-          if (error.response) {
-            if (error.response.status === 401) {
-              setFormError(true);
-              setFormSuccess(false);
-              setIsLoading(false);
-              setTokenExpired(true);
-              setResponseMessage(error.response.data.msg);
-            }
-          }
-        });
-    }
-
-    return Forms[formType]();
+    return Forms[formType][1]();
   }
-
-  return Forms[formType]();
+  return Forms[formType][0]();
 }
 
 function mapStateToProps(state) {
@@ -855,7 +786,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { logInUser, userHasBeenVerified, userHasNotBeenVerified, resetCountNotVerified },
+    { logInUser, userHasBeenVerified, userHasNotBeenVerified, resetUserAcoountVerified },
     dispatch
   );
 
