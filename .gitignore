@@ -67,3 +67,5 @@ typings/
 #mongoDB related dirs
 mongoDB-atlas-backup/
 config/
+
+.now
