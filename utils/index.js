@@ -2,6 +2,7 @@ import { Responsive } from 'semantic-ui-react';
 import { sanitize } from 'indicative/sanitizer';
 
 import { extend, validate, validateAll } from 'indicative/validator';
+import { validations } from 'indicative/validator';
 
 export function getWidthFactory(isMobileFromSSR) {
   return function() {
@@ -34,19 +35,24 @@ export function validateInputs(
       };
 
       var schema = {
-        username: 'required|email',
-        password: 'required|min:7|max:11'
+        username: [
+          validations.regex([
+            new RegExp(
+              '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
+            )
+          ])
+        ],
+        password: 'min:7|max:11'
       };
       var messages = {
-        required: 'Make sure to enter the field value',
-        email: 'Enter valid email address',
+        regex: 'Make sure this is a valid email!!',
         min: 'The value is too short',
         max: 'The value is too long'
       };
 
       // sanitize(data, sanitizeSchema);
 
-      validate(data, schema, messages)
+      validateAll(data, schema, messages)
         .then(success => {
           if (success.username) {
             console.log('success.username ', success.username);
@@ -56,6 +62,9 @@ export function validateInputs(
           if (success.password) {
             console.log('success.password ', success.password);
             setPasswordError(false);
+          }
+          if (success.username && success.password) {
+            console.log('success.username ', success.username);
             setDisableButton(false);
           }
         })
@@ -65,9 +74,6 @@ export function validateInputs(
             setUsernameError(true);
             setDisableButton(true);
             setUsernameFeedback(errors[0].message);
-          }
-          if (errors[0].field !== 'username') {
-            setUsernameError(false);
           }
 
           if (errors[0].field === 'password') {

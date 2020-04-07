@@ -246,7 +246,7 @@ function FormComponent({
                   placeholder="E-mail address, e.g. joe@schmoe.com"
                   name="username"
                   value={username}
-                  onChange={e => handleChange(e)}
+                  onChange={handleChange}
                 />
                 <Transition visible={usernameError} animation="scale" duration={duration}>
                   <Message error content={usernameFeedback} />
