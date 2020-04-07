@@ -34,8 +34,8 @@ export function validateInputs(
       };
 
       var schema = {
-        username: 'email',
-        password: 'min:7|max:11'
+        username: 'required|email',
+        password: 'required|min:7|max:11'
       };
       var messages = {
         required: 'Make sure to enter the field value',
