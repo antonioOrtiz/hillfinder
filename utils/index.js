@@ -35,17 +35,19 @@ export function validateInputs(
       };
 
       var schema = {
-        username: [
-          validations.regex([
-            new RegExp(
-              '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
-            )
-          ])
-        ],
+        username: 'email',
+        // username: [
+        //   validations.regex([
+        //     new RegExp(
+        //       '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
+        //     )
+        //   ])
+        // ],
         password: 'min:7|max:11'
       };
       var messages = {
-        regex: 'Make sure this is a valid email!!',
+        email: 'Make sure this is a valid email!!',
+        // regex: 'Make sure this is a valid email!!',
         min: 'The value is too short',
         max: 'The value is too long'
       };
