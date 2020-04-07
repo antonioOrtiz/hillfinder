@@ -184,7 +184,6 @@ router.route('/forgot_password').post((req, res) => {
         });
 
       user.generatePasswordReset();
-      user.isVerified = false;
       user.save(err => {
         if (err) {
           return res.status(500).send({ msg: err.message });
