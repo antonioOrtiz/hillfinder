@@ -174,7 +174,7 @@ async function start() {
     // render the error page
 
     console.log('err.status ', err.status);
-    res.status(err.status).send(err.message);
+    res.status(401).send(err.message);
   });
 
   server.listen(PORT, err => {

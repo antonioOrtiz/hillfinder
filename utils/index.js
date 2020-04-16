@@ -35,21 +35,14 @@ export function validateInputs(
       };
 
       var schema = {
-        username: 'email',
-        // username: [
-        //   validations.regex([
-        //     new RegExp(
-        //       '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
-        //     )
-        //   ])
-        // ],
-        password: 'min:7|max:11'
+        username: 'required|email',
+        password: 'required|min:7|max:11'
       };
       var messages = {
-        email: 'Make sure this is a valid email!!',
-        // regex: 'Make sure this is a valid email!!',
-        min: 'The value is too short',
-        max: 'The value is too long'
+        email: 'Make sure this is a valid email',
+        required: 'This is a required field.',
+        min: 'The value for the password is too short.',
+        max: 'The value for the password is too long.'
       };
 
       // sanitize(data, sanitizeSchema);
@@ -74,13 +67,11 @@ export function validateInputs(
           console.log('errors ', errors);
           if (errors[0].field === 'username') {
             setUsernameError(true);
-            setDisableButton(true);
             setUsernameFeedback(errors[0].message);
           }
 
           if (errors[0].field === 'password') {
             setPasswordError(true);
-            setDisableButton(true);
             setPasswordFeedback(errors[0].message);
           }
         });
@@ -175,9 +166,6 @@ export function validateInputs(
         max: 'Password is too long.',
         same: 'Password must match.'
       };
-      // extend('username', {
-      //   async: true
-      // });
 
       validate(data, schema, messages)
         .then(success => {
@@ -201,13 +189,11 @@ export function validateInputs(
           if (errors[0].field === 'password') {
             setPasswordError(true);
             setPasswordFeedback(errors[0].message);
-            setDisableButton(true);
           }
 
           if (errors[0].field === 'password_confirmation') {
             setPasswordConfirmationError(true);
             setPasswordConfirmationFeedback(errors[0].message);
-            setDisableButton(true);
           }
         });
     }

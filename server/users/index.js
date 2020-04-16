@@ -86,51 +86,117 @@ router.route('/login').post((req, res, next) => {
   })(req, res, next);
 });
 
-router.route('/registration').post((req, res, next) => {
+router.route('/registration').post(
   // Checks for errors in validation
 
-  passport.authenticate('local', (err, user) => {
+  (req, res, next) => {
     try {
-      console.log('user ', user);
-      if (user)
-        return res.status(409).send({
-          msg: [
-            'The email address you have entered is already associated with another account.',
-            'Please re-enter another email address.'
-          ]
-        });
-
-      // Create and save the user
-      user = new User({
-        username: req.body.username,
-        password: req.body.password
-      });
-
-      user.save(err => {
-        if (err) {
-          return res.status(500).send({ msg: err.message });
+      passport.authenticate('local', (err, user) => {
+        if (user) {
+          res.status(409).send({
+            msg: [
+              'The email address you have entered is already associated with another account.',
+              'Please re-enter another email address.'
+            ]
+          });
+        } else if (err) {
+          res.status(401).send({
+            msg: [
+              'Please enter a valid username i.e. email and password to register.',
+              'Either your email and/or password are not valid.'
+            ]
+          });
+          return next(err);
         }
-        nodeMailerFunc(
-          user,
-          `Account Verification`,
-          `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
-            req.headers.host
-          }/confirmed`,
-          'verification email'
-        );
-      });
 
-      return res.status(200).send({
-        msg: [
-          'Your user registration was successful.',
-          'Please check your email to complete your registration!'
-        ]
-      });
-    } catch (err) {
-      return next(err);
+        // Create and save the user
+      })(req, res, next);
+    } catch (error) {
+      console.log(error);
     }
-  })(req, res, next);
-});
+  },
+  (req, res) => {
+    var user = new User({
+      username: req.body.username,
+      password: req.body.password
+    });
+    user.save(err => {
+      if (err) {
+        return next(res.status(500).send({ msg: err.message }));
+      }
+      nodeMailerFunc(
+        user,
+        `Account Verification`,
+        `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+          req.headers.host
+        }/confirmed`,
+        'verification email'
+      );
+    });
+    res.status(200).send({
+      msg: [
+        'Your user registration was successful.',
+        'Please check your email to complete your registration!'
+      ]
+    });
+  }
+);
+
+// router.route('/registration').post(
+//   (req, res, next) => {
+//     // Checks for errors in validation
+
+//     passport.authenticate('local', (err, user) => {
+//       console.log('users ', user);
+//       // if (!user) {
+//       //   res.status(401).send({
+//       //     msg: [
+//       //       'Please enter a valid username i.e. email and password to register.',
+//       //       'Either your email and/or password are not valid.'
+//       //     ]
+//       //   });
+//       //   return;
+//       // }
+
+//       if (user === null) {
+//         res.status(409).send({
+//           msg: [
+//             'The email address you have entered is already associated with another account.',
+//             'Please re-enter another email address.'
+//           ]
+//         });
+//         return;
+//       }
+//     })(req, res, next);
+//   },
+//   (req, res, next) => {
+//     var user = new User({
+//       username: req.body.username,
+//       password: req.body.password
+//     });
+
+//     user.save(err => {
+//       if (err) {
+//         return next(res.status(500).send({ msg: err.message }));
+//       }
+//       nodeMailerFunc(
+//         user,
+//         `Account Verification`,
+//         `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+//           req.headers.host
+//         }/confirmed`,
+//         'verification email'
+//       );
+//     });
+
+//     res.status(200).send({
+//       msg: [
+//         'Your user registration was successful.',
+//         'Please check your email to complete your registration!'
+//       ]
+//     });
+//   }
+// );
 
 router.route('/confirmation/:token').get((req, res, next) => {
   var usersToken = req.params.token;
