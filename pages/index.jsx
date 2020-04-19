@@ -32,8 +32,6 @@ class App extends Component {
     const { isLoggedIn, accountVerified } = this.props;
     console.log('accountVerified ', accountVerified);
 
-    console.log('this.props ', this.props);
-
     let navBars = [
       { name: 'Home', path: '/' },
       { name: 'Profile', path: '/profile' },

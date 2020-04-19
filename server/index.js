@@ -102,8 +102,8 @@ async function start() {
 
   server.use(auth.initialize);
   server.use(auth.session);
-  server.use(auth.setUser);
-  console.log('auth.setUser ', auth.setUser);
+  // server.use(auth.setUser);
+  // console.log('auth.setUser ', auth.setUser);
 
   server.use(cors());
   server.use('/users', require('./users'));
@@ -170,9 +170,6 @@ async function start() {
     res.locals.errorStatus = err.status;
     res.locals.errorMessage = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-
     console.log('err.status ', err.status);
     res.status(401).send(err.message);
   });

@@ -2,19 +2,12 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = require('../models/UserModel');
 var Token = require('../models/TokenSchema');
-
 var crypto = require('crypto');
-require('dotenv').config();
 var nodemailer = require('nodemailer');
+var auth = require('../lib/auth');
+require('dotenv').config();
 
-var { body, sanitizeBody, validationResult } = require('express-validator');
-
-function redirectIfLoggedIn(req, res, next) {
-  if (req.user) return res.redirect('/profile');
-  return next();
-}
-
-function nodeMailerFunc(user, subjectField, textField, emailType) {
+function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
     _userId: user._id,
     token: crypto.randomBytes(16).toString('hex')
@@ -23,7 +16,8 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
   // Save the token
   token.save(function(err) {
     if (err) {
-      return res.status(500).send({ msg: err.message });
+      res.status(500).send({ msg: err.message });
+      return;
     }
 
     // Send the email
@@ -51,19 +45,28 @@ function nodeMailerFunc(user, subjectField, textField, emailType) {
       if (err) {
         return res.status(500).send({ msg: err.message });
       }
-      res.status(200).send(`A ${emailType} has been sent to ${user.username}`);
+      res.status(201).send(`A ${emailType} has been sent to ${user.username}`);
+      // return res.status(201).send({
+      //   msg: [
+      //     'Your user registration was successful.',
+      //     'Please check your email to complete your registration!'
+      //   ]
+      // });
     });
   });
 }
 
 router.route('/login').post((req, res, next) => {
   passport.authenticate('local', (err, user) => {
+    console.log('user ', user);
+
+    // console.log('res.locals.user ', res.locals.user);
     if (!user) {
       res.status(404).send({
         msg: [
           `We were unable to find this user.`,
-          `This email and password combo may be incorrect.
-          Please confirm "Forgot password" link above!`
+          `This email and/or password combo may be incorrect.
+          Please confirm with the "Forgot password" link above or the "Register" link below!`
         ]
       });
       return;
@@ -86,44 +89,31 @@ router.route('/login').post((req, res, next) => {
   })(req, res, next);
 });
 
-router.route('/registration').post(
-  // Checks for errors in validation
-
-  (req, res, next) => {
-    try {
-      passport.authenticate('local', (err, user) => {
-        if (user) {
-          res.status(409).send({
-            msg: [
-              'The email address you have entered is already associated with another account.',
-              'Please re-enter another email address.'
-            ]
-          });
-        } else if (err) {
-          res.status(401).send({
-            msg: [
-              'Please enter a valid username i.e. email and password to register.',
-              'Either your email and/or password are not valid.'
-            ]
-          });
-          return next(err);
-        }
-
-        // Create and save the user
-      })(req, res, next);
-    } catch (error) {
-      console.log(error);
+router.route('/registration').post((req, res, next) => {
+  User.findOne({ username: req.body.username }, function(err, user) {
+    console.log('user ', user);
+    if (user) {
+      return res.status(409).send({
+        msg: [
+          'The email address you have entered is already associated with another account.',
+          'Please re-enter another email address.'
+        ]
+      });
     }
-  },
-  (req, res) => {
-    var user = new User({
+    user = new User({
       username: req.body.username,
       password: req.body.password
     });
-    user.save(err => {
+    user.save(function(err) {
       if (err) {
-        return next(res.status(500).send({ msg: err.message }));
+        return res.status(401).send({
+          msg: [
+            'You entered an incorrect username and/or email.',
+            'Please follow the validations above, re-enter a proper email and password.'
+          ]
+        });
       }
+
       nodeMailerFunc(
         user,
         `Account Verification`,
@@ -132,104 +122,71 @@ router.route('/registration').post(
         }/confirmed`,
         'verification email'
       );
+      console.log('user ', user);
+      return res.status(201).send({
+        msg: [
+          'Your user registration was successful.',
+          'Please check your email to complete your registration!'
+        ]
+      });
     });
-    res.status(200).send({
-      msg: [
-        'Your user registration was successful.',
-        'Please check your email to complete your registration!'
-      ]
-    });
-  }
-);
-
-// router.route('/registration').post(
-//   (req, res, next) => {
-//     // Checks for errors in validation
-
-//     passport.authenticate('local', (err, user) => {
-//       console.log('users ', user);
-//       // if (!user) {
-//       //   res.status(401).send({
-//       //     msg: [
-//       //       'Please enter a valid username i.e. email and password to register.',
-//       //       'Either your email and/or password are not valid.'
-//       //     ]
-//       //   });
-//       //   return;
-//       // }
-
-//       if (user === null) {
-//         res.status(409).send({
-//           msg: [
-//             'The email address you have entered is already associated with another account.',
-//             'Please re-enter another email address.'
-//           ]
-//         });
-//         return;
-//       }
-//     })(req, res, next);
-//   },
-//   (req, res, next) => {
-//     var user = new User({
-//       username: req.body.username,
-//       password: req.body.password
-//     });
-
-//     user.save(err => {
-//       if (err) {
-//         return next(res.status(500).send({ msg: err.message }));
-//       }
-//       nodeMailerFunc(
-//         user,
-//         `Account Verification`,
-//         `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
-//           req.headers.host
-//         }/confirmed`,
-//         'verification email'
-//       );
-//     });
-
-//     res.status(200).send({
-//       msg: [
-//         'Your user registration was successful.',
-//         'Please check your email to complete your registration!'
-//       ]
-//     });
-//   }
-// );
+  });
+});
 
 router.route('/confirmation/:token').get((req, res, next) => {
   var usersToken = req.params.token;
 
-  console.log('usersToken ', usersToken);
   try {
     Token.findOne({ token: usersToken }, function(err, token) {
-      if (token === null)
+      if (token === null) {
+        console.log('We were unable to find a valid token 404 ', 404);
         return res.status(404).send({
           msg: ['We were unable to find a valid token. Your token my have expired.']
         });
+      }
       // If we found a token, find a matching user
-      User.findOne({ _id: token._userId, email: req.body.username }, function(err, user) {
-        if (!user)
-          return res
-            .status(404)
-            .send({ msg: ['We were unable to find a user for this token.'] });
-        if (user.isVerified)
-          return res.status(400).send({
-            msg: ['This user has already been verified.']
-          });
 
-        // Verify and save the user
-        user.isVerified = true;
-        user.save(function(err) {
-          if (err) {
-            return res.status(500).send({ msg: [err.message] });
+      if (token) {
+        User.findOne({ _id: token._userId }, function(err, user) {
+          console.log('user ', user);
+          if (!user) {
+            console.log("'We were unable to find a user for this token.' ", 404);
+            return res.status(404).send({
+              msg: ['We were unable to find a user for this token.']
+            });
           }
+          console.log('user ', user);
+
+          if (user.isVerified) {
+            console.log('User has already been verified ', 409);
+            return res.status(400).send({
+              msg: ['This user has already been verified.']
+            });
+          }
+
+          // Verify and save the user
+          user.isVerified = true;
+          console.log('user ', user);
+          user
+            .save()
+            .then(confirmed => {
+              console.log('The account has been verified. Please log in. 171', 200);
+
+              res.status(200).send({
+                msg: ['The account has been verified. Please log in!']
+              });
+            })
+            .catch(err => {
+              return res.status(500).send({ msg: [err.message] });
+            });
+          // user.save(function(err) {
+          //   if (err) {
+          //     console.log('User save error 500  167', 500);
+          //     return res.status(500).send({ msg: [err.message] });
+          //   }
+          // });
         });
-        return res
-          .status(200)
-          .send({ msg: ['The account has been verified. Please log in.'] });
-      });
+      }
     });
   } catch (err) {
     return next(err);
@@ -238,16 +195,17 @@ router.route('/confirmation/:token').get((req, res, next) => {
 
 router.route('/forgot_password').post((req, res) => {
   // Checks for errors in validation
-  console.log('req ', req.body);
   try {
     User.findOne({ username: req.body.username }, function(err, user) {
-      if (!user)
-        return res.status(404).send({
+      if (!user) {
+        res.status(404).send({
           msg: [
             'We were unable to find this user.',
             'Please re-enter another email address, or click the link below to register.'
           ]
         });
+        return;
+      }
 
       user.generatePasswordReset();
       user.save(err => {
@@ -276,9 +234,6 @@ router.route('/forgot_password').post((req, res) => {
 });
 
 router.route('/reset_password/:token').post((req, res, next) => {
-  console.log('req.params ', req.params);
-  console.log('req.body ', req.body);
-
   try {
     User.findOne({
       resetPasswordToken: req.body.token,
@@ -297,7 +252,10 @@ router.route('/reset_password/:token').post((req, res, next) => {
 
       // Save
       user.save(err => {
-        if (err) return res.status(500).json({ message: err.message });
+        if (err) {
+          res.status(500).json({ message: err.message });
+          return;
+        }
 
         nodeMailerFunc(
           user,
@@ -305,9 +263,10 @@ router.route('/reset_password/:token').post((req, res, next) => {
           `You may now login with your new password ${req.body.password} `,
           'change of password'
         );
-      });
-      return res.status(200).send({
-        msg: ['Your password has been changed!']
+        res.status(201).send({
+          msg: ['Your password has been changed!']
+        });
+        return;
       });
     });
   } catch (err) {

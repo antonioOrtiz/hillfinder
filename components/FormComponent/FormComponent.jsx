@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Loader,
@@ -39,10 +39,10 @@ function FormComponent({
 }) {
   var Forms = {
     Confirmation: [isConfirmationForm],
-    ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit, isGenericUseEffect],
-    Login: [isLoginForm, loginSubmit, isGenericUseEffect],
-    Registration: [isRegisterForm, registerSubmit, isGenericUseEffect],
-    UpdatePassword: [isUpdatePasswordForm, updatePasswordSubmit, isGenericUseEffect]
+    ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit],
+    Login: [isLoginForm, loginSubmit],
+    Registration: [isRegisterForm, registerSubmit],
+    UpdatePassword: [isUpdatePasswordForm, updatePasswordSubmit]
   };
 
   var [duration, setDuration] = useState(500);
@@ -58,7 +58,7 @@ function FormComponent({
   var [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
   var [formSuccess, setFormSuccess] = useState(false);
   var [formError, setFormError] = useState(false);
-  var [disableButton, setDisableButton] = useState(true);
+  var [disableButton, setDisableButton] = useState(false);
   var [isLoading, setIsLoading] = useState(false);
   var [responseMessage, setResponseMessage] = useState({});
   var [tokenExpired, setTokenExpired] = useState(false);
@@ -461,7 +461,6 @@ function FormComponent({
   }
 
   function isUpdatePasswordForm() {
-    console.log('disableButton ', disableButton);
     return (
       <div className="login-form">
         {' '}
@@ -603,9 +602,6 @@ function FormComponent({
             setFormSuccess(false);
             setIsLoading(false);
           }
-
-          console.log('error.response.data', error.response.data);
-          console.log('error.response.headers', error.response.headers);
         }
       });
   }
@@ -653,8 +649,6 @@ function FormComponent({
             setIsLoading(false);
             setResponseMessage(error.response.data.msg);
           }
-          console.log('error.response.data', error.response.data);
-          console.log('error.response.headers', error.response.headers);
         }
       });
   }
@@ -667,7 +661,7 @@ function FormComponent({
       })
       .then(response => {
         console.log('response', response);
-        if (response.status === 200) {
+        if (response.status === 201) {
           setTimeout(() => {
             history.push('/login');
           }, 5000);
@@ -682,16 +676,25 @@ function FormComponent({
       })
       .catch(function(error) {
         console.log('error ', error);
+        console.log('error.response', error.response);
+
+        console.log('error.response.status', error.response.status);
+        if (error.response.status === 500) {
+          setResponseMessage(error.response.data.msg);
+          setIsLoading(false);
+          setFormError(true);
+        }
+
+        if (error.response.status === 401) {
+          setResponseMessage(error.response.data.msg);
+          setIsLoading(false);
+          setFormError(true);
+        }
+
         if (error.response.status === 409) {
           setUserNameDup(true);
           setResponseMessage(error.response.data.msg);
-
-          setFormError(true);
           setIsLoading(false);
-
-          console.log('userNameDup in error ', userNameDup);
-          console.log('formError in error', formError);
-          console.log('Error in registration', error);
         }
       });
   }
@@ -704,7 +707,7 @@ function FormComponent({
       })
       .then(response => {
         console.log('response', response);
-        if (response.status === 200) {
+        if (response.status === 201) {
           setPassword('');
           setPasswordConfirmation('');
           setFormError(false);
@@ -727,8 +730,63 @@ function FormComponent({
         }
       });
   }
+  useEffect(() => {
+    //   validateInputs(
+    //     formType,
+    //     username,
+    //     setUsernameError,
+    //     setUsernameFeedback,
+    //     password,
+    //     password_confirmation,
+    //     setPasswordConfirmationError,
+    //     setPasswordConfirmationFeedback,
+    //     setPasswordError,
+    //     setPasswordFeedback,
+    //     setDisableButton
+    //   );
+    console.log('Inside useEffect********');
+    console.log('formError', formError);
+    console.log('Inside useEffect********');
+  }, [
+    formType,
+    formError,
+    responseMessage,
+    accountVerified,
+    username,
+    password,
+    usernameError,
+    passwordError,
+    setFormSuccess
+  ]);
 
-  var isGenericUseEffect = useEffect(() => {
+  function handleChange(e) {
+    e.persist();
+    setFormError(false);
+    setFormSuccess(false);
+    setUsernameError(false);
+    setPasswordError(false);
+    setDisableButton(false);
+
+    // resetUserAcoountVerified();
+    setUserNameDup(false);
+
+    if (e.target.name === 'username') {
+      setUsername(e.target.value);
+    }
+
+    if (e.target.name === 'password') {
+      setPassword(e.target.value);
+    }
+
+    if (e.target.name === 'password_confirmation') {
+      setPasswordConfirmation(e.target.value);
+    }
+  }
+
+  function handleSubmit(event, formType) {
+    event.preventDefault();
+
+    console.log('before validate');
     validateInputs(
       formType,
       username,
@@ -740,38 +798,12 @@ function FormComponent({
       setPasswordConfirmationFeedback,
       setPasswordError,
       setPasswordFeedback,
-      setDisableButton
+      setDisableButton,
+      setFormSuccess,
+      setFormError
     );
-  }, [formType, accountVerified, username, password, usernameError, passwordError]);
+    console.log('after validate');
 
-  function handleChange(e) {
-    console.log('e ', e);
-    e.persist();
-    setFormError(false);
-    setDisableButton(true);
-    console.log('resetUserAcoountVerified fired!');
-    resetUserAcoountVerified();
-    console.log('resetUserAcoountVerified fired!');
-    setUserNameDup(false);
-
-    if (e.target.name === 'username') {
-      console.log('username', e.target.name);
-      setUsername(e.target.value);
-    }
-
-    if (e.target.name === 'password') {
-      console.log('password', e.target.name);
-      setPassword(e.target.value);
-    }
-
-    if (e.target.name === 'password_confirmation') {
-      console.log('password_confirmation', e.target.name);
-      setPasswordConfirmation(e.target.value);
-    }
-  }
-
-  function handleSubmit(event, formType) {
-    event.preventDefault();
     return Forms[formType][1]();
   }
   return Forms[formType][0]();

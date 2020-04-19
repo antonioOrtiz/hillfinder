@@ -64,10 +64,13 @@ typings/
 .env
 
 # next.js build output
-.next
+.next/
 
 ~$*.pptx
 
 #mongoDB related dirs
 mongoDB-atlas-backup/
 config/
+
+
+build/

@@ -23,7 +23,8 @@ var UserSchema = new mongoose.Schema(
       required: true,
       trim: true,
       index: { unique: true },
-      minlength: 8
+      minlength: 7,
+      maxlength: 11
     },
     roles: [{ type: 'String' }],
     isVerified: { type: Boolean, default: false },

@@ -25,7 +25,9 @@ export function validateInputs(
   setPasswordConfirmationFeedback,
   setPasswordError,
   setPasswordFeedback,
-  setDisableButton
+  setDisableButton,
+  setFormSuccess,
+  setFormError
 ) {
   function getFormValidation(formType) {
     function isLoginOrRegistration() {
@@ -41,11 +43,9 @@ export function validateInputs(
       var messages = {
         email: 'Make sure this is a valid email',
         required: 'This is a required field.',
-        min: 'The value for the password is too short.',
-        max: 'The value for the password is too long.'
+        min: 'The password is too short. Minimum 7 characters.',
+        max: 'The password is too long. Maximum 11 characters.'
       };
-
-      // sanitize(data, sanitizeSchema);
 
       validateAll(data, schema, messages)
         .then(success => {
@@ -68,14 +68,19 @@ export function validateInputs(
           if (errors[0].field === 'username') {
             setUsernameError(true);
             setUsernameFeedback(errors[0].message);
+            setDisableButton(true);
+            setFormSuccess(false);
           }
 
           if (errors[0].field === 'password') {
             setPasswordError(true);
             setPasswordFeedback(errors[0].message);
+            setDisableButton(true);
+            setFormSuccess(false);
           }
         });
     }
+
     function isConfirmation() {
       validate(data, schema, messages)
         .then(success => {
@@ -89,7 +94,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          console.log('errors ', errors);
           if (errors[0].field === 'password') {
             setPasswordError(true);
             setPasswordFeedBack(errors[0].message);
@@ -145,7 +149,6 @@ export function validateInputs(
           if (errors[0].validation === 'email') {
             const { message } = errors[0];
             setUsernameError(true);
-            setDisableButton(true);
             setUsernameFeedback(message);
           }
         });
@@ -157,43 +160,42 @@ export function validateInputs(
         password_confirmation: password_confirmation
       };
       var schema = {
-        password: 'min:4|max:11|string',
-        password_confirmation: 'required|min:4|max:11|string|same:password'
+        password: 'required|min:4|max:11|string',
+        password_confirmation: 'required|min:7|max:11|string|same:password'
       };
       var messages = {
         required: 'Make sure to enter the field value',
-        min: 'Password is too short.',
-        max: 'Password is too long.',
-        same: 'Password must match.'
+        min: 'The password is too short. Minimum 7 characters.',
+        max: 'The password is too long. Maximum 11 characters.',
+        same: 'Passwords must match.'
       };
 
-      validate(data, schema, messages)
+      validateAll(data, schema, messages)
         .then(success => {
           console.log('success ', success);
-          // if (success.password) {
-          //   setPasswordError(false);
-          //   // if (success.password_confirmation) {
-          //   //   setPasswordConfirmationError(false);
-          //   // }
 
-          //   if (success.password === success.password_confirmation) {
-          //     console.log('success.username ', success.username);
-          //     setPasswordConfirmationError(false);
-          //     setDisableButton(false);
-          //     setPasswordConfirmationError(false);
-          //   }
-          // }
+          if (success.password) {
+            setPasswordError(false);
+            setDisableButton(false);
+          }
+
+          if (success.password === success.password_confirmation) {
+            console.log('success.username ', success.username);
+            setPasswordError(false);
+            setPasswordConfirmationError(false);
+          }
         })
         .catch(errors => {
-          console.log('errors ', errors);
           if (errors[0].field === 'password') {
             setPasswordError(true);
             setPasswordFeedback(errors[0].message);
+            setDisableButton(true);
           }
 
           if (errors[0].field === 'password_confirmation') {
             setPasswordConfirmationError(true);
             setPasswordConfirmationFeedback(errors[0].message);
+            setDisableButton(true);
           }
         });
     }
@@ -208,9 +210,7 @@ export function validateInputs(
     try {
       //  setFormError(false);
       Forms[formType]();
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   return getFormValidation(formType);

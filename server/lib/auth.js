@@ -1,6 +1,6 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const UserModel = require('../models/UserModel');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var UserModel = require('../models/UserModel');
 
 passport.use(
   new LocalStrategy(
@@ -40,9 +40,9 @@ passport.deserializeUser(async (id, done) => {
 
 module.exports = {
   initialize: passport.initialize(),
-  session: passport.session(),
-  setUser: (req, res, next) => {
-    res.locals.user = req.user;
-    return next();
-  }
+  session: passport.session()
+  // setUser: (req, res, next) => {
+  //   res.locals.user = req.user;
+  //   return next();
+  // }
 };

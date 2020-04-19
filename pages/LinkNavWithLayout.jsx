@@ -43,8 +43,6 @@ const logOutMenuItemHelper = (
     handleSidebarHide
   ) {
     if (nav.name === 'Log in') {
-      console.log('mobile nav.name ', nav.name);
-
       return (
         <React.Fragment key={'modalForMobile'}>
           {modalActive && (
@@ -160,7 +158,7 @@ class DesktopContainer extends Component {
       modalStateOn,
       modalStateOff
     } = this.props;
-    // console.log("this.props desktop in LinkNAV ", this.props);
+
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
         <Visibility
