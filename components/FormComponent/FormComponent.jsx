@@ -32,7 +32,7 @@ function FormComponent({
   match,
   history,
   logInUser,
-  accountVerified,
+  accountNotVerified,
   userHasBeenVerified,
   userHasNotBeenVerified,
   resetUserAcoountVerified
@@ -104,14 +104,14 @@ function FormComponent({
           ''
         )}
 
-        {accountVerified === true && error === true ? (
+        {accountNotVerified === true && error === true ? (
           <Transition unmountOnHide={true} animation="scale" duration={duration}>
             <Message error header={responseMessage[0]} />
           </Transition>
         ) : (
           ''
         )}
-        {isNull(accountVerified) && error === true ? (
+        {isNull(accountNotVerified) && error === true ? (
           <Transition unmountOnHide={true} animation="scale" duration={duration}>
             <Message error header={responseMessage[0]} />
           </Transition>
@@ -271,7 +271,7 @@ function FormComponent({
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={accountVerified === false}
+                  visible={accountNotVerified}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -731,33 +731,8 @@ function FormComponent({
       });
   }
   useEffect(() => {
-    //   validateInputs(
-    //     formType,
-    //     username,
-    //     setUsernameError,
-    //     setUsernameFeedback,
-    //     password,
-    //     password_confirmation,
-    //     setPasswordConfirmationError,
-    //     setPasswordConfirmationFeedback,
-    //     setPasswordError,
-    //     setPasswordFeedback,
-    //     setDisableButton
-    //   );
-    console.log('Inside useEffect********');
-    console.log('formError', formError);
-    console.log('Inside useEffect********');
-  }, [
-    formType,
-    formError,
-    responseMessage,
-    accountVerified,
-    username,
-    password,
-    usernameError,
-    passwordError,
-    setFormSuccess
-  ]);
+    resetUserAcoountVerified();
+  }, []);
 
   function handleChange(e) {
     e.persist();
@@ -767,7 +742,7 @@ function FormComponent({
     setPasswordError(false);
     setDisableButton(false);
 
-    // resetUserAcoountVerified();
+    resetUserAcoountVerified();
     setUserNameDup(false);
 
     if (e.target.name === 'username') {
@@ -811,9 +786,9 @@ function FormComponent({
 
 function mapStateToProps(state) {
   const { users } = state;
-  const { accountVerified, isLoggedIn } = users;
+  const { accountNotVerified, isLoggedIn } = users;
 
-  return { accountVerified, isLoggedIn };
+  return { accountNotVerified, isLoggedIn };
 }
 
 const mapDispatchToProps = dispatch =>
