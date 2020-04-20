@@ -18,10 +18,16 @@ import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 import Register from './register';
 
 class App extends Component {
-  static getInitialProps({ store, accountVerified, isLoggedIn, logInUser, logOutUser }) {
+  static getInitialProps({
+    store,
+    accountNotVerified,
+    isLoggedIn,
+    logInUser,
+    logOutUser
+  }) {
     console.log('store', store);
 
-    return { store, accountVerified, isLoggedIn, logInUser, logOutUser };
+    return { store, accountNotVerified, isLoggedIn, logInUser, logOutUser };
   }
 
   constructor(props) {
@@ -29,8 +35,8 @@ class App extends Component {
   }
 
   render() {
-    const { isLoggedIn, accountVerified } = this.props;
-    console.log('accountVerified ', accountVerified);
+    const { isLoggedIn, accountNotVerified } = this.props;
+    console.log('accountNotVerified ', accountNotVerified);
 
     let navBars = [
       { name: 'Home', path: '/' },
@@ -45,7 +51,7 @@ class App extends Component {
         <Route
           {...rest}
           render={({ location }) =>
-            isLoggedIn && accountVerified ? (
+            isLoggedIn && !accountNotVerified ? (
               { ...children }
             ) : (
               <Redirect
@@ -88,7 +94,7 @@ class App extends Component {
 
           <Route
             path="/login"
-            render={props => <Login accountVerified={accountVerified} {...props} />}
+            render={props => <Login accountNotVerified={accountNotVerified} {...props} />}
           />
 
           <Route
@@ -100,7 +106,7 @@ class App extends Component {
 
           <PrivateRoute
             path="/confirmed/:token"
-            accountVerified={accountVerified}
+            accountNotVerified={accountNotVerified}
             component={Confirmation}
           />
 
@@ -123,9 +129,9 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar, accountVerified } = users;
+  const { isLoggedIn, userAvatar, accountNotVerified } = users;
   const { modalActive } = ui;
-  return { isLoggedIn, accountVerified, userAvatar, modalActive };
+  return { isLoggedIn, accountNotVerified, userAvatar, modalActive };
 }
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);

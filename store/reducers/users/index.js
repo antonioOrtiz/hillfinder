@@ -1,6 +1,6 @@
 /* initial state */
 export var usersStartState = {
-  accountVerified: null,
+  accountNotVerified: true,
   isLoggedIn: false,
   error: true,
   userAvatar: ''
@@ -21,13 +21,13 @@ export const actionTypes = {
 export default function users(state = usersStartState, action) {
   switch (action.type) {
     case actionTypes.RESET_USER_ACCOUNT_IS_VERIFIED:
-      return Object.assign({}, state, { accountVerified: null });
+      return Object.assign({}, state, { accountNotVerified: null });
 
     case actionTypes.USER_ACCOUNT_IS_VERIFIED:
-      return Object.assign({}, state, { accountVerified: true });
+      return Object.assign({}, state, { accountNotVerified: false });
 
     case actionTypes.USER_ACCOUNT_NOT_VERIFIED:
-      return Object.assign({}, state, { accountVerified: false });
+      return Object.assign({}, state, { accountNotVerified: true });
 
     case actionTypes.IS_LOGGED_IN:
       return Object.assign({}, state, { isLoggedIn: true });
