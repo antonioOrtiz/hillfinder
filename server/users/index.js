@@ -155,7 +155,7 @@ router.route('/confirmation/:token').get((req, res, next) => {
               msg: ['We were unable to find a user for this token.']
             });
           } else if (user.isVerified) {
-            console.log('User has already been verified ', 409);
+            console.log('User has already been verified ', 400);
             return res.status(400).send({
               msg: ['This user has already been verified.']
             });
@@ -243,8 +243,7 @@ router.route('/reset_password/:token').post((req, res, next) => {
       // Save
       user.save(err => {
         if (err) {
-          res.status(500).json({ message: err.message });
-          return;
+          return res.status(500).json({ message: err.message });
         }
 
         nodeMailerFunc(
@@ -253,10 +252,9 @@ router.route('/reset_password/:token').post((req, res, next) => {
           `You may now login with your new password ${req.body.password} `,
           'change of password'
         );
-        res.status(201).send({
+        return res.status(201).send({
           msg: ['Your password has been changed!']
         });
-        return;
       });
     });
   } catch (err) {
