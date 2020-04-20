@@ -67,6 +67,7 @@ function FormComponent({
 
   function isConfirmationForm() {
     useEffect(() => {
+      console.log('isConfirmationForm-useEffect fired!');
       axios
         .get(`http://localhost:8016/users/confirmation/${match.params.token}`)
         .then(response => {
@@ -104,7 +105,7 @@ function FormComponent({
           ''
         )}
 
-        {accountNotVerified === true && error === true ? (
+        {accountNotVerified === false && error === true ? (
           <Transition unmountOnHide={true} animation="scale" duration={duration}>
             <Message error header={responseMessage[0]} />
           </Transition>
@@ -220,6 +221,9 @@ function FormComponent({
   }
 
   function isLoginForm() {
+    useEffect(() => {
+      resetUserAcoountVerified();
+    }, []);
     return (
       <div className="login-form">
         {' '}
@@ -730,9 +734,6 @@ function FormComponent({
         }
       });
   }
-  useEffect(() => {
-    resetUserAcoountVerified();
-  }, []);
 
   function handleChange(e) {
     e.persist();
