@@ -148,43 +148,33 @@ router.route('/confirmation/:token').get((req, res, next) => {
 
       if (token) {
         User.findOne({ _id: token._userId }, function(err, user) {
-          console.log('user ', user);
+          console.log('user 151 ', user);
           if (!user) {
             console.log("'We were unable to find a user for this token.' ", 404);
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
             });
-          }
-          console.log('user ', user);
-
-          if (user.isVerified) {
+          } else if (user.isVerified) {
             console.log('User has already been verified ', 409);
             return res.status(400).send({
               msg: ['This user has already been verified.']
             });
-          }
+          } else if (!user.isVerified) {
+            // Verify and save the user
+            user.isVerified = true;
+            console.log('user 165', user);
 
-          // Verify and save the user
-          user.isVerified = true;
-          console.log('user ', user);
-          user
-            .save()
-            .then(confirmed => {
+            user.update({ isVerified: true }, function(err) {
+              if (err) {
+                console.log('User save error 500  167', 500);
+                return res.status(500).send({ msg: [err.message] });
+              }
               console.log('The account has been verified. Please log in. 171', 200);
-
-              res.status(200).send({
-                msg: ['The account has been verified. Please log in!']
-              });
-            })
-            .catch(err => {
-              return res.status(500).send({ msg: [err.message] });
             });
-          // user.save(function(err) {
-          //   if (err) {
-          //     console.log('User save error 500  167', 500);
-          //     return res.status(500).send({ msg: [err.message] });
-          //   }
-          // });
+            return res.status(200).send({
+              msg: ['The account has been verified. Please log in!']
+            });
+          }
         });
       }
     });
