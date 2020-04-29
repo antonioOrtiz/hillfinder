@@ -3,7 +3,7 @@
     "scripts": {
         "dev": "nodemon server/index.js",
         "build": "next build",
-        "start": "NODE_ENV=development node server/index.js"
+        "start": "next start"
     },
     "dependencies": {
         "@zeit/next-css": "^1.0.1",
