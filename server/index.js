@@ -1,8 +1,10 @@
-const express = require('express');
+require('newrelic');
+
+var express = require('express');
 
 require('dotenv').config();
 
-const nextJS = require('next');
+var nextJS = require('next');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -11,15 +13,20 @@ var auth = require('./lib/auth');
 var cors = require('cors');
 var morgan = require('morgan');
 var HttpStatus = require('http-status-codes');
+var compression = require('compression');
+var helmet = require('helmet');
+var MongoClient = require('mongodb').MongoClient;
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 var PORT = process.env.PORT || 8016;
 
-const { isBlockedPage, isInternalUrl } = require('next-server/dist/server/utils');
+var { isBlockedPage, isInternalUrl } = require('next-server/dist/server/utils');
 
 function NODE_ENVSetter(ENV) {
   var environment,
     environments = {
       production: () => {
-        environment = process.env.PRODUCTION_DB_DSN;
+        environment = process.env.MONGODB_URI;
         console.log(`We are currently in the production environment: ${environment}`);
         return environment;
       },
@@ -60,11 +67,19 @@ function errorHandler(err, req, res, next) {
   });
 }
 
-async function start() {
+function start() {
   const dev = process.env.NODE_ENV !== 'production';
+
+  // const options = {
+  //   target: 'http://localhost:8016',
+
+  //   changeOrigin: true // needed for virtual hosted sites,}
+
   const app = nextJS({ dev });
   const server = express();
-  await app
+  // const proxy = createProxyMiddleware(options);
+
+  app
     .prepare()
     .then(() => {
       mongoose.connect(db, { useNewUrlParser: true });
@@ -100,6 +115,8 @@ async function start() {
     })
   );
 
+  server.use(compression());
+  server.use(helmet());
   server.use(auth.initialize);
   server.use(auth.session);
   // server.use(auth.setUser);
@@ -151,14 +168,6 @@ async function start() {
     }
   });
 
-  // server.use(function(req, res, next) {
-  //     res.status(404).send('404 - Not Found!');
-  // });
-
-  // // eslint-disable-next-line func-names
-  // server.use(errorHandler, function(error, req, res, next) {
-  //     res.json({ message: error.message })
-  // })
   // catch 404 and forward to error handler
   server.use(function(req, res, next) {
     next(createError(404));
@@ -174,10 +183,34 @@ async function start() {
     res.status(401).send(err.message);
   });
 
-  server.listen(PORT, err => {
-    if (err) throw err;
-    console.log(`> Ready and listening on http://localhost:${PORT}`);
-  });
+  if (process.env.NODE_ENV === 'production') {
+    server.use(express.static('build/static'));
+    // server.use('/static', express.static(path.join(__dirname, 'static')));
+    // Add production middleware such as redirecting to https
+
+    // Express will serve up production assets i.e. main.js
+    // If Express doesn't recognize route serve index.html
+    // const path = require('path');
+    server.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'build/static'));
+    });
+    // server.get('/*', (req, res) => {
+    //   const parsedUrl = url.parse(req.url, true);
+    //   nextHandler(req, res, parsedUrl);
+    // });
+
+    server.listen(PORT, err => {
+      if (err) throw err;
+      console.log(
+        `> Ready and listening on PORT:${PORT} in the ${process.env.NODE_ENV} environment`
+      );
+    });
+  } else {
+    server.listen(PORT, err => {
+      if (err) throw err;
+      console.log(`> Ready and listening on http://localhost:${PORT}`);
+    });
+  }
 }
 
 start();

@@ -36,7 +36,6 @@ class App extends Component {
 
   render() {
     const { isLoggedIn, accountNotVerified } = this.props;
-    console.log('accountNotVerified ', accountNotVerified);
 
     let navBars = [
       { name: 'Home', path: '/' },
