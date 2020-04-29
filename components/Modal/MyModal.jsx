@@ -7,58 +7,54 @@ import { bindActionCreators } from 'redux';
 import { logOutUser } from '../../store/reducers/users/index';
 import { modalStateOn, modalStateOff } from '../../store/reducers/ui/index';
 
-class MyModal extends Component {
-  render() {
-    const {
-      message,
-      modalActive,
-      isAlertModal,
-      modalStateOff,
-      logOutUser,
-      affirmativeUsed
-    } = this.props;
-
-    return (
-      <>
-        <Modal
-          dimmer={'blurring'}
-          centered={true}
-          size={'mini'}
-          open={modalActive}
-          onClose={() => modalStateOff()}
-        >
-          <Modal.Header>
-            <p>{message}</p>
-          </Modal.Header>
-          <Modal.Actions>
-            {isAlertModal ? (
+function MyModal({
+  message,
+  modalActive,
+  isAlertModal,
+  modalStateOff,
+  logOutUser,
+  affirmativeUsed
+}) {
+  return (
+    <>
+      <Modal
+        dimmer={'blurring'}
+        centered={true}
+        size={'mini'}
+        open={modalActive}
+        onClose={() => modalStateOff()}
+      >
+        <Modal.Header>
+          <p>{message}</p>
+        </Modal.Header>
+        <Modal.Actions>
+          {isAlertModal ? (
+            <Button
+              color="black"
+              onClick={() => modalStateOff()}
+              content={affirmativeUsed}
+            />
+          ) : (
+            <>
+              <Button color="black" onClick={() => modalStateOff()}>
+                No
+              </Button>
               <Button
-                color="black"
-                onClick={() => modalStateOff()}
+                positive
+                icon="checkmark"
+                labelPosition="right"
                 content={affirmativeUsed}
+                onClick={() => {
+                  modalStateOff();
+                  logOutUser();
+                }}
               />
-            ) : (
-              <>
-                <Button color="black" onClick={() => modalStateOff()}>
-                  No
-                </Button>
-                <Button
-                  positive
-                  icon="checkmark"
-                  labelPosition="right"
-                  content={affirmativeUsed}
-                  onClick={() => {
-                    modalStateOff();
-                    logOutUser();
-                  }}
-                />
-              </>
-            )}
-          </Modal.Actions>
-        </Modal>
-      </>
-    );
-  }
+            </>
+          )}
+        </Modal.Actions>
+      </Modal>
+    </>
+  );
 }
 
 MyModal.propTypes = {
