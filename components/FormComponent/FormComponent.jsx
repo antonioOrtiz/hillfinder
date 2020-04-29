@@ -69,19 +69,15 @@ function FormComponent({
     useEffect(() => {
       console.log('isConfirmationForm-useEffect fired!');
       axios
-        .get(`http://localhost:8016/users/confirmation/${match.params.token}`)
+        .get(`/users/confirmation/${match.params.token}`)
         .then(response => {
           if (response.status === 200) {
             setError(false);
             setResponseMessage(response.data.msg);
-            // setTimeout(() => {
-            //   userHasBeenVerified();
-            // }, 1000);
           }
         })
         .catch(function(error) {
           if (error.response.status === 404) {
-            // Token not in database
             resetUserAcoountVerified();
             setResponseMessage(error.response.data.msg);
             setError(true);
@@ -224,6 +220,7 @@ function FormComponent({
     useEffect(() => {
       resetUserAcoountVerified();
     }, []);
+
     return (
       <div className="login-form">
         {' '}
@@ -585,7 +582,7 @@ function FormComponent({
 
   function forgotPasswordSubmit() {
     axios
-      .post('http://localhost:8016/users/forgot_password', {
+      .post('/users/forgot_password', {
         username: username
       })
       .then(response => {
@@ -612,7 +609,7 @@ function FormComponent({
 
   function loginSubmit() {
     axios
-      .post('http://localhost:8016/users/login', {
+      .post('/users/login', {
         username: username,
         password: password
       })
@@ -659,7 +656,7 @@ function FormComponent({
 
   function registerSubmit() {
     axios
-      .post('http://localhost:8016/users/registration', {
+      .post('/users/registration', {
         username: username,
         password: password
       })
@@ -706,7 +703,7 @@ function FormComponent({
   function updatePasswordSubmit() {
     var { token } = match.params;
     axios
-      .post(`http://localhost:8016/users/reset_password/${token}`, {
+      .post(`/users/reset_password/${token}`, {
         password: password
       })
       .then(response => {
