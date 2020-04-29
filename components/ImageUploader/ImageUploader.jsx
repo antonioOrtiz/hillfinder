@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import { Button, Card, Icon, Image, Grid, Input, Segment, Form } from 'semantic-ui-react';
+import { Button, Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
 import ImageModal from '../Modal/MyModal.jsx';
 import axios from 'axios';
@@ -24,12 +24,7 @@ class ImageUploader extends PureComponent {
 
   setDefaultImage() {
     var defaultImage = '../../static/profile-avatars/assets/default-img.jpg';
-    this.loadAvatarImage(defaultImage);
-  }
-
-  loadAvatarImage(img) {
-    var { loadAvatar } = this.props;
-    loadAvatar(img);
+    this.props.loadAvatar(defaultImage);
   }
 
   fileChange = e => {
@@ -39,7 +34,7 @@ class ImageUploader extends PureComponent {
   uploadImage(e, method) {
     e.stopPropagation();
 
-    const { avatarModalStateOn, errorLoading } = this.props;
+    const { avatarModalStateOn, errorLoading, loadAvatar } = this.props;
 
     if (method === 'multer') {
       let imageFormObj = new FormData();
@@ -47,11 +42,11 @@ class ImageUploader extends PureComponent {
       imageFormObj.append('imageName', 'multer-image-' + Date.now());
       imageFormObj.append('imageData', e.target.files[0]);
 
-      this.loadAvatarImage(window.URL.createObjectURL(e.target.files[0]));
+      loadAvatar(window.URL.createObjectURL(e.target.files[0]));
 
       var config = { headers: { 'content-type': 'multipart/form-data' } };
       axios
-        .post(`http://localhost:8016/images/uploadmulter`, imageFormObj, config)
+        .post(`/images/uploadmulter`, imageFormObj, config)
         .then(data => {
           if (data.data.success) {
             avatarModalStateOn();
