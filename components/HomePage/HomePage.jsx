@@ -10,7 +10,7 @@ const HomepageLayout = () => (
       style={{ minHeight: 'auto', padding: '4.5em 0em 5em' }}
       vertical
     >
-      <MyHeader content="Welcome to Hillfinder!" textAlign={'center'} />
+      <MyHeader content="Welcome to Hillfinders!" textAlign={'center'} />
       <p style={{ fontSize: '1.33em' }}>
         An app on the decline! <br />
         er about finding declines... Register!
@@ -23,7 +23,7 @@ const HomepageLayout = () => (
           "Is it an app to find a hill, to eventually build a hobbit home in a shire"?
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-          "No. Essentially Hillfinder is a directions app, except all endpoints of your
+          "No. Essentially Hillfinders is a directions app, except all endpoints of your
           journey try to be on a lower position in elevation than where you started from".
         </p>
         <Button as="a" size="large">

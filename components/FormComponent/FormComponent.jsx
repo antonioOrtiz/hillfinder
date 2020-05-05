@@ -217,9 +217,9 @@ function FormComponent({
   }
 
   function isLoginForm() {
-    useEffect(() => {
-      resetUserAcoountVerified();
-    }, []);
+    console.log('accountNotVerified ', accountNotVerified);
+    userHasBeenVerified();
+    useEffect(() => {}, []);
 
     return (
       <div className="login-form">
@@ -272,7 +272,7 @@ function FormComponent({
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={accountNotVerified}
+                  visible={false}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}

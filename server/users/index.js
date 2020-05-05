@@ -76,7 +76,7 @@ router.route('/login').post((req, res, next) => {
       });
     } else {
       return res.status(200).send({
-        msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
+        msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
       });
     }
   })(req, res, next);
@@ -111,7 +111,7 @@ router.route('/registration').post((req, res, next) => {
       nodeMailerFunc(
         user,
         `Account Verification`,
-        `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+        `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
           req.headers.host
         }/confirmed`,
         'verification email',
