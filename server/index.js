@@ -67,12 +67,6 @@ function errorHandler(err, req, res, next) {
 
 function start() {
   const dev = process.env.NODE_ENV !== 'production';
-
-  // const options = {
-  //   target: 'http://localhost:8016',
-
-  //   changeOrigin: true // needed for virtual hosted sites,}
-
   const app = nextJS({ dev });
   const server = express();
   // const proxy = createProxyMiddleware(options);
@@ -182,20 +176,11 @@ function start() {
   });
 
   if (process.env.NODE_ENV === 'production') {
-    server.use(express.static('build/static'));
-    // server.use('/static', express.static(path.join(__dirname, 'static')));
-    // Add production middleware such as redirecting to https
+    server.use(express.static('.next/static'));
 
-    // Express will serve up production assets i.e. main.js
-    // If Express doesn't recognize route serve index.html
-    // const path = require('path');
     server.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'build/static'));
+      res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));
     });
-    // server.get('/*', (req, res) => {
-    //   const parsedUrl = url.parse(req.url, true);
-    //   nextHandler(req, res, parsedUrl);
-    // });
 
     server.listen(PORT, err => {
       if (err) throw err;

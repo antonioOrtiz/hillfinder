@@ -4,6 +4,7 @@ var User = require('../models/UserModel');
 var Token = require('../models/TokenSchema');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var nodemailerMailgun = require('nodemailer-mailgun-transport');
 require('dotenv').config();
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
@@ -18,14 +19,14 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       return res.status(500).send({ msg: err.message });
     }
 
-    // Send the email
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
+    var auth = {
       auth: {
-        user: `${process.env.EMAIL_ADDRESS}`,
-        pass: `${process.env.EMAIL_PASSWORD}`
+        api_key: process.env.MAILGUN_PRIVATE_API,
+        domain: process.env.MAILGUN_DOMAIN
       }
-    });
+    };
+
+    var transporter = nodemailer.createTransport(nodemailerMailgun(auth));
 
     function outputTokenInEmail(emailType) {
       if (emailType !== 'change of password') return `/${token.token}`;
@@ -33,17 +34,20 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
 
     var mailOptions = {
-      from: '17antonio.ortiz@gmail.com',
+      from: 'info@hillfinders.com',
       to: `${user.username}`,
       subject: subjectField,
       text: `${textField}${outputTokenInEmail(emailType)}`
     };
 
     transporter.sendMail(mailOptions, function(err) {
-      if (err) {
-        return res.status(500).send({ msg: err.message });
+      console.log('mailOptions ', mailOptions);
+      if (err == true) {
+        return res.status(500).send({
+          msg: err.message
+        });
       }
-      return res.status(201).send(`A ${emailType} has been sent to ${user.username}`);
+      console.log('Message sent successfully!');
     });
   });
 }
@@ -54,29 +58,26 @@ router.route('/login').post((req, res, next) => {
 
     // console.log('res.locals.user ', res.locals.user);
     if (!user) {
-      res.status(404).send({
+      return res.status(404).send({
         msg: [
           `We were unable to find this user.`,
           `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
         ]
       });
-      return;
     }
 
     if (user.isVerified === false) {
-      res.status(401).send({
+      return res.status(401).send({
         msg: [
           'Your username has not been verified!',
           'Check your email for a confirmation link.'
         ]
       });
-      return;
     } else {
-      res.status(200).send({
+      return res.status(200).send({
         msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
       });
-      return;
     }
   })(req, res, next);
 });
@@ -113,7 +114,8 @@ router.route('/registration').post((req, res, next) => {
         `Hello, Welcome to Hillfinder! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
           req.headers.host
         }/confirmed`,
-        'verification email'
+        'verification email',
+        res
       );
       console.log('user ', user);
       return res.status(201).send({
@@ -189,7 +191,8 @@ router.route('/forgot_password').post((req, res) => {
             `Click the following link to reset your password:\nhttp://${
               req.headers.host
             }/update_password`,
-            'email to update your password'
+            'email to update your password',
+            res
           );
         });
         return res.status(200).send({
@@ -233,7 +236,8 @@ router.route('/reset_password/:token').post((req, res, next) => {
                 user,
                 `Your password has been changed!`,
                 `You may now login with your new password—${req.body.password}!`,
-                'change of password'
+                'change of password',
+                res
               );
               return res.status(201).send({
                 msg: ['Your password has been changed!']

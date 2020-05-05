@@ -9,6 +9,9 @@ import reduxStore from '../store/index';
 
 import withReactRouter from '../with-react-router/with-react-router';
 
+import 'semantic-ui-css/semantic.min.css';
+import '../styles/styles.scss';
+
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps

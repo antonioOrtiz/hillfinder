@@ -1,4 +1,3 @@
-import 'semantic-ui-css/semantic.min.css';
 import RegisterForm from '../components/FormComponent/FormComponent.jsx';
 import { withRouter } from 'react-router-dom';
 
