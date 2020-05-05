@@ -13,6 +13,9 @@ import {
 } from 'semantic-ui-react';
 
 import axios from 'axios';
+// var axios = axios.create({
+//   baseURL: ''
+// });
 
 import {
   logInUser,
@@ -67,7 +70,6 @@ function FormComponent({
 
   function isConfirmationForm() {
     useEffect(() => {
-      console.log('isConfirmationForm-useEffect fired!');
       axios
         .get(`/users/confirmation/${match.params.token}`)
         .then(response => {
@@ -218,7 +220,6 @@ function FormComponent({
 
   function isLoginForm() {
     console.log('accountNotVerified ', accountNotVerified);
-    userHasBeenVerified();
     useEffect(() => {}, []);
 
     return (
@@ -272,7 +273,7 @@ function FormComponent({
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={false}
+                  visible={accountNotVerified}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -642,7 +643,6 @@ function FormComponent({
             setResponseMessage(error.response.data.msg);
           }
           if (error.response.status === 404) {
-            resetUserAcoountVerified();
             setUsername('');
             setPassword('');
             setFormError(true);
@@ -781,7 +781,6 @@ function FormComponent({
   }
   return Forms[formType][0]();
 }
-
 function mapStateToProps(state) {
   const { users } = state;
   const { accountNotVerified, isLoggedIn } = users;

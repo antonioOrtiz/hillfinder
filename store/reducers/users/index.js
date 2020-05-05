@@ -1,6 +1,6 @@
 /* initial state */
 export var usersStartState = {
-  accountNotVerified: true,
+  accountNotVerified: null,
   isLoggedIn: false,
   error: true,
   userAvatar: ''
