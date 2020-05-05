@@ -14,7 +14,6 @@ var HttpStatus = require('http-status-codes');
 var compression = require('compression');
 var helmet = require('helmet');
 var MongoClient = require('mongodb').MongoClient;
-const { createProxyMiddleware } = require('http-proxy-middleware');
 
 var PORT = process.env.PORT || 8016;
 
