@@ -13,25 +13,8 @@ import {
 
 import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
-import React, { useState } from 'react';
 
 import { connect } from 'react-redux';
-
-const style = {
-  h1: {
-    marginTop: '3em'
-  },
-  h2: {
-    margin: '4em 0em 2em'
-  },
-  h3: {
-    marginTop: '1em',
-    padding: '0'
-  },
-  last: {
-    marginBottom: '300px'
-  }
-};
 
 const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
   var { userAvatar } = props;
@@ -48,7 +31,6 @@ const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
         <Grid.Column>
           <Segment>
             <Card fluid>
-              <Image src="static/profile-avatars/charly_desktop.jpg" wrapped ui={false} />
               <ImageUploader userAvatar={userAvatar} history={history} />
               <Card.Content>
                 <Card.Header>Charly</Card.Header>
