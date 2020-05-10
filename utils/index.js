@@ -208,7 +208,6 @@ export function validateInputs(
     };
 
     try {
-      //  setFormError(false);
       Forms[formType]();
     } catch (error) {}
   }
