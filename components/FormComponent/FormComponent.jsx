@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import MyHeader from '../Header/Header.jsx';
 
 import {
   Loader,
+  Input,
   Dimmer,
   Transition,
   Button,
@@ -13,9 +15,6 @@ import {
 } from 'semantic-ui-react';
 
 import axios from 'axios';
-// var axios = axios.create({
-//   baseURL: ''
-// });
 
 import {
   logInUser,
@@ -29,6 +28,7 @@ import { validateInputs } from '../../utils/index';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Container } from 'next/app';
 
 function FormComponent({
   formType,
@@ -41,6 +41,7 @@ function FormComponent({
   resetUserAcoountVerified
 }) {
   var Forms = {
+    Hillfinders: [isHillfindersForm],
     Confirmation: [isConfirmationForm],
     ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit],
     Login: [isLoginForm, loginSubmit],
@@ -67,6 +68,28 @@ function FormComponent({
   var [tokenExpired, setTokenExpired] = useState(false);
   var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   var [error, setError] = useState(false);
+
+  function isHillfindersForm() {
+    return (
+      <Container>
+        <MyHeader content="Go find a hill!" textAlign={'center'} />
+        <br />
+
+        <Grid columns={2} stackable className="hillfinder-container">
+          <Grid.Column>
+            <p style={{ fontSize: '1.33em' }}>Where you are...</p>
+            <Input fluid icon="search" placeholder="Search..." />
+          </Grid.Column>
+          <Grid.Column>
+            <p style={{ fontSize: '1.33em' }}>
+              Where you wanna go; Hopefully on a downhill...
+            </p>
+            <Input fluid icon="search" placeholder="Search..." />
+          </Grid.Column>
+        </Grid>
+      </Container>
+    );
+  }
 
   function isConfirmationForm() {
     useEffect(() => {
@@ -379,6 +402,7 @@ function FormComponent({
                   iconPosition="left"
                   placeholder="E-mail address, e.g. joe@schmoe.com"
                   name="username"
+                  type="text"
                   value={username}
                   onChange={e => handleChange(e)}
                   error={usernameError}
