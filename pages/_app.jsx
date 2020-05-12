@@ -10,6 +10,8 @@ import reduxStore from '../store/index';
 import withReactRouter from '../with-react-router/with-react-router';
 
 import 'semantic-ui-css/semantic.min.css';
+import 'leaflet/dist/leaflet.css';
+
 import '../styles/styles.scss';
 
 class MyApp extends App {
