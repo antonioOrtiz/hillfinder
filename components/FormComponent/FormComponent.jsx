@@ -14,8 +14,6 @@ import {
   Segment
 } from 'semantic-ui-react';
 
-import axios from 'axios';
-
 import {
   logInUser,
   userHasBeenVerified,
@@ -29,6 +27,11 @@ import { validateInputs } from '../../utils/index';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Container } from 'next/app';
+
+import dynamic from 'next/dynamic';
+const MyMap = dynamic(() => import('../Map/MyMap.jsx'), {
+  ssr: false
+});
 
 function FormComponent({
   formType,
@@ -71,23 +74,26 @@ function FormComponent({
 
   function isHillfindersForm() {
     return (
-      <Container>
-        <MyHeader content="Go find a hill!" textAlign={'center'} />
-        <br />
+      <>
+        <Container>
+          <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
+          <br />
 
-        <Grid columns={2} stackable className="hillfinder-container">
-          <Grid.Column>
-            <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-            <Input fluid icon="search" placeholder="Search..." />
-          </Grid.Column>
-          <Grid.Column>
-            <p style={{ fontSize: '1.33em' }}>
-              Where you wanna go; Hopefully on a downhill...
-            </p>
-            <Input fluid icon="search" placeholder="Search..." />
-          </Grid.Column>
-        </Grid>
-      </Container>
+          <Grid columns={2} stackable className="hillfinder-container">
+            <Grid.Column>
+              <p style={{ fontSize: '1.33em' }}>Where you are...</p>
+              <Input fluid icon="search" placeholder="Search..." />
+            </Grid.Column>
+            <Grid.Column>
+              <p style={{ fontSize: '1.33em' }}>
+                Where you wanna go; Hopefully on a downhill...
+              </p>
+              <Input fluid icon="search" placeholder="Search..." />
+            </Grid.Column>
+          </Grid>
+        </Container>
+        <MyMap />
+      </>
     );
   }
 
