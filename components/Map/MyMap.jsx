@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
+import LocateControl from '../LocateControl/LocateControl.jsx';
 
 export default function MyMap() {
-  var [latLng, setlatlng] = useState({ lat: 51.505, lng: -0.09 });
-  var [zoom, setZoom] = useState(13);
+  var [latLng, setlatlng] = useState({ lat: 39.74739, lng: -105 });
+  var [zoom, setZoom] = useState(4);
   var [map, setData] = useState([]);
   var [animate, setAnimate] = useState(false);
 
-  useEffect(() => {
-    // const res = axios.get('', {
-    //   params: {}
-    // });
-    // setData(map => [...map, res.data]);
-  }, []);
+  useEffect(() => {}, []);
 
   function handleClick(e) {
     console.log('e ', e);
@@ -23,6 +19,14 @@ export default function MyMap() {
   function toggleAnimate() {
     setAnimate(animate => !animate);
   }
+
+  var locateOptions = {
+    position: 'topright',
+    strings: {
+      title: 'Show me where I am, yo!'
+    },
+    onActivate: () => {} // callback before engine starts retrieving locations
+  };
 
   return map ? (
     <>
@@ -35,11 +39,9 @@ export default function MyMap() {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        <Marker position={latLng}>
-          <Popup>Expected: This popup can get out of the maps viewport</Popup>
-        </Marker>
+
+        <LocateControl options={locateOptions} startDirectly latLng={latLng} />
       </Map>
-      );
     </>
   ) : (
     'Data is Loading...'
