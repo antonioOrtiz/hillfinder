@@ -19,7 +19,7 @@ MapBoxGLLayer.propTypes = {
 };
 
 MapBoxGLLayer.defaultProps = {
-  style: 'mapbox://styles/mapbox/streets-v9'
+  style: 'mapbox://styles/mapbox/streets-v11'
 };
 
 export default withLeaflet(MapBoxGLLayer);
