@@ -5,7 +5,7 @@ export var usersStartState = {
   accountNotVerified: null,
   isLoggedIn: false,
   error: true,
-  userAvatar: null
+  userAvatar: require('../../../assests/profile-avatars/placeholder.jpg')
 };
 
 /* action types */
@@ -82,7 +82,6 @@ export const logOutUser = () => {
 };
 
 export const loadAvatar = data => {
-  console.log('data foo 71', data);
   return { type: actionTypes.LOAD_USER_AVATAR, data };
 };
 
