@@ -128,9 +128,9 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar, accountNotVerified } = users;
+  const { isLoggedIn, accountNotVerified } = users;
   const { modalActive } = ui;
-  return { isLoggedIn, accountNotVerified, userAvatar, modalActive };
+  return { isLoggedIn, accountNotVerified, modalActive };
 }
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);
