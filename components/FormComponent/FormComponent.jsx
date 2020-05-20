@@ -25,8 +25,6 @@ import {
 
 import { Link } from 'react-router-dom';
 
-import axios from 'axios';
-
 import { validateInputs } from '../../utils/index';
 
 import { connect } from 'react-redux';
