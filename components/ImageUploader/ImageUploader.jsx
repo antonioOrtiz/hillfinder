@@ -5,34 +5,32 @@ import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 import axios from 'axios';
 
 function ImageUploader() {
-  var [defaultImage, setDefaultImage] = useState(
-    require('../../assets/images/placeholder.jpg')
+  var [userAvatar, setUserAvatar] = useState(
+    require('../../assests/profile-avatars/placeholder.jpg')
   );
-  var [userAvatar, setUserAvatar] = useState(defaultImage);
-
   useEffect(() => {
     setUserAvatar(userAvatar);
   }, [userAvatar]);
 
   function fileUploader(e) {
-    console.log('event fileUploader ', e);
-    var imageFormObj = new FormData();
+    e.persist();
 
-    console.log('e.target.files[0] ', e.target.files[0]);
+    var imageFormObj = new FormData();
+    console.log('e.target.files[0 ', e.target.files[0]);
 
     imageFormObj.append('imageName', 'multer-image-' + Date.now());
     imageFormObj.append('imageData', e.target.files[0]);
-    setUserAvatar(window.URL.createObjectURL(e.target.files[0]));
-
-    console.log('userAvatar ', userAvatar);
-    console.log('imageFormObj ', imageFormObj);
 
     axios
       .post(`/users/uploadmulter`, imageFormObj)
       .then(data => {
-        if (data.data.success) {
-          alert('Image has been successfully uploaded using multer');
-          this.setDefaultImage('multer');
+        if (data.status === 200) {
+          console.log('data ', data);
+          var { path } = data.data;
+          console.log('path ', path);
+
+          console.log('It woriks!');
+          setUserAvatar('../../' + path);
         }
       })
       .catch(err => {
@@ -40,6 +38,7 @@ function ImageUploader() {
       });
   }
 
+  console.log('userAvatar ', userAvatar);
   return (
     <>
       <Segment>
@@ -56,12 +55,6 @@ function ImageUploader() {
                   onChange={e => fileUploader(e)}
                   name="avatar"
                 />
-                {/* <Button
-                  content="Edit your Avatar!"
-                  labelPosition="left"
-                  icon="file"
-                  onClick={e => fileUploader(e)}
-                /> */}
               </Form.Field>
             </Form>
           </Segment>

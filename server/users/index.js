@@ -1,8 +1,11 @@
 var router = require('express').Router();
 var passport = require('passport');
-var User = require('../models/UserModel');
-var Token = require('../models/TokenSchema');
+var multer = require('multer');
+var Image = require('../models/userImageCollectionSchema');
+var Token = require('../models/tokenSchema');
+var User = require('../models/userModel');
 var crypto = require('crypto');
+
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
 require('dotenv').config();
@@ -52,37 +55,43 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 }
 
-router.route('/login').post((req, res, next) => {
-  passport.authenticate('local', (err, user) => {
-    console.log('user ', user);
+router.post('/login', passport.authenticate('local'), function(req, res) {
+  var user = req.user;
 
-    // console.log('res.locals.user ', res.locals.user);
-    if (!user) {
-      return res.status(404).send({
-        msg: [
-          `We were unable to find this user.`,
-          `This email and/or password combo may be incorrect.
+  if (!user) {
+    return res.status(404).send({
+      msg: [
+        `We were unable to find this user.`,
+        `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
-        ]
-      });
-    }
+      ]
+    });
+  }
 
-    if (user.isVerified === false) {
-      return res.status(401).send({
-        msg: [
-          'Your username has not been verified!',
-          'Check your email for a confirmation link.'
-        ]
-      });
-    } else {
-      return res.status(200).send({
-        msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
-      });
-    }
-  })(req, res, next);
+  if (user.isVerified === false) {
+    return res.status(401).send({
+      msg: [
+        'Your username has not been verified!',
+        'Check your email for a confirmation link.'
+      ]
+    });
+  } else {
+    return res.status(200).send({
+      msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
+    });
+  }
 });
 
-router.route('/registration').post((req, res, next) => {
+router.get('/logout', (req, res) => {
+  console.log('Does req have a logout property', req.hasOwnProperty('logout'));
+  req.logout();
+  return res.status(201).send({
+    msg: ['Your have successfully logged out!']
+  });
+});
+
+router.post('/registration', (req, res) => {
+  var user = req.user;
   User.findOne({ username: req.body.username }, function(err, user) {
     if (user) {
       return res.status(409).send({
@@ -128,7 +137,7 @@ router.route('/registration').post((req, res, next) => {
   });
 });
 
-router.route('/confirmation/:token').get((req, res, next) => {
+router.get('/confirmation/:token', (req, res) => {
   var { token } = req.params;
 
   try {
@@ -171,44 +180,49 @@ router.route('/confirmation/:token').get((req, res, next) => {
   }
 });
 
-router.route('/forgot_password').post((req, res) => {
+router.post('/forgot_password', (req, res) => {
   // Checks for errors in validation
   try {
-    User.findOne({ username: req.body.username }, function(err, user) {
-      if (!user) {
-        return res.status(404).send({
-          msg: [
-            'We were unable to find this user.',
-            'Please re-enter another email address, or click the link below to register.'
-          ]
-        });
-      } else if (user) {
-        user.generatePasswordReset();
-        user.save(() => {
-          nodeMailerFunc(
-            user,
-            `Your password has been reset`,
-            `Click the following link to reset your password:\nhttp://${
-              req.headers.host
-            }/update_password`,
-            'email to update your password',
-            res
-          );
-        });
-        return res.status(200).send({
-          msg: [
-            'Your password has been reset!',
-            'Please check your email for the link which will allow you to reset your password!'
-          ]
-        });
+    User.findOne(
+      {
+        username: req.body.username
+      },
+      function(err, user) {
+        if (!user) {
+          return res.status(404).send({
+            msg: [
+              'We were unable to find this user.',
+              'Please re-enter another email address, or click the link below to register.'
+            ]
+          });
+        } else if (user) {
+          user.generatePasswordReset();
+          user.save(() => {
+            nodeMailerFunc(
+              user,
+              `Your password has been reset`,
+              `Click the following link to reset your password:\nhttp://${
+                req.headers.host
+              }/update_password`,
+              'email to update your password',
+              res
+            );
+          });
+          return res.status(200).send({
+            msg: [
+              'Your password has been reset!',
+              'Please check your email for the link which will allow you to reset your password!'
+            ]
+          });
+        }
       }
-    });
+    );
   } catch (err) {
     return next(err);
   }
 });
 
-router.route('/reset_password/:token').post((req, res, next) => {
+router.post('/reset_password/:token', (req, res, next) => {
   var { token } = req.params;
 
   try {
@@ -250,6 +264,65 @@ router.route('/reset_password/:token').post((req, res, next) => {
   } catch (err) {
     return next(err);
   }
+});
+
+var file;
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './uploads/avatar');
+  },
+  filename: function(req, file, cb) {
+    const ext = file.mimetype.split('/')[1];
+    file = `user-${req.user.id}-${Date.now()}.${ext}`;
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  }
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload an image.', 400), false);
+  }
+};
+
+var upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: multerFilter
+});
+
+/*
+stores image in uploads folder
+using mulkter and creates a reference to the file
+*/
+
+router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
+  var { path } = req.file.path;
+
+  console.log('path ', req.file.path);
+  var user = req.user;
+  var newImage = new Image({
+    avatar: {
+      _userId: user._id,
+      imageName: req.body.imageName,
+      imageData: req.body.imageData
+    }
+  });
+
+  newImage
+    .save()
+    .then(result => {
+      res.status(200).send({
+        success: true,
+        document: result,
+        path: req.file.path
+      });
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;

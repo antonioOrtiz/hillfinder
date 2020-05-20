@@ -24,6 +24,9 @@ import {
 } from '../../store/reducers/users/index';
 
 import { Link } from 'react-router-dom';
+
+import axios from 'axios';
+
 import { validateInputs } from '../../utils/index';
 
 import { connect } from 'react-redux';

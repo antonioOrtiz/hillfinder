@@ -1,5 +1,4 @@
 require('dotenv').config();
-var createError = require('http-errors');
 var express = require('express');
 
 var path = require('path');
@@ -50,9 +49,7 @@ var db = NODE_ENVSetter('development');
 function start() {
   const dev = process.env.NODE_ENV !== 'production';
   const app = nextJS({ dev });
-  const server = express();
-  // const proxy = createProxyMiddleware(options);
-
+  server = express();
   app
     .prepare()
     .then(() => {
@@ -87,7 +84,6 @@ function start() {
 
   server.use(logger('dev'));
   server.set('view engine', 'html');
-  // server.use(express.static(path.join(__dirname + 'uploads')));
   server.use('/uploads', express.static('uploads'));
 
   server.use(cors());
@@ -110,11 +106,6 @@ function start() {
   server.use(helmet());
 
   server.use('/users', require('./users'));
-
-  // server.use((req, res, next) => {
-  //   console.log('req.user', req.user._id);
-  //   next();
-  // });
 
   // Redirect all requests to main entrypoint pages/index.js
   server.get('/*', async (req, res, next) => {
@@ -157,20 +148,6 @@ function start() {
       next(e);
     }
   });
-
-  // eslint-disable-next-line func-names
-
-  class AppError extends Error {
-    constructor(message, statusCode) {
-      super(message);
-
-      this.statusCode = statusCode;
-      this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-      this.isOperational = true;
-
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
 
   server.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
