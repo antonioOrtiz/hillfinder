@@ -14,6 +14,8 @@ import {
   Segment
 } from 'semantic-ui-react';
 
+import axios from 'axios';
+
 import {
   logInUser,
   userHasBeenVerified,
@@ -90,9 +92,11 @@ function FormComponent({
               </p>
               <Input fluid icon="search" placeholder="Search..." />
             </Grid.Column>
+            <Grid.Column computer={16}>
+              <MyMap />
+            </Grid.Column>
           </Grid>
         </Container>
-        <MyMap />
       </>
     );
   }
@@ -642,7 +646,8 @@ function FormComponent({
     axios
       .post('/users/login', {
         username: username,
-        password: password
+        password: password,
+        withCredentials: true
       })
       .then(response => {
         console.log('response', response);
