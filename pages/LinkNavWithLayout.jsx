@@ -15,7 +15,6 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
-import { loadAvatar } from '../store/reducers/users/index';
 
 const getWidth = () => {
   const isSSR = typeof window === 'undefined';
@@ -336,7 +335,6 @@ const LinkNavWithLayout = ({
   children,
   history,
   data,
-  userAvatar,
   modalActive,
   modalStateOn,
   modalStateOff,
@@ -346,7 +344,6 @@ const LinkNavWithLayout = ({
     <DesktopContainer
       history={history}
       data={data}
-      userAvatar={userAvatar}
       modalActive={modalActive}
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
@@ -357,7 +354,6 @@ const LinkNavWithLayout = ({
     <MobileContainer
       history={history}
       data={data}
-      userAvatar={userAvatar}
       modalActive={modalActive}
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
@@ -370,14 +366,14 @@ const LinkNavWithLayout = ({
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar } = users;
+  const { isLoggedIn } = users;
   const { modalActive } = ui;
 
-  return { isLoggedIn, userAvatar, modalActive };
+  return { isLoggedIn, modalActive };
 }
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ modalStateOn, modalStateOff, loadAvatar }, dispatch);
+  bindActionCreators({ modalStateOn, modalStateOff }, dispatch);
 
 export default connect(
   mapStateToProps,
