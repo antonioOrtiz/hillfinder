@@ -49,8 +49,9 @@ const logOutMenuItemHelper = (
               isAlertModal={false}
               history={history}
               affirmativeUsed="Yes"
-              message=" Are you sure you want to log out of your account?"
+              message=" Are you sure you want to log out of your account??"
               modalActive={modalActive}
+              isLoggedIn={isLoggedIn}
             />
           )}
           <Menu.Item
@@ -97,8 +98,9 @@ const logOutMenuItemHelper = (
               isAlertModal={false}
               history={history}
               affirmativeUsed="Yes"
-              message="Are you sure you want to log out of your account?"
+              message="Are you sure you want to log out of your account??"
               modalActive={modalActive}
+              isLoggedIn={isLoggedIn}
             />
           )}
           <Menu.Item
