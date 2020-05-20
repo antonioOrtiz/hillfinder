@@ -1,9 +1,11 @@
 /* initial state */
+import axios from 'axios';
+
 export var usersStartState = {
   accountNotVerified: null,
   isLoggedIn: false,
   error: true,
-  userAvatar: ''
+  userAvatar: null
 };
 
 /* action types */
@@ -64,10 +66,23 @@ export const logInUser = () => {
 };
 
 export const logOutUser = () => {
+  axios
+    .get('/users/logout')
+    .then(response => {
+      if (response.status === 200) {
+        console.log('You have been logged out!');
+      }
+    })
+    .catch(function(error) {
+      if (error.response.status === 500) {
+        console.log('An error has occured');
+      }
+    });
   return { type: actionTypes.IS_LOGGED_OUT };
 };
 
 export const loadAvatar = data => {
+  console.log('data foo 71', data);
   return { type: actionTypes.LOAD_USER_AVATAR, data };
 };
 
