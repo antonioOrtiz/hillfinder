@@ -1,12 +1,15 @@
 var router = require('express').Router();
 var passport = require('passport');
-var User = require('../models/UserModel');
-var Token = require('../models/TokenSchema');
+var multer = require('multer');
+var Image = require('../models/userImageCollectionSchema');
+var Token = require('../models/tokenSchema');
+var User = require('../models/userModel');
 var crypto = require('crypto');
+
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
 require('dotenv').config();
-
+var USER = require('../index');
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
     _userId: user._id,
@@ -54,9 +57,14 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 
 router.route('/login').post((req, res, next) => {
   passport.authenticate('local', (err, user) => {
-    console.log('user ', user);
+    console.log(
+      'user ',
+      user // console.log('res.locals.user ', res.locals.user);
+    );
 
-    // console.log('res.locals.user ', res.locals.user);
+    USER = { ...USER, ...user._doc };
+    console.log('USER ', USER);
+
     if (!user) {
       return res.status(404).send({
         msg: [
@@ -250,6 +258,57 @@ router.route('/reset_password/:token').post((req, res, next) => {
   } catch (err) {
     return next(err);
   }
+});
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+
+var fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    // rejects storing a file
+    cb(null, false);
+  }
+};
+
+var upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
+
+/*
+stores image in uploads folder
+using mulkter and creates a reference to the file
+*/
+
+router.route('/uploadmulter').post(upload.any('imageData'), (req, res, next) => {
+  var newImage = new Image({
+    avatar: {
+      _userId: USER._id,
+      imageName: req.body.imageName,
+      imageData: req.body.imageData
+    }
+  });
+
+  newImage
+    .save()
+    .then(result => {
+      res.status(200).json({
+        success: true,
+        document: result
+      });
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;

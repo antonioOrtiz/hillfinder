@@ -1,19 +1,22 @@
+require('dotenv').config();
+var createError = require('http-errors');
 var express = require('express');
 
-require('dotenv').config();
-
-var nextJS = require('next');
+var path = require('path');
 var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var cors = require('cors');
+
+var mongoose = require('mongoose');
+var nextJS = require('next');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var bodyParser = require('body-parser');
 var auth = require('./lib/auth');
-var cors = require('cors');
-var morgan = require('morgan');
 var HttpStatus = require('http-status-codes');
 var compression = require('compression');
 var helmet = require('helmet');
-var MongoClient = require('mongodb').MongoClient;
+var server;
 
 var PORT = process.env.PORT || 8016;
 
@@ -44,36 +47,20 @@ function NODE_ENVSetter(ENV) {
 }
 
 var db = NODE_ENVSetter('development');
-var mongoose = require('mongoose');
-
-function errorHandler(err, req, res, next) {
-  // Set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // Log error
-  console.error(err.stack);
-
-  // Render the error page
-  res.status(err.status || 500);
-
-  // Default error message by HTTP code
-  res.render('error', {
-    title: HttpStatus.getStatusText(err.status),
-    message: HttpStatus.getStatusText(err.status)
-  });
-}
 
 function start() {
   const dev = process.env.NODE_ENV !== 'production';
   const app = nextJS({ dev });
-  const server = express();
+  server = express();
   // const proxy = createProxyMiddleware(options);
 
   app
     .prepare()
     .then(() => {
-      mongoose.connect(db, { useNewUrlParser: true });
+      mongoose.connect(db, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
       mongoose.Promise = global.Promise;
 
       mongoose.connection
@@ -88,34 +75,49 @@ function start() {
       console.error(err);
     });
 
+  server.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Methods', '*'); // enables all the methods to take place
+    return next();
+  });
+
+  server.use(logger('dev'));
   server.set('view engine', 'html');
+  // server.use(express.static(path.join(__dirname + 'uploads')));
+  server.use('/uploads', express.static('uploads'));
 
-  server.use('/uploads', express.static(__dirname + '/uploads'));
-  server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
-  server.use(bodyParser.json({ limit: '50mb' }));
-  server.use(morgan('dev'));
-
+  server.use(cors());
   server.use(cookieParser());
-
+  server.use(bodyParser.json());
   server.use(
     session({
       secret: 'very secret 12345',
-      resave: false,
+      resave: true,
       saveUninitialized: false,
       store: new MongoStore({ mongooseConnection: mongoose.connection })
     })
   );
+  server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+
+  server.use(auth.initialize);
+  server.use(auth.session);
 
   server.use(compression());
   server.use(helmet());
-  server.use(auth.initialize);
-  server.use(auth.session);
-  // server.use(auth.setUser);
-  // console.log('auth.setUser ', auth.setUser);
 
-  server.use(cors());
+  server.set('USER', {});
+
   server.use('/users', require('./users'));
-  server.use('/images', require('./images'));
+
+  // server.use((req, res, next) => {
+  //   console.log('req.user', req.user._id);
+  //   next();
+  // });
 
   // Redirect all requests to main entrypoint pages/index.js
   server.get('/*', async (req, res, next) => {
@@ -159,19 +161,22 @@ function start() {
     }
   });
 
-  // catch 404 and forward to error handler
-  server.use(function(req, res, next) {
-    next(createError(404));
-  });
+  // eslint-disable-next-line func-names
 
-  // error handler
-  server.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.errorStatus = err.status;
-    res.locals.errorMessage = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    console.log('err.status ', err.status);
-    res.status(401).send(err.message);
+  class AppError extends Error {
+    constructor(message, statusCode) {
+      super(message);
+
+      this.statusCode = statusCode;
+      this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+      this.isOperational = true;
+
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+
+  server.all('*', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
   });
 
   if (process.env.NODE_ENV === 'production') {
@@ -196,3 +201,5 @@ function start() {
 }
 
 start();
+
+module.exports = server.get('USER');
