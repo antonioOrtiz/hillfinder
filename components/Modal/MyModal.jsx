@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
@@ -13,7 +12,8 @@ function MyModal({
   isAlertModal,
   modalStateOff,
   logOutUser,
-  affirmativeUsed
+  affirmativeUsed,
+  isLoggedIn
 }) {
   return (
     <>
