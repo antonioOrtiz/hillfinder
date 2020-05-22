@@ -2,16 +2,14 @@ import { useState, useEffect } from 'react';
 
 import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import axios from 'axios';
 
-function ImageUploader() {
-  var [userAvatar, setUserAvatar] = useState(
-    require('../../assests/profile-avatars/placeholder.jpg')
-  );
-  useEffect(() => {
-    setUserAvatar(userAvatar);
-  }, [userAvatar]);
+import { loadAvatar } from '../../store/reducers/users/index';
 
+function ImageUploader({ userAvatar }) {
   function fileUploader(e) {
     e.persist();
 
@@ -27,9 +25,8 @@ function ImageUploader() {
         if (data.status === 200) {
           console.log('data ', data);
           var { path } = data.data;
-          console.log('path ', path);
+          console.log('path ', data.data.path);
 
-          console.log('It woriks!');
           setUserAvatar('../../' + path);
         }
       })
@@ -77,4 +74,16 @@ function ImageUploader() {
   );
 }
 
-export default ImageUploader;
+function mapStateToProps(state) {
+  const { users } = state;
+  const { userAvatar } = users;
+
+  return { userAvatar };
+}
+
+const mapDispatchToProps = dispatch => bindActionCreators({ loadAvatar }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImageUploader);
