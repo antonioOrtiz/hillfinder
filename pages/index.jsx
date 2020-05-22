@@ -38,6 +38,8 @@ class App extends Component {
   render() {
     const { isLoggedIn, accountNotVerified, userAvatar } = this.props;
 
+    console.log('this.props in Parent App ', this.props);
+
     let navBars = [
       { name: 'Home', path: '/' },
       { name: 'Profile', path: '/profile' },
@@ -129,9 +131,9 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, accountNotVerified } = users;
+  const { isLoggedIn, accountNotVerified, userAvatar } = users;
   const { modalActive } = ui;
-  return { isLoggedIn, accountNotVerified, modalActive };
+  return { isLoggedIn, accountNotVerified, userAvatar, modalActive };
 }
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { loadAvatar } from '../../store/reducers/users/index';
 
 function ImageUploader({ userAvatar }) {
+  var [localUserAvatar, setLocalUserAvatar] = useState(userAvatar);
   function fileUploader(e) {
     e.persist();
 
@@ -18,25 +19,22 @@ function ImageUploader({ userAvatar }) {
     imageFormObj.append('imageName', 'multer-image-' + Date.now());
     imageFormObj.append('imageData', e.target.files[0]);
 
-    loadAvatar(URL.createObjectURL(e.target.files[0]));
-
     axios
       .post(`/users/uploadmulter`, imageFormObj)
       .then(data => {
         if (data.status === 200) {
           console.log('data ', data);
-          var { path } = data.data;
-          console.log('path ', data.data.path);
+          console.log('path typeof ', typeof data.data.path.toString());
 
-          loadAvatar(data.data.path);
+          loadAvatar(data.data.path.toString());
         }
       })
       .catch(err => {
         alert('Error while uploading image using multer');
       });
   }
-
   console.log('userAvatar in imageUploader ', userAvatar);
+  console.log('localUserAvatar in imageUploader ', localUserAvatar);
   return (
     <>
       <Segment>
@@ -74,16 +72,13 @@ function ImageUploader({ userAvatar }) {
   );
 }
 
-function mapStateToProps(state) {
-  const { users } = state;
-  const { userAvatar } = users;
+// function mapStateToProps(state) {
+//   const { users } = state;
+//   const { userAvatar } = users;
 
-  return { userAvatar };
-}
+//   return { userAvatar };
+// }
 
 const mapDispatchToProps = dispatch => bindActionCreators({ loadAvatar }, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ImageUploader);
+export default connect(mapDispatchToProps)(ImageUploader);

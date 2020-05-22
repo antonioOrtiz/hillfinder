@@ -83,6 +83,7 @@ router.post('/login', passport.authenticate('local'), function(req, res) {
 });
 
 router.get('/logout', (req, res) => {
+  console.log('Does req have a logout property', req.hasOwnProperty('logout'));
   req.logout();
   return res.status(201).send({
     msg: ['Your have successfully logged out!']
@@ -233,6 +234,7 @@ router.post('/reset_password/:token', (req, res, next) => {
       }
       if (token) {
         User.findOne({ _id: token._userId }, function(err, user) {
+          console.log('user ', user);
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
@@ -264,15 +266,12 @@ router.post('/reset_password/:token', (req, res, next) => {
   }
 });
 
-var file;
-
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, './uploads/avatar');
   },
   filename: function(req, file, cb) {
     const ext = file.mimetype.split('/')[1];
-    file = `user-${req.user.id}-${Date.now()}.${ext}`;
     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
   }
 });

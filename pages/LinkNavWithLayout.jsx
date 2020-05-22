@@ -363,10 +363,10 @@ const LinkNavWithLayout = ({
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar } = users;
+  const { isLoggedIn } = users;
   const { modalActive } = ui;
 
-  return { isLoggedIn, modalActive, userAvatar };
+  return { isLoggedIn, modalActive };
 }
 
 const mapDispatchToProps = dispatch =>
