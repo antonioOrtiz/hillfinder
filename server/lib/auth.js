@@ -32,8 +32,6 @@ passport.serializeUser((user, done) => done(null, user._id));
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await UserModel.findById(id).exec(); //exec is used to get a real Promise
-
-    console.log('user deserialUser', user);
     return done(null, user);
   } catch (err) {
     return done(err);

@@ -83,7 +83,6 @@ router.post('/login', passport.authenticate('local'), function(req, res) {
 });
 
 router.get('/logout', (req, res) => {
-  console.log('Does req have a logout property', req.hasOwnProperty('logout'));
   req.logout();
   return res.status(201).send({
     msg: ['Your have successfully logged out!']
@@ -234,7 +233,6 @@ router.post('/reset_password/:token', (req, res, next) => {
       }
       if (token) {
         User.findOne({ _id: token._userId }, function(err, user) {
-          console.log('user ', user);
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']

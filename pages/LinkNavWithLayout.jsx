@@ -156,7 +156,8 @@ class DesktopContainer extends Component {
       isLoggedIn,
       modalActive,
       modalStateOn,
-      modalStateOff
+      modalStateOff,
+      userAvatar
     } = this.props;
 
     return (
@@ -236,7 +237,8 @@ class MobileContainer extends Component {
       isLoggedIn,
       modalActive,
       modalStateOn,
-      modalStateOff
+      modalStateOff,
+      userAvatar
     } = this.props;
     const { sidebarOpened } = this.state;
 
@@ -338,7 +340,8 @@ const LinkNavWithLayout = ({
   modalActive,
   modalStateOn,
   modalStateOff,
-  isLoggedIn
+  isLoggedIn,
+  userAvatar
 }) => (
   <React.Fragment>
     <DesktopContainer
@@ -348,6 +351,7 @@ const LinkNavWithLayout = ({
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
       isLoggedIn={isLoggedIn}
+      userAvatar={userAvatar}
     >
       {children}
     </DesktopContainer>
@@ -358,6 +362,7 @@ const LinkNavWithLayout = ({
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
       isLoggedIn={isLoggedIn}
+      userAvatar={userAvatar}
     >
       {children}
     </MobileContainer>
@@ -366,10 +371,10 @@ const LinkNavWithLayout = ({
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn } = users;
+  const { isLoggedIn, userAvatar } = users;
   const { modalActive } = ui;
 
-  return { isLoggedIn, modalActive };
+  return { isLoggedIn, modalActive, userAvatar };
 }
 
 const mapDispatchToProps = dispatch =>
