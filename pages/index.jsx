@@ -82,7 +82,7 @@ class App extends Component {
 
           <PrivateRoute path="/profile" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout userAvatar={userAvatar} data={navBars}>
-              <Profile userAvatar={userAvatar} user />
+              <Profile user />
             </LinkNavWithLayout>
           </PrivateRoute>
 

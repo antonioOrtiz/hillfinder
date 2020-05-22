@@ -14,7 +14,8 @@ import {
 import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
 
-const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
+const ProfilePage = ({ history, isMobileFromSSR, userAvatar, ...props }) => {
+  console.log('userAvatar in Profile', userAvatar);
   return (
     <>
       <Grid container columns={1} relaxed stackable>
@@ -27,7 +28,7 @@ const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
         <Grid.Column>
           <Segment>
             <Card fluid>
-              <ImageUploader history={history} />
+              <ImageUploader userAvatar={userAvatar} history={history} />
               <Card.Content>
                 <Card.Header>Charly</Card.Header>
                 <Card.Meta>

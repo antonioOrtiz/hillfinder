@@ -82,6 +82,8 @@ export const logOutUser = () => {
 };
 
 export const loadAvatar = data => {
+  console.log('in load avatar ', data);
+
   return { type: actionTypes.LOAD_USER_AVATAR, data };
 };
 

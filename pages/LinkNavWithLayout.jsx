@@ -81,14 +81,7 @@ const logOutMenuItemHelper = (
     }
   }
 
-  function desktoplogOutMenuItemHelper(
-    history,
-    modalActive,
-    nav,
-    NavLink,
-    modalStateOn,
-    modalStateOff
-  ) {
+  function desktoplogOutMenuItemHelper(history, modalActive, nav, NavLink, modalStateOn) {
     if (nav.name === 'Log in') {
       return (
         <React.Fragment key={'modalForDesktop'}>
@@ -152,14 +145,13 @@ class DesktopContainer extends Component {
     const {
       history,
       data,
-      children,
       isLoggedIn,
       modalActive,
       modalStateOn,
       modalStateOff,
       userAvatar
     } = this.props;
-
+    console.log('1A: In DesktopContainer userAvatar ', userAvatar);
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
         <Visibility
@@ -216,7 +208,7 @@ class DesktopContainer extends Component {
             </Menu>
           </Segment>
         </Visibility>
-        {children}
+        {React.cloneElement(this.props.children, { userAvatar: userAvatar })}
       </Responsive>
     );
   }
@@ -231,7 +223,6 @@ class MobileContainer extends Component {
 
   render() {
     const {
-      children,
       history,
       data,
       isLoggedIn,
@@ -242,6 +233,7 @@ class MobileContainer extends Component {
     } = this.props;
     const { sidebarOpened } = this.state;
 
+    console.log('1B: In MobileContainer userAvatar ', userAvatar);
     return (
       <Responsive
         as={Sidebar.Pushable}
@@ -326,7 +318,7 @@ class MobileContainer extends Component {
             </Container>
           </Segment>
 
-          {children}
+          {React.cloneElement(this.props.children, { userAvatar: userAvatar })}
         </Sidebar.Pusher>
       </Responsive>
     );

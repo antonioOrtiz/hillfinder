@@ -36,7 +36,7 @@ function ImageUploader({ userAvatar }) {
       });
   }
 
-  console.log('userAvatar ', userAvatar);
+  console.log('userAvatar in imageUploader ', userAvatar);
   return (
     <>
       <Segment>
