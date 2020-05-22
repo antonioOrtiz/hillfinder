@@ -14,10 +14,11 @@ function ImageUploader({ userAvatar }) {
     e.persist();
 
     var imageFormObj = new FormData();
-    console.log('e.target.files[0 ', e.target.files[0]);
 
     imageFormObj.append('imageName', 'multer-image-' + Date.now());
     imageFormObj.append('imageData', e.target.files[0]);
+
+    loadAvatar(URL.createObjectURL(e.target.files[0]));
 
     axios
       .post(`/users/uploadmulter`, imageFormObj)
@@ -27,7 +28,7 @@ function ImageUploader({ userAvatar }) {
           var { path } = data.data;
           console.log('path ', data.data.path);
 
-          setUserAvatar('../../' + path);
+          loadAvatar(data.data.path);
         }
       })
       .catch(err => {
@@ -50,7 +51,6 @@ function ImageUploader({ userAvatar }) {
                   type="file"
                   content="Edit your Avatar!"
                   onChange={e => fileUploader(e)}
-                  name="avatar"
                 />
               </Form.Field>
             </Form>

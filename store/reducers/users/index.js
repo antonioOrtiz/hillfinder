@@ -5,7 +5,7 @@ export var usersStartState = {
   accountNotVerified: null,
   isLoggedIn: false,
   error: true,
-  userAvatar: '../../../uploads/avatar/placeholder.jpg'
+  userAvatar: 'uploads/avatar/placeholder.jpg'
 };
 
 /* action types */
