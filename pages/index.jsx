@@ -23,11 +23,12 @@ class App extends Component {
     accountNotVerified,
     isLoggedIn,
     logInUser,
-    logOutUser
+    logOutUser,
+    userAvatar
   }) {
     console.log('store', store);
 
-    return { store, accountNotVerified, isLoggedIn, logInUser, logOutUser };
+    return { store, accountNotVerified, isLoggedIn, logInUser, logOutUser, userAvatar };
   }
 
   constructor(props) {
@@ -35,7 +36,7 @@ class App extends Component {
   }
 
   render() {
-    const { isLoggedIn, accountNotVerified } = this.props;
+    const { isLoggedIn, accountNotVerified, userAvatar } = this.props;
 
     let navBars = [
       { name: 'Home', path: '/' },
@@ -80,8 +81,8 @@ class App extends Component {
           />
 
           <PrivateRoute path="/profile" isLoggedIn={isLoggedIn}>
-            <LinkNavWithLayout data={navBars}>
-              <Profile user />
+            <LinkNavWithLayout userAvatar={userAvatar} data={navBars}>
+              <Profile userAvatar={userAvatar} user />
             </LinkNavWithLayout>
           </PrivateRoute>
 
