@@ -21,6 +21,7 @@ export const actionTypes = {
 
 /* reducer(s) */
 export default function users(state = usersStartState, action) {
+  // console.log('In users reducer! ', action);
   switch (action.type) {
     case actionTypes.RESET_USER_ACCOUNT_IS_VERIFIED:
       return Object.assign({}, state, { accountNotVerified: null });
@@ -38,7 +39,7 @@ export default function users(state = usersStartState, action) {
       return Object.assign({}, state, { isLoggedIn: false });
 
     case actionTypes.LOAD_USER_AVATAR:
-      return Object.assign({}, state, { error: false, userAvatar: action.data });
+      return { ...state, userAvatar: action.data };
 
     case actionTypes.ERROR_LOADING:
       return Object.assign({}, state, { error: true });
@@ -84,7 +85,7 @@ export const logOutUser = () => {
 export const loadAvatar = data => {
   console.log('in load avatar ', data);
 
-  return { type: actionTypes.LOAD_USER_AVATAR, data };
+  return { type: actionTypes.LOAD_USER_AVATAR, data: data };
 };
 
 export const errorLoading = () => {
