@@ -4,10 +4,9 @@ import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { loadAvatar } from '../../store/reducers/users/index';
 
 import axios from 'axios';
-
-import { loadAvatar } from '../../store/reducers/users/index';
 
 function ImageUploader({ userAvatar }) {
   var [localUserAvatar, setLocalUserAvatar] = useState(userAvatar);
@@ -18,15 +17,20 @@ function ImageUploader({ userAvatar }) {
 
     imageFormObj.append('imageName', 'multer-image-' + Date.now());
     imageFormObj.append('imageData', e.target.files[0]);
+    loadAvatar('foo');
 
-    axios
-      .post(`/users/uploadmulter`, imageFormObj)
+    axios({
+      method: 'post',
+      url: `/users/uploadmulter`,
+      data: imageFormObj,
+      config: { headers: { 'Content-Type': 'multipart/form-data' } }
+    })
       .then(data => {
         if (data.status === 200) {
           console.log('data ', data);
-          console.log('path typeof ', typeof data.data.path.toString());
-
-          loadAvatar(data.data.path.toString());
+          console.log('path typeof ', typeof data.data.path);
+          alert('It worked!');
+          setLocalUserAvatar('../../' + data.data.path);
         }
       })
       .catch(err => {
@@ -34,12 +38,17 @@ function ImageUploader({ userAvatar }) {
       });
   }
   console.log('userAvatar in imageUploader ', userAvatar);
+  console.log('Date.now() line 44 in imageUploader ', Date.now());
   console.log('localUserAvatar in imageUploader ', localUserAvatar);
+  console.log('Date.now() line 46 in imageUploader ', Date.now());
+
+  console.log("loadAvatar('barbar') ", loadAvatar('barbar'));
+
   return (
     <>
       <Segment>
         <Card fluid>
-          <Image src={userAvatar} alt="upload-image" />
+          <Image src={localUserAvatar} alt="upload-image" />
           <Segment>
             <Form encType="multipart/form-data">
               <Form.Field>
@@ -72,13 +81,16 @@ function ImageUploader({ userAvatar }) {
   );
 }
 
-// function mapStateToProps(state) {
-//   const { users } = state;
-//   const { userAvatar } = users;
+function mapStateToProps(state) {
+  const { users } = state;
+  const { userAvatar } = users;
 
-//   return { userAvatar };
-// }
+  return { userAvatar };
+}
 
 const mapDispatchToProps = dispatch => bindActionCreators({ loadAvatar }, dispatch);
 
-export default connect(mapDispatchToProps)(ImageUploader);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImageUploader);
