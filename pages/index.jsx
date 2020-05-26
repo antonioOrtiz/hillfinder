@@ -4,6 +4,7 @@ import { logInUser, logOutUser } from '../store/reducers/users/index';
 import { bindActionCreators } from 'redux';
 
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+// import { Redirect } from 'react-router';
 
 import LinkNavWithLayout from './LinkNavWithLayout';
 import Index from './home';
