@@ -5,6 +5,7 @@ var Image = require('../models/userImageCollectionSchema');
 var Token = require('../models/tokenSchema');
 var User = require('../models/userModel');
 var crypto = require('crypto');
+var path = require('path');
 
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
@@ -55,31 +56,34 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 }
 
-router.post('/login', passport.authenticate('local'), function(req, res) {
-  var user = req.user;
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user) => {
+    console.log('user ', user);
 
-  if (!user) {
-    return res.status(404).send({
-      msg: [
-        `We were unable to find this user.`,
-        `This email and/or password combo may be incorrect.
+    // console.log('res.locals.user ', res.locals.user);
+    if (!user) {
+      return res.status(404).send({
+        msg: [
+          `We were unable to find this user.`,
+          `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
-      ]
-    });
-  }
+        ]
+      });
+    }
 
-  if (user.isVerified === false) {
-    return res.status(401).send({
-      msg: [
-        'Your username has not been verified!',
-        'Check your email for a confirmation link.'
-      ]
-    });
-  } else {
-    return res.status(200).send({
-      msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
-    });
-  }
+    if (user.isVerified === false) {
+      return res.status(401).send({
+        msg: [
+          'Your username has not been verified!',
+          'Check your email for a confirmation link.'
+        ]
+      });
+    } else {
+      return res.status(200).send({
+        msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
+      });
+    }
+  })(req, res, next);
 });
 
 router.get('/logout', (req, res) => {
@@ -91,8 +95,9 @@ router.get('/logout', (req, res) => {
 });
 
 router.post('/registration', (req, res) => {
-  var user = req.user;
-  User.findOne({ username: req.body.username }, function(err, user) {
+  User.findOne({ username: req.body.username }).then(user => {
+    console.log('req.body ', req.body);
+    console.log('user ', user);
     if (user) {
       return res.status(409).send({
         msg: [
@@ -100,40 +105,39 @@ router.post('/registration', (req, res) => {
           'Please re-enter another email address.'
         ]
       });
-    }
-
-    user = new User({
-      username: req.body.username,
-      password: req.body.password
-    });
-
-    user.save(function(err) {
-      if (err) {
-        return res.status(401).send({
-          msg: [
-            'You entered an incorrect username and/or email.',
-            'Please follow the validations above, re-enter a proper email and password.'
-          ]
-        });
-      }
-
-      nodeMailerFunc(
-        user,
-        `Account Verification`,
-        `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
-          req.headers.host
-        }/confirmed`,
-        'verification email',
-        res
-      );
-      console.log('user ', user);
-      return res.status(201).send({
-        msg: [
-          'Your user registration was successful.',
-          'Please check your email to complete your registration!'
-        ]
+    } else if (user === null) {
+      const user = new User({
+        username: req.body.username,
+        password: req.body.password
       });
-    });
+      user
+        .save()
+        .then(result => {
+          nodeMailerFunc(
+            user,
+            `Account Verification`,
+            `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+              req.headers.host
+            }/confirmed`,
+            'verification email',
+            res
+          );
+          return res.status(201).send({
+            msg: [
+              'Your user registration was successful.',
+              'Please check your email to complete your registration!'
+            ]
+          });
+        })
+        .catch(err => {
+          return res.status(401).send({
+            msg: [
+              'You entered an incorrect username and/or email.',
+              'Please follow the validations above, re-enter a proper email and password.'
+            ]
+          });
+        });
+    }
   });
 });
 
@@ -268,7 +272,7 @@ router.post('/reset_password/:token', (req, res, next) => {
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, './uploads/avatar');
+    cb(null, './uploads/avatar/');
   },
   filename: function(req, file, cb) {
     const ext = file.mimetype.split('/')[1];
@@ -300,13 +304,13 @@ using mulkter and creates a reference to the file
 router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
 
-  console.log('path ', req.file.path);
+  console.log('path ', req.file);
   var user = req.user;
   var newImage = new Image({
     avatar: {
       _userId: user._id,
-      imageName: req.body.imageName,
-      imageData: req.body.imageData
+      imageName: req.file.filename,
+      imageData: req.file.path
     }
   });
 
