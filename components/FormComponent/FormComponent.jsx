@@ -70,7 +70,7 @@ function FormComponent({
   var [formError, setFormError] = useState(false);
   var [disableButton, setDisableButton] = useState(false);
   var [isLoading, setIsLoading] = useState(false);
-  var [responseMessage, setResponseMessage] = useState({});
+  var [responseMessage, setResponseMessage] = useState(['', '']);
   var [tokenExpired, setTokenExpired] = useState(false);
   var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   var [error, setError] = useState(false);
