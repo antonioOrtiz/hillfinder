@@ -299,16 +299,18 @@ class MobileContainer extends Component {
                 <Menu.Item position="right">
                   <Button inverted>
                     {isLoggedIn ? (
-                      <Link to="/" onClick={modalStateOn}>
+                      <Link href to="/" onClick={modalStateOn}>
                         Log out
                       </Link>
                     ) : (
-                      <Link to="/login">Log in</Link>
+                      <Link href to="/login">
+                        Log in
+                      </Link>
                     )}
                   </Button>
                   {!isLoggedIn ? (
                     <Button inverted style={{ marginLeft: '0.5em' }}>
-                      <Link to="/register">
+                      <Link href to="/register">
                         <span>Register!</span>
                       </Link>
                     </Button>
