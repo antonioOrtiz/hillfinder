@@ -7,14 +7,15 @@ const SALT_ROUNDS = 12;
 
 var UserSchema = new mongoose.Schema(
   {
-    username_email: {
+    username: {
       type: String,
       required: true,
+      trim: true,
       lowercase: true,
       index: { unique: true },
       validate: {
         validator: emailValidator.validate,
-        message: props => `${props.value} is not a valid email address`
+        message: props => `${props.value} is not a valid email address!`
       }
     },
     password: {
@@ -22,8 +23,13 @@ var UserSchema = new mongoose.Schema(
       required: true,
       trim: true,
       index: { unique: true },
-      minlength: 8
-    }
+      minlength: 7,
+      maxlength: 11
+    },
+    roles: [{ type: 'String' }],
+    isVerified: { type: Boolean, default: false },
+    passwordResetToken: String,
+    resetPasswordExpires: Date
   },
   {
     timestamps: true
@@ -31,17 +37,23 @@ var UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre('save', async function preSave(next) {
-  var user = this;
-  var hash;
+  const user = this;
   if (!user.isModified('password')) return next();
   try {
-    hash = await bcrypt.hash(user.password, SALT_ROUNDS);
+    const hash = await bcrypt.hash(user.password, SALT_ROUNDS);
     user.password = hash;
     return next();
   } catch (err) {
     return next(err);
   }
 });
+
+UserSchema.methods.generatePasswordReset = function() {
+  this.resetPasswordToken = require('crypto')
+    .randomBytes(20)
+    .toString('hex');
+  this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+};
 
 UserSchema.methods.comparePassword = async function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
