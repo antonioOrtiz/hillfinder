@@ -44,13 +44,31 @@ function NODE_ENVSetter(ENV) {
   return environment;
 }
 
+function errorHandler(err, req, res, next) {
+  // Set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // Log error
+  console.error(err.stack);
+
+  // Render the error page
+  res.status(err.status || 500);
+
+  // Default error message by HTTP code
+  res.render('error', {
+    title: HttpStatus.getStatusText(err.status),
+    message: HttpStatus.getStatusText(err.status)
+  });
+}
+
 var db = NODE_ENVSetter('development');
 
-function start() {
+async function start() {
   const dev = process.env.NODE_ENV !== 'production';
   const app = nextJS({ dev });
-  server = express();
-  app
+  var server = express();
+  await app
     .prepare()
     .then(() => {
       mongoose.connect(db, {
@@ -89,10 +107,11 @@ function start() {
   server.use(cors());
   server.use(cookieParser());
   server.use(bodyParser.json());
+
   server.use(
     session({
       secret: 'very secret 12345',
-      resave: true,
+      resave: false,
       saveUninitialized: false,
       store: new MongoStore({ mongooseConnection: mongoose.connection })
     })
@@ -101,6 +120,7 @@ function start() {
 
   server.use(auth.initialize);
   server.use(auth.session);
+  server.use(auth.setUser);
 
   server.use(compression());
   server.use(helmet());
@@ -148,9 +168,21 @@ function start() {
       next(e);
     }
   });
+  // catch 404 and forward to error handler
+  server.use(function(req, res, next) {
+    next(createError(404));
+  });
 
-  server.all('*', (req, res, next) => {
-    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  // error handler
+  server.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.errorStatus = err.status;
+    res.locals.errorMessage = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    console.log('err.status ', err.status);
+
+    console.log('err.message ', err.message);
+    res.status(401).send(err.message);
   });
 
   if (process.env.NODE_ENV === 'production') {
