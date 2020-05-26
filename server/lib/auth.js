@@ -1,13 +1,13 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var UserModel = require('../models/userModel');
+var User = require('../models/userModel');
 
 passport.use(
   new LocalStrategy(
     { usernameField: 'username', passwordField: 'password' },
     async (username, password, done) => {
       try {
-        const user = await UserModel.findOne({ username: username }).exec();
+        const user = await User.findOne({ username: username }).exec();
         if (!user) {
           return done(null, false, { message: 'Invalid username!' });
         }
@@ -31,7 +31,7 @@ passport.serializeUser((user, done) => done(null, user._id));
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await UserModel.findById(id).exec(); //exec is used to get a real Promise
+    const user = await User.findById(id).exec(); //exec is used to get a real Promise
     return done(null, user);
   } catch (err) {
     return done(err);
@@ -40,5 +40,9 @@ passport.deserializeUser(async (id, done) => {
 
 module.exports = {
   initialize: passport.initialize(),
-  session: passport.session()
+  session: passport.session(),
+  setUser: (req, res, next) => {
+    res.locals.user = req.user;
+    return next();
+  }
 };
