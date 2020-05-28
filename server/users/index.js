@@ -52,34 +52,34 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 }
 
-router.route('/login').post((req, res, next) => {
-  passport.authenticate('local', (err, user) => {
-    console.log('req.user ', req.user);
+router.route('/login').post(passport.authenticate('local'), (req, res, next) => {
+  var user = req.user;
+  console.log('user line 57 ', req);
+  console.log('user line 58', user);
 
-    // console.log('res.locals.user ', res.locals.user);
-    if (!user) {
-      return res.status(404).send({
-        msg: [
-          `We were unable to find this user.`,
-          `This email and/or password combo may be incorrect.
+  // console.log('res.locals.user ', res.locals.user);
+  if (!user) {
+    return res.status(404).send({
+      msg: [
+        `We were unable to find this user.`,
+        `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
-        ]
-      });
-    }
+      ]
+    });
+  }
 
-    if (user.isVerified === false) {
-      return res.status(401).send({
-        msg: [
-          'Your username has not been verified!',
-          'Check your email for a confirmation link.'
-        ]
-      });
-    } else {
-      return res.status(200).send({
-        msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
-      });
-    }
-  })(req, res, next);
+  if (user.isVerified === false) {
+    return res.status(401).send({
+      msg: [
+        'Your username has not been verified!',
+        'Check your email for a confirmation link.'
+      ]
+    });
+  } else {
+    return res.status(200).send({
+      msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
+    });
+  }
 });
 
 router.route('/registration').post((req, res, next) => {

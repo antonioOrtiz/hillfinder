@@ -32,6 +32,8 @@ passport.serializeUser((user, done) => done(null, user._id));
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await UserModel.findById(id).exec();
+
+    console.log('user ', user);
     return done(null, user);
   } catch (err) {
     return done(err);
@@ -40,5 +42,10 @@ passport.deserializeUser(async (id, done) => {
 
 module.exports = {
   initialize: passport.initialize(),
-  session: passport.session()
+  session: passport.session(),
+  setUser: (req, res, next) => {
+    console.log('in lib.auth.js 47 ', req.user);
+    res.locals.user = req.user;
+    return next();
+  }
 };

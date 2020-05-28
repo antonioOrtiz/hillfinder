@@ -110,7 +110,7 @@ function start() {
   server.use(helmet());
   server.use(auth.initialize);
   server.use(auth.session);
-  // server.use(auth.setUser);
+  server.use(auth.setUser);
   // console.log('auth.setUser ', auth.setUser);
 
   server.use(cors());
