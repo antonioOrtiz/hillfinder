@@ -36,7 +36,7 @@
         "multer": "^1.4.2",
         "multiparty": "^4.2.1",
         "newrelic": "^6.6.0",
-        "next": "^9.2.1",
+        "next": "^8.0.3",
         "next-authentication": "^0.1.1",
         "next-page-transitions": "^1.0.0-beta.2",
         "next-redux-wrapper": "^3.0.0",
