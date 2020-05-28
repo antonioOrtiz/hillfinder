@@ -91,6 +91,7 @@ function start() {
   server.set('view engine', 'html');
 
   server.use('/uploads', express.static(__dirname + '/uploads'));
+  server.use(express.json());
   server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
   server.use(bodyParser.json({ limit: '50mb' }));
   server.use(morgan('dev'));
@@ -160,19 +161,19 @@ function start() {
   });
 
   // catch 404 and forward to error handler
-  server.use(function(req, res, next) {
-    next(createError(404));
-  });
+  // server.use(function(req, res, next) {
+  //   next(createError(404));
+  // });
 
-  // error handler
-  server.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.errorStatus = err.status;
-    res.locals.errorMessage = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    console.log('err.status ', err.status);
-    res.status(401).send(err.message);
-  });
+  // // error handler
+  // server.use(function(err, req, res, next) {
+  //   // set locals, only providing error in development
+  //   res.locals.errorStatus = err.status;
+  //   res.locals.errorMessage = err.message;
+  //   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  //   console.log('err.status ', err.status);
+  //   res.status(401).send(err.message);
+  // });
 
   if (process.env.NODE_ENV === 'production') {
     server.use(express.static('.next/static'));

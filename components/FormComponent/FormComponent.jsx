@@ -628,7 +628,7 @@ function FormComponent({
         }
       })
       .catch(function(error) {
-        console.log(error);
+        console.log(error.response);
         if (error.response) {
           if (error.response.status === 404) {
             setResponseMessage(error.response.data.msg);
@@ -664,17 +664,29 @@ function FormComponent({
         }
       })
       .catch(function(error) {
+        console.log('error ', error);
+
+        console.log('error.response ', error.response);
+        console.log('error.response.data.msg ', error.response.data.msg);
         if (error.response) {
           if (error.response.status === 401) {
-            userHasNotBeenVerified();
+            // userHasNotBeenVerified();
             setUsername('');
             setPassword('');
-            setFormError(false);
+            setFormError(true);
             setFormSuccess(false);
             setIsLoading(false);
             setResponseMessage(error.response.data.msg);
           }
           if (error.response.status === 404) {
+            setUsername('');
+            setPassword('');
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setResponseMessage(error.response.data.msg);
+          }
+          if (error.response.status === 422) {
             setUsername('');
             setPassword('');
             setFormError(true);

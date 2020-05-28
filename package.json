@@ -22,6 +22,7 @@
         "email-validator": "^2.0.4",
         "express": "^4.16.4",
         "express-session": "^1.15.6",
+        "express-validator": "^6.5.0",
         "font-awesome": "^4.7.0",
         "helmet": "^3.22.0",
         "http-proxy-middleware": "^1.0.3",

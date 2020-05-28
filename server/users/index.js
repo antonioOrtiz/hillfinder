@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
 require('dotenv').config();
+const { check, validationResult } = require('express-validator');
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
@@ -52,35 +53,55 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 }
 
-router.route('/login').post(passport.authenticate('local'), (req, res, next) => {
-  var user = req.user;
-  console.log('user line 57 ', req);
-  console.log('user line 58', user);
+router.route('/login').post(
+  [
+    // username must be an email
+    // password must be at least 5 chars long
+    check('password').isLength({ min: 7, max: 11 })
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
 
-  // console.log('res.locals.user ', res.locals.user);
-  if (!user) {
-    return res.status(404).send({
-      msg: [
-        `We were unable to find this user.`,
-        `This email and/or password combo may be incorrect.
+    console.log('errors line 68 ', errors);
+    if (!errors.isEmpty()) {
+      return res.status(401).send({
+        msg: [
+          'You entered an incorrect username and/or password',
+          'Please follow the validations above, re-enter a proper email and/or password.'
+        ]
+      });
+    }
+  },
+  passport.authenticate('local'),
+
+  (req, res, next) => {
+    var user = req.user;
+
+    // console.log('res.locals.user ', res.locals.user);
+    if (!user) {
+      return res.status(404).send({
+        msg: [
+          `We were unable to find this user.`,
+          `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
-      ]
-    });
-  }
+        ]
+      });
+    }
 
-  if (user.isVerified === false) {
-    return res.status(401).send({
-      msg: [
-        'Your username has not been verified!',
-        'Check your email for a confirmation link.'
-      ]
-    });
-  } else {
-    return res.status(200).send({
-      msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
-    });
+    if (user.isVerified === false) {
+      return res.status(403).send({
+        msg: [
+          'Your username has not been verified!',
+          'Check your email for a confirmation link.'
+        ]
+      });
+    } else {
+      return res.status(200).send({
+        msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
+      });
+    }
   }
-});
+);
 
 router.route('/registration').post((req, res, next) => {
   User.findOne({ username: req.body.username }, function(err, user) {
@@ -117,7 +138,6 @@ router.route('/registration').post((req, res, next) => {
         'verification email',
         res
       );
-      console.log('user ', user);
       return res.status(201).send({
         msg: [
           'Your user registration was successful.',
@@ -220,7 +240,6 @@ router.route('/reset_password/:token').post((req, res, next) => {
       }
       if (token) {
         User.findOne({ _id: token._userId }, function(err, user) {
-          console.log('user ', user);
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
