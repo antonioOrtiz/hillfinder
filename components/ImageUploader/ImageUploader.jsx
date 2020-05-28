@@ -6,7 +6,7 @@ import axios from 'axios';
 
 function ImageUploader() {
   var [defaultImage, setDefaultImage] = useState(
-    require('../../assets/images/placeholder.jpg')
+    require('../../uploads/avatar/placeholder.jpg')
   );
   var [userAvatar, setUserAvatar] = useState(defaultImage);
 

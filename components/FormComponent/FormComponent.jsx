@@ -24,6 +24,8 @@ import {
 import { Link } from 'react-router-dom';
 import { validateInputs } from '../../utils/index';
 
+import axios from 'axios';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Container } from 'next/app';

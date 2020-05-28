@@ -54,7 +54,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 
 router.route('/login').post((req, res, next) => {
   passport.authenticate('local', (err, user) => {
-    console.log('user ', user);
+    console.log('req.user ', req.user);
 
     // console.log('res.locals.user ', res.locals.user);
     if (!user) {

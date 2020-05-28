@@ -115,7 +115,7 @@ function start() {
 
   server.use(cors());
   server.use('/users', require('./users'));
-  server.use('/images', require('./images'));
+  // server.use('/images', require('./images'));
 
   // Redirect all requests to main entrypoint pages/index.js
   server.get('/*', async (req, res, next) => {
