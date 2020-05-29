@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
 require('dotenv').config();
-const { check, validationResult } = require('express-validator');
+var { check, validationResult } = require('express-validator');
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
@@ -59,7 +59,7 @@ router.route('/login').post(
     // password must be at least 5 chars long
     check('password').isLength({ min: 7, max: 11 })
   ],
-  (req, res) => {
+  (req, res, next) => {
     const errors = validationResult(req);
 
     console.log('errors line 68 ', errors);
@@ -71,35 +71,38 @@ router.route('/login').post(
         ]
       });
     }
+    next();
   },
-  passport.authenticate('local'),
-
-  (req, res, next) => {
-    var user = req.user;
-
-    // console.log('res.locals.user ', res.locals.user);
-    if (!user) {
-      return res.status(404).send({
-        msg: [
-          `We were unable to find this user.`,
-          `This email and/or password combo may be incorrect.
+  function(req, res, next) {
+    // generate the authenticate method and pass the req/res
+    passport.authenticate('local', function(err, user, info) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(404).send({
+          msg: [
+            `We were unable to find this user.`,
+            `This email and/or password combo may be incorrect.
           Please confirm with the "Forgot password" link above or the "Register" link below!`
-        ]
-      });
-    }
+          ]
+        });
+      }
 
-    if (user.isVerified === false) {
-      return res.status(403).send({
-        msg: [
-          'Your username has not been verified!',
-          'Check your email for a confirmation link.'
-        ]
-      });
-    } else {
-      return res.status(200).send({
-        msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
-      });
-    }
+      // req / res held in closure
+      if (user.isVerified === false) {
+        return res.status(403).send({
+          msg: [
+            'Your username has not been verified!',
+            'Check your email for a confirmation link.'
+          ]
+        });
+      } else {
+        return res.status(200).send({
+          msg: [`Your have successfully logged in;`, `Welcome to Hillfinders!`]
+        });
+      }
+    })(req, res, next);
   }
 );
 

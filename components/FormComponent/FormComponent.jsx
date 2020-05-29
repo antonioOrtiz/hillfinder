@@ -304,7 +304,7 @@ function FormComponent({
                 <Link to="/forgot_password">Forgot password?</Link>
 
                 <Transition
-                  visible={accountNotVerified}
+                  visible={accountNotVerified && !formError}
                   unmountOnHide={true}
                   animation="scale"
                   duration={duration}
@@ -670,10 +670,18 @@ function FormComponent({
         console.log('error.response.data.msg ', error.response.data.msg);
         if (error.response) {
           if (error.response.status === 401) {
-            // userHasNotBeenVerified();
             setUsername('');
             setPassword('');
             setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setResponseMessage(error.response.data.msg);
+          }
+          if (error.response.status === 403) {
+            userHasNotBeenVerified();
+            setUsername('');
+            setPassword('');
+            setFormError(false);
             setFormSuccess(false);
             setIsLoading(false);
             setResponseMessage(error.response.data.msg);
