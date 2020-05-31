@@ -417,6 +417,7 @@ router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
 
   console.log('user /uploadmulter ', req.user);
+  var user = req.user;
   var newImage = new Image({
     avatar: {
       _userId: user._id,

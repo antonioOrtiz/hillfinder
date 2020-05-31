@@ -34,6 +34,7 @@ using mulkter and creates a reference to the file
 */
 
 router.route('/uploadmulter').post(upload.single('imageData'), (req, res, next) => {
+  console.log('req.user', req.user);
   var newImage = new Image({
     imageName: req.body.imageName,
     imageData: req.file.path
