@@ -61,34 +61,34 @@ function bar(req, res, next) {
   console.log('req.user', req.user), next();
 }
 
-function passportLogin(req, res, next) {
-  passport.authenticate('local', { session: true }, function(err, user, info) {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.status(404).send({
-        msg: [
-          `We were unable to find this user.`,
-          `This email and/or password combo may be incorrect.
-              Please confirm with the "Forgot password" link above or the "Register" link below!`
-        ]
-      });
-    }
-    if (user.isVerified === false) {
-      return res.status(403).send({
-        msg: [
-          'Your username has not been verified!',
-          'Check your email for a confirmation link.'
-        ]
-      });
-    }
-    // edit as per comment
-    //return res.send("Test Route Accessed").end();
-    req.user = user; // Forward user information to the next middleware
-    next();
-  })(req, res, next);
-}
+// function passportLogin(req, res, next) {
+//   passport.authenticate('local', { session: true }, function(err, user, info) {
+//     if (err) {
+//       return next(err);
+//     }
+//     if (!user) {
+//       return res.status(404).send({
+//         msg: [
+//           `We were unable to find this user.`,
+//           `This email and/or password combo may be incorrect.
+//               Please confirm with the "Forgot password" link above or the "Register" link below!`
+//         ]
+//       });
+//     }
+//     if (user.isVerified === false) {
+//       return res.status(403).send({
+//         msg: [
+//           'Your username has not been verified!',
+//           'Check your email for a confirmation link.'
+//         ]
+//       });
+//     }
+//     // edit as per comment
+//     //return res.send("Test Route Accessed").end();
+//     req.user = user; // Forward user information to the next middleware
+//     next();
+//   })(req, res, next);
+// }
 
 // Since we are using the passport.authenticate() method, we should be redirected no matter what
 router.post(
@@ -100,6 +100,7 @@ router.post(
     check('password').isLength({ min: 7, max: 11 })
   ],
   function(req, res, next) {
+    console.log('req.user 103 ', req.user);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(401).send({
@@ -415,6 +416,8 @@ using mulkter and creates a reference to the file
 
 router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
+  console.log('req.user in images', req.user);
+  console.log('res.locals', res.locals);
 
   console.log('user /uploadmulter ', req.user);
   var user = req.user;
