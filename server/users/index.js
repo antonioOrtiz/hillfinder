@@ -416,8 +416,6 @@ using mulkter and creates a reference to the file
 
 router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
-  console.log('req.user in images', req.user);
-  console.log('res.locals', res.locals);
 
   console.log('user /uploadmulter ', req.user);
   var user = req.user;
