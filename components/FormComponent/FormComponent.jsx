@@ -251,7 +251,9 @@ function FormComponent({
 
   function isLoginForm() {
     console.log('accountNotVerified ', accountNotVerified);
-    useEffect(() => {}, []);
+    useEffect(() => {
+      resetUserAcoountVerified();
+    }, []);
 
     return (
       <div className="login-form">
@@ -644,7 +646,8 @@ function FormComponent({
     axios
       .post('/users/login', {
         username: username,
-        password: password
+        password: password,
+        withCredentials: true
       })
       .then(response => {
         console.log('response', response);
@@ -710,7 +713,8 @@ function FormComponent({
     axios
       .post('/users/registration', {
         username: username,
-        password: password
+        password: password,
+        withCredentials: true
       })
       .then(response => {
         console.log('response', response);
