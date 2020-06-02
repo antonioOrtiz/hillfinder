@@ -669,10 +669,22 @@ function FormComponent({
       .catch(function(error) {
         console.log('error ', error);
 
-        console.log('error.response ', error.response);
-        console.log('error.response.data.msg ', error.response.data.msg);
+        console.log('error.response.statusText === Unauthorized', error.response);
+
+        if (error.response.statusText === 'Unauthorized') {
+          setUsername('');
+          setPassword('');
+          setFormError(true);
+          setFormSuccess(false);
+          setIsLoading(false);
+          setResponseMessage([
+            `Incorrect password`,
+            `The password you've entered with this email/username is incorrect, please reset it using the link above`
+          ]);
+        }
+
         if (error.response) {
-          if (error.response.status === 401) {
+          if (error.response.status === 401 && error.response.data !== 'Unauthorized') {
             setUsername('');
             setPassword('');
             setFormError(true);
@@ -680,6 +692,7 @@ function FormComponent({
             setIsLoading(false);
             setResponseMessage(error.response.data.msg);
           }
+
           if (error.response.status === 403) {
             userHasNotBeenVerified();
             setUsername('');
