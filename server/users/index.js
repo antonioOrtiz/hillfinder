@@ -57,39 +57,6 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 }
 
-function bar(req, res, next) {
-  console.log('req.user', req.user), next();
-}
-
-// function passportLogin(req, res, next) {
-//   passport.authenticate('local', { session: true }, function(err, user, info) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!user) {
-//       return res.status(404).send({
-//         msg: [
-//           `We were unable to find this user.`,
-//           `This email and/or password combo may be incorrect.
-//               Please confirm with the "Forgot password" link above or the "Register" link below!`
-//         ]
-//       });
-//     }
-//     if (user.isVerified === false) {
-//       return res.status(403).send({
-//         msg: [
-//           'Your username has not been verified!',
-//           'Check your email for a confirmation link.'
-//         ]
-//       });
-//     }
-//     // edit as per comment
-//     //return res.send("Test Route Accessed").end();
-//     req.user = user; // Forward user information to the next middleware
-//     next();
-//   })(req, res, next);
-// }
-
 // Since we are using the passport.authenticate() method, we should be redirected no matter what
 router.post(
   '/login',
@@ -146,58 +113,8 @@ router.post(
     return res.status(200).send({
       msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
     });
-  },
-  bar
+  }
 );
-
-// router.route('/login').post(
-
-//     passport.authenticate('local', { session: true }, function(err, user, info) {
-//       console.log('in passport');
-
-//       console.log('user ', user);
-//       if (!user) {
-//         return res.status(404).send({
-//           msg: [
-//             `We were unable to find this user.`,
-//             `This email and/or password combo may be incorrect.
-//               Please confirm with the "Forgot password" link above or the "Register" link below!`
-//           ]
-//         });
-//       }
-
-//       if (user.isVerified === false) {
-//         return res.status(403).send({
-//           msg: [
-//             'Your username has not been verified!',
-//             'Check your email for a confirmation link.'
-//           ]
-//         });
-//       } else {
-//         return res.status(200).send({
-//           msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
-//         });
-//       }
-//     })(req, res, next);
-//   }
-// );
-
-// app.get('/login', function(req, res, next) {
-//   passport.authenticate('local', function(err, user, info) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!user) {
-//       return res.redirect('/login');
-//     }
-//     req.logIn(user, function(err) {
-//       if (err) {
-//         return next(err);
-//       }
-//       return res.redirect('/users/' + user.username);
-//     });
-//   })(req, res, next);
-// });
 
 router.get('/logout', (req, res) => {
   req.logout();
@@ -385,7 +302,7 @@ router.post('/reset_password/:token', (req, res, next) => {
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, './uploads/avatar/');
+    cb(null, './public/uploads/avatar/');
   },
   filename: function(req, file, cb) {
     const ext = file.mimetype.split('/')[1];
