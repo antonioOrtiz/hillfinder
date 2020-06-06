@@ -4,7 +4,10 @@ import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
 import axios from 'axios';
 
-function ImageUploader() {
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+function ImageUploader({ userAvatar }) {
   var [defaultImage, setDefaultImage] = useState(
     require('../../uploads/avatar/placeholder.jpg')
   );
@@ -32,7 +35,6 @@ function ImageUploader() {
       .then(data => {
         if (data.data.success) {
           alert('Image has been successfully uploaded using multer');
-          this.setDefaultImage('multer');
         }
       })
       .catch(err => {
@@ -84,4 +86,16 @@ function ImageUploader() {
   );
 }
 
-export default ImageUploader;
+function mapStateToProps(state) {
+  const { users } = state;
+  const { userAvatar } = users;
+
+  return { userAvatar };
+}
+
+const mapDispatchToProps = dispatch => bindActionCreators({ loadAvatar }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImageUploader);
