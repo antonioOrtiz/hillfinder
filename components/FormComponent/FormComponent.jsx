@@ -18,7 +18,8 @@ import {
   logInUser,
   userHasBeenVerified,
   userHasNotBeenVerified,
-  resetUserAcoountVerified
+  resetUserAcoountVerified,
+  errorLoading
 } from '../../store/reducers/users/index';
 
 import { Link } from 'react-router-dom';
@@ -43,7 +44,8 @@ function FormComponent({
   accountNotVerified,
   userHasBeenVerified,
   userHasNotBeenVerified,
-  resetUserAcoountVerified
+  resetUserAcoountVerified,
+  errorLoading
 }) {
   var Forms = {
     Hillfinders: [isHillfindersForm],
@@ -250,7 +252,6 @@ function FormComponent({
   }
 
   function isLoginForm() {
-    console.log('accountNotVerified ', accountNotVerified);
     useEffect(() => {
       resetUserAcoountVerified();
     }, []);
@@ -650,7 +651,6 @@ function FormComponent({
         withCredentials: true
       })
       .then(response => {
-        console.log('response', response);
         if (response.status === 200) {
           setTimeout(() => {
             logInUser();
@@ -664,13 +664,12 @@ function FormComponent({
           setIsLoading(false);
           setResponseMessage(response.data.msg);
           userHasBeenVerified();
+
+          console.log('*******errorLoading');
+          errorLoading();
         }
       })
       .catch(function(error) {
-        console.log('error ', error);
-
-        console.log('error.response.statusText === Unauthorized', error.response);
-
         if (error.response.statusText === 'Unauthorized') {
           setUsername('');
           setPassword('');
@@ -745,10 +744,6 @@ function FormComponent({
         }
       })
       .catch(function(error) {
-        console.log('error ', error);
-        console.log('error.response', error.response);
-
-        console.log('error.response.status', error.response.status);
         if (error.response.status === 500) {
           setResponseMessage(error.response.data.msg);
           setIsLoading(false);
@@ -828,7 +823,6 @@ function FormComponent({
   function handleSubmit(event, formType) {
     event.preventDefault();
 
-    console.log('before validate');
     validateInputs(
       formType,
       username,
@@ -844,7 +838,6 @@ function FormComponent({
       setFormSuccess,
       setFormError
     );
-    console.log('after validate');
 
     return Forms[formType][1]();
   }
@@ -859,7 +852,13 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { logInUser, userHasBeenVerified, userHasNotBeenVerified, resetUserAcoountVerified },
+    {
+      logInUser,
+      userHasBeenVerified,
+      userHasNotBeenVerified,
+      resetUserAcoountVerified,
+      errorLoading
+    },
     dispatch
   );
 
