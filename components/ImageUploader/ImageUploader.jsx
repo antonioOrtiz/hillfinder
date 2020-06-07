@@ -3,15 +3,16 @@ import { useState, useEffect } from 'react';
 import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
 
 import axios from 'axios';
-
+import localAvatar from './profile-avatars/placeholder.jpg';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
+import { loadAvatar } from '../../store/reducers/users/index.js';
 function ImageUploader({ userAvatar }) {
-  var [defaultImage, setDefaultImage] = useState(
-    require('../../uploads/avatar/placeholder.jpg')
-  );
-  var [userAvatar, setUserAvatar] = useState(defaultImage);
+  // var [defaultImage, setDefaultImage] = useState('');
+  var [userAvatar, setUserAvatar] = useState(userAvatar);
+  // console.log('localUserAvatar in imageloader', localUserAvatar);
+
+  console.log('userAvatar in imageloader', userAvatar);
 
   useEffect(() => {
     setUserAvatar(userAvatar);
@@ -46,7 +47,7 @@ function ImageUploader({ userAvatar }) {
     <>
       <Segment>
         <Card fluid>
-          <Image src={userAvatar} alt="upload-image" />
+          <Image src={localAvatar} alt="user-avatar" />
           <Segment>
             <Form encType="multipart/form-data">
               <Form.Field>
