@@ -1,11 +1,11 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 
 /* imported reducers */
-import ui from './reducers/ui/index';
-import users from './reducers/users/index';
+import ui, { uiStartState } from './reducers/ui/index';
+import users, { usersStartState } from './reducers/users/index';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { persistStore } from 'redux-persist';
+import { createMigrate, persistStore } from 'redux-persist';
 
 import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
@@ -17,10 +17,13 @@ var rootReducer = combineReducers({
   ui: ui
 });
 
+var state = { ...uiStartState, ...usersStartState };
+
 // var startState = Object.assign({}, uiStartState, usersStartState)
 
-export default () => {
+export default (initialState = state) => {
   let store;
+
   const isClient = typeof window !== 'undefined';
   if (isClient) {
     const { persistReducer } = require('redux-persist');
@@ -29,11 +32,11 @@ export default () => {
       key: 'root',
       storage,
       stateReconciler: autoMergeLevel2,
-
-      whitelist: ['users', 'ui'] // place to select which state you want to persist
+      whitelist: ['users', 'ui']
     };
     store = createStore(
       persistReducer(persistConfig, rootReducer),
+      initialState,
       composeWithDevTools(
         applyMiddleware(thunkMiddleware, createLogger({ collapsed: false }))
       )
@@ -42,6 +45,7 @@ export default () => {
   } else {
     store = createStore(
       rootReducer,
+      initialState,
       composeWithDevTools(
         applyMiddleware(thunkMiddleware, createLogger({ collapsed: false }))
       )

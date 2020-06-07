@@ -3,7 +3,7 @@ export var usersStartState = {
   accountNotVerified: null,
   isLoggedIn: false,
   error: true,
-  userAvatar: ''
+  userAvatar: require('../../../public/static/uploads/profile-avatars/placeholder.jpg')
 };
 
 /* action types */
@@ -39,7 +39,7 @@ export default function users(state = usersStartState, action) {
       return Object.assign({}, state, { error: false, userAvatar: action.data });
 
     case actionTypes.ERROR_LOADING:
-      return Object.assign({}, state, { error: true });
+      return { ...state, error: false };
 
     default:
       return state;
@@ -72,5 +72,6 @@ export const loadAvatar = data => {
 };
 
 export const errorLoading = () => {
+  console.log('in error ');
   return { type: actionTypes.ERROR_LOADING };
 };
