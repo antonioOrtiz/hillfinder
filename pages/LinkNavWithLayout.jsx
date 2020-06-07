@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
-import { loadAvatar } from '../store/reducers/users/index';
+import { loadAvatar, errorLoading } from '../store/reducers/users/index';
 
 const getWidth = () => {
   const isSSR = typeof window === 'undefined';
@@ -87,7 +87,8 @@ const logOutMenuItemHelper = (
     nav,
     NavLink,
     modalStateOn,
-    modalStateOff
+    modalStateOff,
+    errorLoading
   ) {
     if (nav.name === 'Log in') {
       return (
@@ -105,6 +106,8 @@ const logOutMenuItemHelper = (
             key={'modalForDesktop'}
             name="Log out"
             onClick={event => {
+              console.log('errorLoading-------');
+              errorLoading();
               modalStateOn();
             }}
           >
@@ -136,7 +139,8 @@ const logOutMenuItemHelper = (
     nav,
     NavLink,
     modalStateOn,
-    modalStateOff
+    modalStateOff,
+    errorLoading
   );
 };
 
@@ -155,7 +159,8 @@ class DesktopContainer extends Component {
       isLoggedIn,
       modalActive,
       modalStateOn,
-      modalStateOff
+      modalStateOff,
+      errorLoading
     } = this.props;
 
     return (
@@ -193,7 +198,8 @@ class DesktopContainer extends Component {
                         nav,
                         NavLink,
                         modalStateOn,
-                        modalStateOff
+                        modalStateOff,
+                        errorLoading
                       );
                     })
                 : data
@@ -334,7 +340,6 @@ const LinkNavWithLayout = ({
   children,
   history,
   data,
-  userAvatar,
   modalActive,
   modalStateOn,
   modalStateOff,
@@ -344,18 +349,17 @@ const LinkNavWithLayout = ({
     <DesktopContainer
       history={history}
       data={data}
-      userAvatar={userAvatar}
       modalActive={modalActive}
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
       isLoggedIn={isLoggedIn}
+      errorLoading={errorLoading}
     >
       {children}
     </DesktopContainer>
     <MobileContainer
       history={history}
       data={data}
-      userAvatar={userAvatar}
       modalActive={modalActive}
       modalStateOn={modalStateOn}
       modalStateOff={modalStateOff}
@@ -368,14 +372,20 @@ const LinkNavWithLayout = ({
 
 function mapStateToProps(state) {
   const { ui, users } = state;
-  const { isLoggedIn, userAvatar } = users;
+  const { isLoggedIn } = users;
   const { modalActive } = ui;
 
-  return { isLoggedIn, userAvatar, modalActive };
+  return { isLoggedIn, modalActive };
 }
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators({ modalStateOn, modalStateOff, loadAvatar }, dispatch);
+const mapDispatchToProps = dispatch => ({
+  modalStateOn: () => dispatch(modalStateOn()),
+  modalStateOff: () => dispatch(modalStateOff()),
+  errorLoading: () => dispatch(errorLoading())
+});
+
+// const mapDispatchToProps = dispatch =>
+//   bindActionCreators({ modalStateOn, modalStateOff, loadAvatar, errorLoading }, dispatch);
 
 export default connect(
   mapStateToProps,
