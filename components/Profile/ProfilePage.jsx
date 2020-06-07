@@ -18,6 +18,8 @@ import { connect } from 'react-redux';
 
 const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
   var { userAvatar } = props;
+
+  console.log('userAvatar 22 in profile', userAvatar);
   return (
     <>
       {console.log('Profile Page!! ', props)}
@@ -31,7 +33,7 @@ const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
         <Grid.Column>
           <Segment>
             <Card fluid>
-              <ImageUploader userAvatar={userAvatar} history={history} />
+              <ImageUploader userAvatar={userAvatar} />
               <Card.Content>
                 <Card.Header>Charly</Card.Header>
                 <Card.Meta>
