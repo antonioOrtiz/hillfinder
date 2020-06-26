@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+
 import MyHeader from '../Header/Header.jsx';
 
 import {
@@ -30,11 +31,154 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Container } from 'next/app';
+import UserContext from '../UserContext/UserContext.jsx';
 
 import dynamic from 'next/dynamic';
 const MyMap = dynamic(() => import('../Map/MyMap.jsx'), {
   ssr: false
 });
+
+function GenericInputForm({
+  formHeader,
+  handleSubmit,
+  formType,
+  formError,
+  username,
+  handleChange,
+  usernameError,
+  duration,
+  usernameFeedback,
+  password,
+  passwordError,
+  passwordFeedback,
+  disableButton,
+  buttonName
+}) {
+  return (
+    <div className="login-form">
+      {' '}
+      {}
+      <style>
+        {`body > div, body > div > div, body > div > div > div.login-form { height: 100%;}`}{' '}
+      </style>
+      <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
+        <Grid.Column style={{ maxWidth: 450 }}>
+          <Header as="h2" color="green" textAlign="center">
+            {formHeader}
+          </Header>
+
+          <Form size="large" onSubmit={e => handleSubmit(e, formType)} error={formError}>
+            <Segment stacked>
+              <Form.Input
+                fluid
+                icon="user"
+                iconPosition="left"
+                placeholder="E-mail address, e.g. joe@schmoe.com"
+                name="username"
+                value={username}
+                onChange={handleChange}
+              />
+              <Transition visible={usernameError} animation="scale" duration={duration}>
+                <Message error content={usernameFeedback} />
+              </Transition>
+              <Form.Input
+                fluid
+                icon="lock"
+                iconPosition="left"
+                placeholder="Password"
+                name="password"
+                type="password"
+                value={password}
+                onChange={e => handleChange(e)}
+              />
+              <Transition visible={passwordError} animation="scale" duration={duration}>
+                <Message error content={passwordFeedback} />
+              </Transition>
+              <Button color="green" fluid size="large" disabled={disableButton}>
+                {buttonName}
+              </Button>
+              <br />
+              <Link to="/forgot_password">Forgot password?</Link>
+
+              <Transition
+                visible={accountNotVerified && !formError}
+                unmountOnHide={true}
+                animation="scale"
+                duration={duration}
+              >
+                {isLoading ? (
+                  <Dimmer active inverted>
+                    <Loader />
+                  </Dimmer>
+                ) : (
+                  <Message
+                    warning
+                    color="yellow"
+                    centered="true"
+                    header={responseMessage[0]}
+                    content={responseMessage[1]}
+                  />
+                )}
+              </Transition>
+
+              <Transition
+                visible={formError}
+                unmountOnHide={true}
+                animation="scale"
+                duration={duration}
+              >
+                {isLoading ? (
+                  <Dimmer active inverted>
+                    <Loader />
+                  </Dimmer>
+                ) : (
+                  <Message
+                    error
+                    centered="true"
+                    header={responseMessage[0]}
+                    content={responseMessage[1]}
+                  />
+                )}
+              </Transition>
+
+              <Transition
+                visible={formSuccess}
+                unmountOnHide={true}
+                animation="scale"
+                duration={duration}
+              >
+                {isLoading ? (
+                  <Dimmer active inverted>
+                    <Loader />
+                  </Dimmer>
+                ) : (
+                  <Message
+                    success
+                    header={responseMessage[0]}
+                    content={responseMessage[1]}
+                  />
+                )}
+              </Transition>
+            </Segment>
+          </Form>
+          {formError ? (
+            <Transition visible={formError} animation="scale" duration={1000}>
+              {isLoading ? (
+                <Dimmer active inverted>
+                  <Loader />
+                </Dimmer>
+              ) : (
+                <Message>
+                  <Link to="/register">Register</Link>{' '}
+                </Message>
+              )}
+            </Transition>
+          ) : null}
+        </Grid.Column>{' '}
+      </Grid>{' '}
+    </div>
+  );
+}
 
 function FormComponent({
   formType,
@@ -75,6 +219,9 @@ function FormComponent({
   var [tokenExpired, setTokenExpired] = useState(false);
   var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   var [error, setError] = useState(false);
+  var { userId, setUserId } = useContext(UserContext);
+
+  var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
 
   function isHillfindersForm() {
     return (
@@ -253,6 +400,7 @@ function FormComponent({
 
   function isLoginForm() {
     useEffect(() => {
+      console.log('userId in LoginForm ', userId);
       resetUserAcoountVerified();
     }, []);
 
@@ -651,8 +799,13 @@ function FormComponent({
         withCredentials: true
       })
       .then(response => {
+        console.log('response ', response);
+
+        console.log('response.data.userId ', response.data.userId);
+
         if (response.status === 200) {
           setTimeout(() => {
+            setUserId(response.data.userId);
             logInUser();
             history.push('/profile');
           }, 5000);
@@ -664,12 +817,11 @@ function FormComponent({
           setIsLoading(false);
           setResponseMessage(response.data.msg);
           userHasBeenVerified();
-
-          console.log('*******errorLoading');
-          errorLoading();
         }
       })
       .catch(function(error) {
+        console.log('error ', error);
+
         if (error.response.statusText === 'Unauthorized') {
           setUsername('');
           setPassword('');
