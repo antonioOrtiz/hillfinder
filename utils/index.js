@@ -1,8 +1,6 @@
 import { Responsive } from 'semantic-ui-react';
-import { sanitize } from 'indicative/sanitizer';
-
-import { extend, validate, validateAll } from 'indicative/validator';
-import { validations } from 'indicative/validator';
+import { validate, validateAll } from 'indicative/validator';
+import axios from 'axios';
 
 export function getWidthFactory(isMobileFromSSR) {
   return function() {
@@ -213,4 +211,34 @@ export function validateInputs(
   }
 
   return getFormValidation(formType);
+}
+
+export function logOutUserSession() {
+  axios
+    .get('/users/logout')
+    .then(response => {
+      if (response.status === 200) {
+        console.log('you have been logged out');
+      }
+    })
+    .catch(error => {
+      console.log('error ', error);
+    });
+}
+
+export function getUserAvatar() {
+  return axios
+    .get('/users/user_avatar')
+    .then(response => {
+      if (response.status === 200) {
+        console.log('response ', response);
+        if (!response.data.hasOwnProperty('avatar_info')) {
+          return '/static/uploads/profile-avatars/placeholder.jpg';
+        }
+        return response.data.avatar_info.secure_url;
+      }
+    })
+    .catch(function(error) {
+      console.log(`error in /users/user_avatar`);
+    });
 }
