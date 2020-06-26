@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Modal from '../components/Modal/MyModal.jsx';
 import {
@@ -13,9 +13,9 @@ import {
 } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
-import { loadAvatar, errorLoading } from '../store/reducers/users/index';
+
+import UserContext from '../components/UserContext/UserContext.jsx';
 
 const getWidth = () => {
   const isSSR = typeof window === 'undefined';
@@ -87,8 +87,7 @@ const logOutMenuItemHelper = (
     nav,
     NavLink,
     modalStateOn,
-    modalStateOff,
-    errorLoading
+    modalStateOff
   ) {
     if (nav.name === 'Log in') {
       return (
@@ -106,9 +105,8 @@ const logOutMenuItemHelper = (
             key={'modalForDesktop'}
             name="Log out"
             onClick={event => {
-              console.log('errorLoading-------');
-              errorLoading();
               modalStateOn();
+              window.localStorage.clear();
             }}
           >
             Log Out
@@ -139,8 +137,7 @@ const logOutMenuItemHelper = (
     nav,
     NavLink,
     modalStateOn,
-    modalStateOff,
-    errorLoading
+    modalStateOff
   );
 };
 
@@ -160,8 +157,10 @@ class DesktopContainer extends Component {
       modalActive,
       modalStateOn,
       modalStateOff,
-      errorLoading
+      userData
     } = this.props;
+
+    // console.log('this.props ', this.props);
 
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -198,8 +197,7 @@ class DesktopContainer extends Component {
                         nav,
                         NavLink,
                         modalStateOn,
-                        modalStateOff,
-                        errorLoading
+                        modalStateOff
                       );
                     })
                 : data
@@ -220,7 +218,7 @@ class DesktopContainer extends Component {
             </Menu>
           </Segment>
         </Visibility>
-        {children}
+        {React.cloneElement(this.props.children, { userData })}
       </Responsive>
     );
   }
@@ -241,7 +239,8 @@ class MobileContainer extends Component {
       isLoggedIn,
       modalActive,
       modalStateOn,
-      modalStateOff
+      modalStateOff,
+      userData
     } = this.props;
     const { sidebarOpened } = this.state;
 
@@ -310,16 +309,16 @@ class MobileContainer extends Component {
                 <Menu.Item position="right">
                   <Button inverted>
                     {isLoggedIn ? (
-                      <Link to="/" onClick={modalStateOn}>
+                      <Link href="/" onClick={modalStateOn}>
                         Log out
                       </Link>
                     ) : (
-                      <Link to="/login">Log in</Link>
+                      <Link href="/login">Log in</Link>
                     )}
                   </Button>
                   {!isLoggedIn ? (
                     <Button inverted style={{ marginLeft: '0.5em' }}>
-                      <Link to="/register">
+                      <Link href="/register">
                         <span>Register!</span>
                       </Link>
                     </Button>
@@ -329,7 +328,7 @@ class MobileContainer extends Component {
             </Container>
           </Segment>
 
-          {children}
+          {React.cloneElement(this.props.children, { userData })}
         </Sidebar.Pusher>
       </Responsive>
     );
@@ -344,31 +343,35 @@ const LinkNavWithLayout = ({
   modalStateOn,
   modalStateOff,
   isLoggedIn
-}) => (
-  <React.Fragment>
-    <DesktopContainer
-      history={history}
-      data={data}
-      modalActive={modalActive}
-      modalStateOn={modalStateOn}
-      modalStateOff={modalStateOff}
-      isLoggedIn={isLoggedIn}
-      errorLoading={errorLoading}
-    >
-      {children}
-    </DesktopContainer>
-    <MobileContainer
-      history={history}
-      data={data}
-      modalActive={modalActive}
-      modalStateOn={modalStateOn}
-      modalStateOff={modalStateOff}
-      isLoggedIn={isLoggedIn}
-    >
-      {children}
-    </MobileContainer>
-  </React.Fragment>
-);
+}) => {
+  var userData = useContext(UserContext);
+  return (
+    <React.Fragment>
+      <DesktopContainer
+        history={history}
+        data={data}
+        modalActive={modalActive}
+        modalStateOn={modalStateOn}
+        modalStateOff={modalStateOff}
+        isLoggedIn={isLoggedIn}
+        userData={userData}
+      >
+        {children}
+      </DesktopContainer>
+      <MobileContainer
+        history={history}
+        data={data}
+        modalActive={modalActive}
+        modalStateOn={modalStateOn}
+        modalStateOff={modalStateOff}
+        isLoggedIn={isLoggedIn}
+        userData={userData}
+      >
+        {children}
+      </MobileContainer>
+    </React.Fragment>
+  );
+};
 
 function mapStateToProps(state) {
   const { ui, users } = state;
@@ -380,12 +383,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch => ({
   modalStateOn: () => dispatch(modalStateOn()),
-  modalStateOff: () => dispatch(modalStateOff()),
-  errorLoading: () => dispatch(errorLoading())
+  modalStateOff: () => dispatch(modalStateOff())
 });
-
-// const mapDispatchToProps = dispatch =>
-//   bindActionCreators({ modalStateOn, modalStateOff, loadAvatar, errorLoading }, dispatch);
 
 export default connect(
   mapStateToProps,
