@@ -5,11 +5,12 @@ var Image = require('../models/userImageCollectionSchema');
 var Token = require('../models/TokenSchema');
 var User = require('../models/UserModel');
 var crypto = require('crypto');
-var path = require('path');
-const { check, body, validationResult } = require('express-validator');
+var cloudinary = require('cloudinary').v2;
+var { check, body, validationResult } = require('express-validator');
 
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
+const { Cloudinary } = require('cloudinary-core');
 require('dotenv').config();
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
@@ -67,7 +68,6 @@ router.post(
     check('password').isLength({ min: 7, max: 11 })
   ],
   function(req, res, next) {
-    console.log('req.user 103 ', req.user);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(401).send({
@@ -79,8 +79,6 @@ router.post(
     }
 
     User.findOne({ username: req.body.username }).then(user => {
-      console.log('req.body ', req.body);
-      console.log('user ', user);
       if (!user) {
         return res.status(404).send({
           msg: [
@@ -111,10 +109,34 @@ router.post(
       });
     }
     return res.status(200).send({
+      userId: user._id,
       msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
     });
   }
 );
+
+router.get('/user_avatar', (req, res, next) => {
+  cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function(error, result) {
+    console.log('result ', result);
+    if (error) {
+      return res.send({ error: error.message });
+    }
+
+    return res.send({
+      avatar_info: result.resources[0]
+    });
+  });
+});
+
+router.get('/user_data', (req, res) => {
+  if (req.user === undefined) {
+    return res.json({ username: 'User not logged in' });
+  } else {
+    return res.json({
+      userId: req.user._id
+    });
+  }
+});
 
 router.get('/logout', (req, res) => {
   req.logout();
@@ -124,51 +146,38 @@ router.get('/logout', (req, res) => {
   });
 });
 
-router.post('/registration', (req, res) => {
-  User.findOne({ username: req.body.username }).then(user => {
-    console.log('req.body ', req.body);
-    console.log('user ', user);
-    if (user) {
-      return res.status(409).send({
-        msg: [
-          'The email address you have entered is already associated with another account.',
-          'Please re-enter another email address.'
-        ]
-      });
-    } else if (user === null) {
-      const user = new User({
-        username: req.body.username,
-        password: req.body.password
-      });
-      user
-        .save()
-        .then(result => {
-          nodeMailerFunc(
-            user,
-            `Account Verification`,
-            `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
-              req.headers.host
-            }/confirmed`,
-            'verification email',
-            res
-          );
-          return res.status(201).send({
-            msg: [
-              'Your user registration was successful.',
-              'Please check your email to complete your registration!'
-            ]
-          });
-        })
-        .catch(err => {
-          return res.status(401).send({
-            msg: [
-              'You entered an incorrect username and/or email.',
-              'Please follow the validations above, re-enter a proper email and password.'
-            ]
-          });
-        });
-    }
-  });
+router.post('/registration', async (req, res) => {
+  let user = await User.findOne({ username: req.body.username });
+  if (user) {
+    return res.status(409).send({
+      msg: [
+        'The email address you have entered is already associated with another account.',
+        'Please re-enter another email address.'
+      ]
+    });
+  } else {
+    // Insert the new user if they do not exist yet
+    user = new User({
+      username: req.body.username,
+      password: req.body.password
+    });
+    await user.save();
+    nodeMailerFunc(
+      user,
+      `Account Verification`,
+      `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
+        req.headers.host
+      }/confirmed`,
+      'verification email',
+      res
+    );
+    return res.status(201).send({
+      msg: [
+        'Your user registration was successful.',
+        'Please check your email to complete your registration!'
+      ]
+    });
+  }
 });
 
 router.get('/confirmation/:token', (req, res) => {
@@ -268,7 +277,6 @@ router.post('/reset_password/:token', (req, res, next) => {
       }
       if (token) {
         User.findOne({ _id: token._userId }, function(err, user) {
-          console.log('user ', user);
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
@@ -302,10 +310,12 @@ router.post('/reset_password/:token', (req, res, next) => {
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, './public/uploads/avatar/');
+    cb(null, './public/static/uploads/profile-avatars/');
   },
   filename: function(req, file, cb) {
-    const ext = file.mimetype.split('/')[1];
+    console.log("file.mimetype.split('/')[1] ", file.mimetype.split('/')[1]);
+    const ext = file.mimetype.split('/')[1] === 'jpeg' ? 'jpg' : null;
+
     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
   }
 });
@@ -334,13 +344,15 @@ using mulkter and creates a reference to the file
 router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
 
+  console.log(`req.file`, req.file);
+
   console.log('user /uploadmulter ', req.user);
   var user = req.user;
   var newImage = new Image({
     avatar: {
       _userId: user._id,
       imageName: req.file.filename,
-      imageData: req.file.path
+      filePath: req.file.path
     }
   });
 
@@ -354,6 +366,30 @@ router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
       });
     })
     .catch(err => next(err));
+});
+
+router.get('/uploadmulter/user_avatar', (req, res, next) => {
+  console.log(`req.user`, req.user._id);
+
+  try {
+    Image.find({ 'avatar._userId': req.user._id }, function(err, user) {
+      if (!user) {
+        return res.status(404).send({
+          msg: ['We were unable to find a avatar for this user.']
+        });
+      } else if (user) {
+        res.json({ msg: [] });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
+  // fetchId = id => {
+  //   return Image.find({ 'avatar._userId': id }).then(user => user);
+  // }; /* c fvgbhnjmk,l.;/'
+  `123e4r5t6y7u8i90-  `;
+  // fetchId(req.user._id).then(user => res.send(user));
 });
 
 module.exports = router;
