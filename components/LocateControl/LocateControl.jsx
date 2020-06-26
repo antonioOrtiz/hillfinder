@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { withLeaflet } from 'react-leaflet';
 import Locate from 'leaflet.locatecontrol';
-import Modal from '../Modal/MyModal.jsx';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { modalStateOn, modalStateOff } from '../../store/reducers/ui';
 
-function LocateControl({ options, startDirectly, leaflet, modalActive, modalStateOn }) {
+function LocateControl({ options, startDirectly, leaflet, modalActive }) {
   useEffect(() => {
     var { map } = leaflet;
     const lc = new Locate(options);
@@ -15,7 +14,6 @@ function LocateControl({ options, startDirectly, leaflet, modalActive, modalStat
 
     if (startDirectly) {
       // request location update and set location
-      // modalStateOn();
       var message = `Will you allow ${window.location.hostname} to access your location?`;
       console.log('modalActive ', modalActive);
 
