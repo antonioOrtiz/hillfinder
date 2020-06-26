@@ -9,7 +9,8 @@ var UserImageCollectionSchema = new mongoose.Schema({
     imageData: {
       data: Buffer,
       contentType: String
-    }
+    },
+    filePath: { type: String, required: true }
   }
 });
 
