@@ -1,72 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import {
+  fetchPhotos,
+  openUploadWidget
+} from '../CloudinaryService/CloudinaryService.jsx';
 
-import { Card, Icon, Image, Segment, Form } from 'semantic-ui-react';
+import { Button, Card, Dimmer, Icon, Image, Loader, Segment } from 'semantic-ui-react';
+import UserContext from '../UserContext/UserContext.jsx';
 
-import axios from 'axios';
-import localAvatar from './profile-avatars/placeholder.jpg';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { loadAvatar } from '../../store/reducers/users/index.js';
-function ImageUploader({ userAvatar }) {
-  // var [defaultImage, setDefaultImage] = useState('');
-  var [userAvatar, setUserAvatar] = useState(userAvatar);
-  // console.log('localUserAvatar in imageloader', localUserAvatar);
+function ImageUploader() {
+  const { userId, userAvatar, setUserAvatar, isAvatarUploading } = useContext(
+    UserContext
+  );
 
-  console.log('userAvatar in imageloader', userAvatar);
+  function avatarUpdater(avatarPath) {
+    setUserAvatar(avatarPath);
+  }
+
+  const beginUpload = tag => {
+    const uploadOptions = {
+      cloudName: 'hillfinders',
+      context: `userId=${tag}`,
+      tags: [`userId=${tag}`],
+
+      uploadPreset: 'upload'
+    };
+
+    openUploadWidget(uploadOptions, (error, photos) => {
+      if (!error) {
+        if (photos.event === 'success') {
+          console.log('photos  ', photos);
+          avatarUpdater(photos.info.secure_url);
+        }
+      } else {
+        console.log(error);
+      }
+    });
+  };
 
   useEffect(() => {
-    setUserAvatar(userAvatar);
-  }, [userAvatar]);
-
-  function fileUploader(e) {
-    console.log('event fileUploader ', e);
-    var imageFormObj = new FormData();
-
-    console.log('e.target.files[0] ', e.target.files[0]);
-
-    imageFormObj.append('imageName', 'multer-image-' + Date.now());
-    imageFormObj.append('imageData', e.target.files[0]);
-    setUserAvatar(window.URL.createObjectURL(e.target.files[0]));
-
-    console.log('userAvatar ', userAvatar);
-    console.log('imageFormObj ', imageFormObj);
-
-    axios
-      .post(`/users/uploadmulter`, imageFormObj)
-      .then(data => {
-        if (data.data.success) {
-          alert('Image has been successfully uploaded using multer');
-        }
-      })
-      .catch(err => {
-        alert('Error while uploading image using multer');
-      });
-  }
+    console.log('isAvatarUploading in imageUploaderUseEffect', isAvatarUploading);
+    return () => {};
+  });
 
   return (
     <>
       <Segment>
         <Card fluid>
-          <Image src={localAvatar} alt="user-avatar" />
+          {isAvatarUploading ? (
+            <Dimmer active inverted>
+              <Loader />
+            </Dimmer>
+          ) : (
+            <Image src={userAvatar} />
+          )}
           <Segment>
-            <Form encType="multipart/form-data">
-              <Form.Field>
-                <input
-                  placeholder="Name of image"
-                  className="process__upload-btn"
-                  type="file"
-                  content="Edit your Avatar!"
-                  onChange={e => fileUploader(e)}
-                  name="avatar"
-                />
-                {/* <Button
-                  content="Edit your Avatar!"
-                  labelPosition="left"
-                  icon="file"
-                  onClick={e => fileUploader(e)}
-                /> */}
-              </Form.Field>
-            </Form>
+            <Button className="process__upload-btn" onClick={() => beginUpload(userId)}>
+              Upload your Avatar!
+            </Button>
           </Segment>
           <Card.Content>
             <Card.Header>Charly</Card.Header>
@@ -87,16 +77,4 @@ function ImageUploader({ userAvatar }) {
   );
 }
 
-function mapStateToProps(state) {
-  const { users } = state;
-  const { userAvatar } = users;
-
-  return { userAvatar };
-}
-
-const mapDispatchToProps = dispatch => bindActionCreators({ loadAvatar }, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ImageUploader);
+export default ImageUploader;
