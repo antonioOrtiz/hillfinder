@@ -33,7 +33,6 @@ passport.deserializeUser(async (id, done) => {
   try {
     const user = await UserModel.findById(id).exec();
 
-    console.log('user in auth ', user);
     return done(null, user);
   } catch (err) {
     return done(err);
