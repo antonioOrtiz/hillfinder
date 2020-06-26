@@ -42,7 +42,7 @@
         "multer": "^1.4.2",
         "multiparty": "^4.2.1",
         "newrelic": "^6.6.0",
-        "next": "^9.4.4",
+        "next": "^9.1.7",
         "next-authentication": "^0.1.1",
         "next-images": "^1.4.0",
         "next-optimized-images": "^2.6.1",

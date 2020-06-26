@@ -83,37 +83,37 @@ class App extends Component {
             )}
           />
 
-          <PrivateRoute path="/profile" isLoggedIn={isLoggedIn}>
+          <PrivateRoute path="/profile/" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout data={navBars}>
               <Profile user />
             </LinkNavWithLayout>
           </PrivateRoute>
 
-          <PrivateRoute path="/dashboard" isLoggedIn={isLoggedIn}>
+          <PrivateRoute path="/dashboard/" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout data={navBars}>
               <Dashboard />
             </LinkNavWithLayout>
           </PrivateRoute>
 
           <Route
-            path="/login"
+            path="/login/"
             render={props => <Login accountNotVerified={accountNotVerified} {...props} />}
           />
 
           <Route
-            path="/forgot_password"
+            path="/forgot_password/"
             render={props => <ForgotPassword {...props} />}
           />
 
-          <PrivateRoute path="/update_password/:token" component={UpdatePassword} />
+          <PrivateRoute path="/update_password/:token/" component={UpdatePassword} />
 
           <PrivateRoute
-            path="/confirmed/:token"
+            path="/confirmed/:toke/"
             accountNotVerified={accountNotVerified}
             component={Confirmation}
           />
 
-          <Route path="/register" render={props => <Register {...props} />} />
+          <Route path="/register/" render={props => <Register {...props} />} />
 
           <Route
             component={({ location }) => (
