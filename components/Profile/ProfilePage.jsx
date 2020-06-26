@@ -14,15 +14,9 @@ import {
 import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
 
-import { connect } from 'react-redux';
-
-const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
-  var { userAvatar } = props;
-
-  console.log('userAvatar 22 in profile', userAvatar);
+const ProfilePage = ({ history, isMobileFromSSR, userData, ...props }) => {
   return (
     <>
-      {console.log('Profile Page!! ', props)}
       <Grid container columns={1} relaxed stackable>
         <Grid.Column>
           <MyHeader as="h2" content="Foo" textAlign="left" />
@@ -33,7 +27,7 @@ const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
         <Grid.Column>
           <Segment>
             <Card fluid>
-              <ImageUploader userAvatar={userAvatar} />
+              <ImageUploader userData={userData} />
               <Card.Content>
                 <Card.Header>Charly</Card.Header>
                 <Card.Meta>
@@ -228,11 +222,4 @@ const ProfilePage = ({ history, isMobileFromSSR, ...props }) => {
   );
 };
 
-function mapStateToProps(state) {
-  const { users } = state;
-  const { userAvatar } = users;
-
-  return { userAvatar };
-}
-
-export default connect(mapStateToProps)(ProfilePage);
+export default ProfilePage;
