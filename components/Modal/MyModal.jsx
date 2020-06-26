@@ -47,6 +47,7 @@ function MyModal({
                 onClick={() => {
                   modalStateOff();
                   logOutUser();
+                  window.localStorage.clear();
                 }}
               />
             </>
