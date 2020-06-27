@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { logInUser, logOutUser } from '../store/reducers/users/index';
 import { bindActionCreators } from 'redux';
-
+// import { withRouter } from 'next/router';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import LinkNavWithLayout from './LinkNavWithLayout';
@@ -139,9 +139,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ modalStateOn, modalStateOff, logInUser, logOutUser }, dispatch);
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(App)
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(App));

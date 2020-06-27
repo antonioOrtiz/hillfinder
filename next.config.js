@@ -7,6 +7,7 @@ module.exports = withImages(
   optimizedImages(
     withCSS(
       withSass({
+        // useFileSystemPublicRoutes: false,
         target: 'serverless',
         env: {
           MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
