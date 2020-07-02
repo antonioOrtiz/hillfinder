@@ -231,7 +231,7 @@ export function getUserAvatar() {
     .get('/users/user_avatar')
     .then(response => {
       if (response.status === 200) {
-        console.log('response ', response);
+        // console.log('response ', response);
         if (!response.data.hasOwnProperty('avatar_info')) {
           return '/static/uploads/profile-avatars/placeholder.jpg';
         }
