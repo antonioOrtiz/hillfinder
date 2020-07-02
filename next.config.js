@@ -10,7 +10,8 @@ module.exports = withImages(
         // useFileSystemPublicRoutes: false,
         target: 'serverless',
         env: {
-          MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
+          MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+          useFileSystemPublicRoutes: false
         },
 
         webpack(config, options) {
