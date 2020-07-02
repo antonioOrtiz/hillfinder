@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { logInUser, logOutUser } from '../store/reducers/users/index';
 import { bindActionCreators } from 'redux';
-// import { withRouter } from 'next/router';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
+import { Redirect } from 'react-router';
 
 import LinkNavWithLayout from './LinkNavWithLayout';
 import Index from './home';
@@ -108,7 +108,7 @@ class App extends Component {
           <PrivateRoute path="/update_password/:token/" component={UpdatePassword} />
 
           <PrivateRoute
-            path="/confirmed/:toke/"
+            path="/confirmed/:token/"
             accountNotVerified={accountNotVerified}
             component={Confirmation}
           />
@@ -142,4 +142,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withRouter(App));
+)(App);
