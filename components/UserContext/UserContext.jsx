@@ -29,7 +29,7 @@ function UserProvider({ children }) {
   const [user, setUser] = useState(() => getLocalStorage('user', initialState));
   const [isAvatarUploading, setIsAvatarUploading] = useState(true);
 
-  console.log('user ', user);
+  // console.log('user ', user);
   useEffect(() => {
     setLocalStorage('user', user);
   }, [user]);
