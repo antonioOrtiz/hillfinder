@@ -6,22 +6,22 @@ import { UserProvider } from '../components/UserContext/UserContext';
 import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
 import { PersistGate } from 'redux-persist/integration/react';
+import nextWithReactRouter from '../next-with-react-router/next-with-react-router';
 
 import reduxStore from '../store/index';
 
-import withReactRouter from '../with-react-router/with-react-router';
 import 'semantic-ui-css/semantic.min.css';
 import 'leaflet/dist/leaflet.css';
 import 'font-awesome/css/font-awesome.min.css';
 import '../styles/styles.scss';
 
 class MyApp extends App {
-  // static async getInitialProps({ Component, ctx }) {
-  //   const pageProps = Component.getInitialProps
-  //     ? await Component.getInitialProps(ctx)
-  //     : {};
-  //   return { pageProps };
-  // }
+  static async getInitialProps({ Component, ctx }) {
+    const pageProps = Component.getInitialProps
+      ? await Component.getInitialProps(ctx)
+      : {};
+    return { pageProps };
+  }
   render() {
     const { Component, pageProps, store } = this.props;
 
@@ -39,4 +39,4 @@ class MyApp extends App {
   }
 }
 
-export default withRedux(reduxStore)(withReactRouter(MyApp));
+export default withRedux(reduxStore)(nextWithReactRouter(MyApp));
