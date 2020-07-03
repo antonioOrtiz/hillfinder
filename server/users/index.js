@@ -61,12 +61,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 // Since we are using the passport.authenticate() method, we should be redirected no matter what
 router.post(
   '/login',
-  [
-    body('username').isEmail(),
-    // username must be an email
-    // password must be at least 5 chars long
-    check('password').isLength({ min: 7, max: 11 })
-  ],
+  [body('username').isEmail(), check('password').isLength({ min: 7, max: 11 })],
   function(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -116,16 +111,21 @@ router.post(
 );
 
 router.get('/user_avatar', (req, res, next) => {
-  cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function(error, result) {
-    console.log('result ', result);
-    if (error) {
-      return res.send({ error: error.message });
-    }
+  try {
+    cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function(error, result) {
+      console.log('result ', result);
+      if (error) {
+        return res.send({ error: error });
+      }
 
-    return res.send({
-      avatar_info: result.resources[0]
+      return res.send({
+        avatar_info: result.resources[0]
+      });
     });
-  });
+  } catch (error) {
+    console.log('error in /user_avatar', error);
+    res.status(404).json({ error: `User hasn't logged in yet` });
+  }
 });
 
 router.get('/user_data', (req, res) => {
@@ -384,12 +384,6 @@ router.get('/uploadmulter/user_avatar', (req, res, next) => {
   } catch (err) {
     console.log(err);
   }
-
-  // fetchId = id => {
-  //   return Image.find({ 'avatar._userId': id }).then(user => user);
-  // }; /* c fvgbhnjmk,l.;/'
-  `123e4r5t6y7u8i90-  `;
-  // fetchId(req.user._id).then(user => res.send(user));
 });
 
 module.exports = router;
