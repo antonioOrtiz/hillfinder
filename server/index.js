@@ -92,8 +92,8 @@ async function start() {
 
   server.use('/uploads', express.static(__dirname + '/uploads'));
   server.use(express.json());
-  server.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
-  server.use(bodyParser.json({ limit: '50mb' }));
+  server.use(bodyParser.urlencoded({ extended: false }));
+  server.use(bodyParser.json());
   server.use(morgan('dev'));
 
   server.use(cookieParser());
