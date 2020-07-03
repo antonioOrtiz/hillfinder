@@ -1,9 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
 
 import MyHeader from '../Header/Header.jsx';
-import GenericInputForm from './GenericInputForm.jsx';
+import GenericInputForm from './FormElements.jsx';
+import { Confirmation } from './FormElements.jsx';
 
-import { Input, Grid } from 'semantic-ui-react';
+import { Input, Grid, Message, Transition } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -39,7 +40,7 @@ function FormComponent({
 }) {
   var Forms = {
     Hillfinders: [isHillfindersForm],
-    Confirmation: [isConfirmationForm],
+    Confirmation: [isConfirmation],
     ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit],
     Login: [isLoginForm, loginSubmit],
     Registration: [isRegisterForm, registerSubmit],
@@ -94,15 +95,17 @@ function FormComponent({
     );
   }
 
-  function isConfirmationForm() {
+  function isConfirmation() {
     return (
-      <GenericInputForm
+      <Confirmation
+        match={match}
+        setError={setError}
+        setResponseMessage={setResponseMessage}
+        resetUserAcoountVerified={resetUserAcoountVerified}
+        userHasBeenVerified={userHasBeenVerified}
         error={error}
         responseMessage={responseMessage}
-        match={match}
-        resetUserAcoountVerified={resetUserAcoountVerified}
-        setResponseMessage={setResponseMessage}
-        setError={setError}
+        accountNotVerified={accountNotVerified}
       />
     );
   }
