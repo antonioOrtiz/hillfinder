@@ -238,7 +238,6 @@ export function getUserAvatar() {
         return response.data.avatar_info.secure_url;
       }
       if (response.status === 500) {
-        // console.log('response ', response);
         console.log(`couldn't find user`);
       }
     })
