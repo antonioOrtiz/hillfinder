@@ -2,9 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 
 import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
-import { Confirmation } from './FormElements.jsx';
 
-import { Input, Grid, Message, Transition } from 'semantic-ui-react';
+import { Input, Grid, Message } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -24,6 +23,7 @@ import { Container } from 'next/app';
 import UserContext from '../UserContext/UserContext.jsx';
 
 import dynamic from 'next/dynamic';
+
 const MyMap = dynamic(() => import('../Map/MyMap.jsx'), {
   ssr: false
 });
@@ -38,6 +38,7 @@ function FormComponent({
   userHasNotBeenVerified,
   resetUserAcoountVerified
 }) {
+  /* This is an object which is used to store the relevant form views for each page/component  */
   var Forms = {
     Hillfinders: [isHillfindersForm],
     Confirmation: [isConfirmation],
@@ -96,18 +97,55 @@ function FormComponent({
   }
 
   function isConfirmation() {
-    return (
-      <Confirmation
-        match={match}
-        setError={setError}
-        setResponseMessage={setResponseMessage}
-        resetUserAcoountVerified={resetUserAcoountVerified}
-        userHasBeenVerified={userHasBeenVerified}
-        error={error}
-        responseMessage={responseMessage}
-        accountNotVerified={accountNotVerified}
-      />
-    );
+    var [showApi, setShowApi] = useState(true);
+
+    function conirmationCall() {
+      return axios
+        .get(`/users/confirmation/${match.params.token}`, {
+          validateStatus: () => true
+        })
+        .then(response => {
+          return response;
+        })
+        .catch(function(error) {
+          return error;
+        });
+    }
+
+    useEffect(() => {
+      var mounted = true;
+
+      conirmationCall()
+        .then(response => {
+          if (mounted) {
+            if (response.status === 200) {
+              setResponseMessage(response.data.msg);
+            }
+            if (response.status === 404) {
+              resetUserAcoountVerified();
+              setError(true);
+              setResponseMessage(response.data.msg);
+            }
+            if (response.status === 400) {
+              userHasBeenVerified();
+              setError(true);
+              setResponseMessage(response.data.msg);
+            }
+            () => setShowApi(prev => !prev);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      return function() {
+        mounted = false;
+      };
+    }, []);
+
+    if (error) {
+      return showApi && <Message negative header={responseMessage[0]} />;
+    }
+    return showApi && <Message positive header={responseMessage[0]} />;
   }
 
   function isLoginForm() {
@@ -125,10 +163,10 @@ function FormComponent({
         formError={formError}
         accountNotVerified={accountNotVerified}
         username={username}
-        handleChange={handleChange}
         usernameError={usernameError}
-        duration={duration}
         usernameFeedback={usernameFeedback}
+        handleChange={handleChange}
+        duration={duration}
         password={password}
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
@@ -151,10 +189,10 @@ function FormComponent({
         accountNotVerified={accountNotVerified}
         username={username}
         userNameDup={userNameDup}
-        handleChange={handleChange}
         usernameError={usernameError}
-        duration={duration}
         usernameFeedback={usernameFeedback}
+        handleChange={handleChange}
+        duration={duration}
         password={password}
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
@@ -258,10 +296,6 @@ function FormComponent({
         withCredentials: true
       })
       .then(response => {
-        console.log('response ', response);
-
-        console.log('response.data.userId ', response.data.userId);
-
         if (response.status === 200) {
           setTimeout(() => {
             setUserId(response.data.userId);
@@ -354,8 +388,8 @@ function FormComponent({
       .catch(function(error) {
         if (error.response.status === 500) {
           setResponseMessage(error.response.data.msg);
-          setIsLoading(false);
           setFormError(true);
+          setIsLoading(false);
         }
 
         if (error.response.status === 401) {
@@ -395,8 +429,8 @@ function FormComponent({
             setFormError(true);
             setFormSuccess(false);
             setIsLoading(false);
-            setTokenExpired(true);
             setResponseMessage(error.response.data.msg);
+            setTokenExpired(true);
           }
         }
       });

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 import {
@@ -14,55 +14,13 @@ import {
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-export function Confirmation({
-  match,
-  setError,
-  setResponseMessage,
-  resetUserAcoountVerified,
-  userHasBeenVerified,
-  error,
-  responseMessage,
-  accountNotVerified
-}) {
-  useEffect(() => {
-    axios
-      .get(`/users/confirmation/${match.params.token}`)
-      .then(response => {
-        if (response.status === 200) {
-          setError(false);
-          setResponseMessage(response.data.msg);
-        }
-      })
-      .catch(function(error) {
-        if (error.response.status === 404) {
-          resetUserAcoountVerified();
-          setResponseMessage(error.response.data.msg);
-          setError(true);
-        }
-        if (error.response.status === 400) {
-          userHasBeenVerified();
-          setResponseMessage(error.response.data.msg);
-          setError(true);
-        }
-      });
-  }, []);
-
-  const isNull = value => typeof value === 'object' && !value;
-  var response;
-  switch (error) {
-    case error === false:
-      response = <Message success header={responseMessage[0]} />;
-      break;
-    case accountNotVerified === false && error === true:
-      response = <Message error header={responseMessage[0]} />;
-      break;
-    case isNull(accountNotVerified) && error === true:
-      response = <Message error header={responseMessage[0]} />;
-      break;
-  }
-
-  return <>{response}</>;
-}
+// export function Confirmation({ error, responseMessage, accountNotVerified }) {
+//   console.log('accountNotVerified ', accountNotVerified);
+//   if (error) {
+//     return <Message negative header={responseMessage[0]} />;
+//   }
+//   return <Message positive header={responseMessage[0]} />;
+// }
 
 export default function GenericInputForm({
   formHeader,
