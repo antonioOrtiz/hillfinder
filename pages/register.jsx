@@ -1,7 +1,7 @@
 import RegisterForm from '../components/FormComponent/FormComponent.jsx';
 import { withRouter } from 'react-router-dom';
 
-const Register = props => (
+var Register = props => (
   <>
     <RegisterForm formType="Registration" {...props} />
   </>
