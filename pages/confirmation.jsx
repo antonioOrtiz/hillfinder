@@ -1,7 +1,7 @@
 import ConfirmationPage from '../components/FormComponent/FormComponent.jsx';
 import { withRouter } from 'react-router-dom';
 
-const Confirmation = props => (
+var Confirmation = props => (
   <>
     <ConfirmationPage formType="Confirmation" {...props} />
   </>

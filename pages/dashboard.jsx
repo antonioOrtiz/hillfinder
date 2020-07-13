@@ -4,9 +4,7 @@ import { bindActionCreators } from 'redux';
 import { logOutUser } from '../store/reducers/users/index';
 import { withRouter } from 'react-router-dom';
 
-let Dashboard;
-
-Dashboard = ({ isLoggedIn, logOutUser, props }) => (
+var Dashboard = ({ isLoggedIn, logOutUser, props }) => (
   <>
     <HillfindersForm formType="Hillfinders" {...props} />
   </>

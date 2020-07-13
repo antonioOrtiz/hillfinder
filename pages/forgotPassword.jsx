@@ -1,7 +1,7 @@
 import ForgotPasswordForm from '../components/FormComponent/FormComponent.jsx';
 import { withRouter } from 'react-router-dom';
 
-const ForgotPassword = props => (
+var ForgotPassword = props => (
   <>
     <ForgotPasswordForm formType="ForgotPassword" {...props} />
   </>
