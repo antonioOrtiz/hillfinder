@@ -16,17 +16,6 @@ export default App => {
         context: locals.context || {}
       };
     }
-    // static async getInitialProps(appContext) {
-    //   const {
-    //     ctx: {
-    //       req: { originalUrl, locals = {} }
-    //     }
-    //   } = appContext;
-    //   return {
-    //     originalUrl,
-    //     context: locals.context || {}
-    //   };
-    // }
 
     render() {
       if (isServer) {
