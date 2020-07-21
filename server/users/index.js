@@ -10,7 +10,6 @@ var { check, body, validationResult } = require('express-validator');
 
 var nodemailer = require('nodemailer');
 var nodemailerMailgun = require('nodemailer-mailgun-transport');
-const { Cloudinary } = require('cloudinary-core');
 require('dotenv').config();
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
