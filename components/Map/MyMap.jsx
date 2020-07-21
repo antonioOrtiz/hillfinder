@@ -20,8 +20,7 @@ export default function MyMap() {
     setAnimate(animate => !animate);
   }
 
-  var MAPBOX_ACCESS_TOKEN =
-    'pk.eyJ1IjoiYW50b25pb3BvcnRpeiIsImEiOiJja2E3NWx4Zm8wN3k4MnBvOWc0YnNoMm96In0.Ckc-lH-tUqB7aQckJhM2IQ';
+  var MAPBOX_ACCESS_TOKEN = processx.env.MAPBOX_ACCESS_TOKEN;
 
   var locateOptions = {
     position: 'topright',
