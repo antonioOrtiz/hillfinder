@@ -17,6 +17,9 @@ import { validateInputs } from '../../utils/index';
 
 import axios from 'axios';
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Container } from 'next/app';
@@ -102,43 +105,43 @@ function FormComponent({
     function conirmationCall() {
       return axios
         .get(`/users/confirmation/${match.params.token}`, {
-          validateStatus: () => true
+          cancelToken: source.token
         })
         .then(response => {
-          return response;
+          if (response.status === 200) {
+            setResponseMessage(response.data.msg);
+          }
         })
         .catch(function(error) {
-          return error;
+          if (axios.isCancel(error)) {
+            console.log('Request canceled', error.message);
+          } else {
+            // handle error
+            console.log('error.response', error.response);
+
+            if (error.response.status === 404) {
+              resetUserAcoountVerified();
+              setError(true);
+              setResponseMessage(error.response.data.msg);
+            }
+
+            if (error.response.status === 400) {
+              userHasBeenVerified();
+              setError(true);
+              setResponseMessage(error.response.data.msg);
+            }
+          }
         });
     }
 
     useEffect(() => {
-      var mounted = true;
+      conirmationCall();
+      return () => {
+        //when the component unmounts
+        console.log('component unmounted');
 
-      conirmationCall()
-        .then(response => {
-          if (mounted) {
-            if (response.status === 200) {
-              setResponseMessage(response.data.msg);
-            }
-            if (response.status === 404) {
-              resetUserAcoountVerified();
-              setError(true);
-              setResponseMessage(response.data.msg);
-            }
-            if (response.status === 400) {
-              userHasBeenVerified();
-              setError(true);
-              setResponseMessage(response.data.msg);
-            }
-            () => setShowApi(prev => !prev);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      return function() {
-        mounted = false;
+        // cancel the request (the message parameter is optional)
+        source.cancel('Operation canceled by the user.');
       };
     }, []);
 
