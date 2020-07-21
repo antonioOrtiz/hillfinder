@@ -14,14 +14,6 @@ import {
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-// export function Confirmation({ error, responseMessage, accountNotVerified }) {
-//   console.log('accountNotVerified ', accountNotVerified);
-//   if (error) {
-//     return <Message negative header={responseMessage[0]} />;
-//   }
-//   return <Message positive header={responseMessage[0]} />;
-// }
-
 export default function GenericInputForm({
   formHeader,
   handleSubmit,
