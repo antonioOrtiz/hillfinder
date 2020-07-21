@@ -19,8 +19,6 @@ var rootReducer = combineReducers({
 
 var state = { ...uiStartState, ...usersStartState };
 
-// var startState = Object.assign({}, uiStartState, usersStartState)
-
 export default (initialState = state) => {
   let store;
 
