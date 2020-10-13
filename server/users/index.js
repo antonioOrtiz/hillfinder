@@ -1,7 +1,7 @@
 var router = require('express').Router();
 var passport = require('passport');
 var multer = require('multer');
-var Image = require('../models/userImageCollectionSchema');
+var Image = require('../models/UserImageCollectionSchema');
 var Token = require('../models/TokenSchema');
 var User = require('../models/UserModel');
 var crypto = require('crypto');
@@ -19,7 +19,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   });
 
   // Save the token
-  token.save(function(err) {
+  token.save(function (err) {
     if (err) {
       return res.status(500).send({ msg: err.message });
     }
@@ -45,7 +45,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       text: `${textField}${outputTokenInEmail(emailType)}`
     };
 
-    transporter.sendMail(mailOptions, function(err) {
+    transporter.sendMail(mailOptions, function (err) {
       console.log('mailOptions ', mailOptions);
       if (err == true) {
         return res.status(500).send({
@@ -61,7 +61,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 router.post(
   '/login',
   [body('username').isEmail(), check('password').isLength({ min: 7, max: 11 })],
-  function(req, res, next) {
+  function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(401).send({
@@ -89,7 +89,7 @@ router.post(
 
   passport.authenticate('local', { session: true }),
 
-  function(req, res) {
+  function (req, res) {
     var user = req.user;
 
     console.log('In /login ', user);
@@ -111,7 +111,7 @@ router.post(
 
 router.get('/user_avatar', (req, res, next) => {
   try {
-    cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function(error, result) {
+    cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function (error, result) {
       console.log('result ', result);
       if (error) {
         return res.send({ error: error });
@@ -164,8 +164,7 @@ router.post('/registration', async (req, res) => {
     nodeMailerFunc(
       user,
       `Account Verification`,
-      `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${
-        req.headers.host
+      `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${req.headers.host
       }/confirmed`,
       'verification email',
       res
@@ -183,7 +182,7 @@ router.get('/confirmation/:token', (req, res) => {
   var { token } = req.params;
 
   try {
-    Token.findOne({ token: token }, function(err, token) {
+    Token.findOne({ token: token }, function (err, token) {
       if (token === null) {
         console.log('We were unable to find a valid token 404 ', 404);
         return res.status(404).send({
@@ -193,7 +192,7 @@ router.get('/confirmation/:token', (req, res) => {
       // If we found a token, find a matching user
 
       if (token) {
-        User.findOne({ _id: token._userId }, function(err, user) {
+        User.findOne({ _id: token._userId }, function (err, user) {
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
@@ -205,7 +204,7 @@ router.get('/confirmation/:token', (req, res) => {
           } else if (!user.isVerified) {
             // Verify and save the user
             user.isVerified = true;
-            user.update({ isVerified: true }, function(err) {
+            user.update({ isVerified: true }, function (err) {
               if (err) {
                 return res.status(500).send({ msg: [err.message] });
               }
@@ -229,7 +228,7 @@ router.post('/forgot_password', (req, res) => {
       {
         username: req.body.username
       },
-      function(err, user) {
+      function (err, user) {
         if (!user) {
           return res.status(404).send({
             msg: [
@@ -243,8 +242,7 @@ router.post('/forgot_password', (req, res) => {
             nodeMailerFunc(
               user,
               `Your password has been reset`,
-              `Click the following link to reset your password:\nhttp://${
-                req.headers.host
+              `Click the following link to reset your password:\nhttp://${req.headers.host
               }/update_password`,
               'email to update your password',
               res
@@ -268,14 +266,14 @@ router.post('/reset_password/:token', (req, res, next) => {
   var { token } = req.params;
 
   try {
-    Token.findOne({ token: token }, function(err, token) {
+    Token.findOne({ token: token }, function (err, token) {
       if (token === null) {
         return res.status(401).send({
           msg: ['We were unable to find a valid token. Your token my have expired.']
         });
       }
       if (token) {
-        User.findOne({ _id: token._userId }, function(err, user) {
+        User.findOne({ _id: token._userId }, function (err, user) {
           if (!user) {
             return res.status(404).send({
               msg: ['We were unable to find a user for this token.']
@@ -308,10 +306,10 @@ router.post('/reset_password/:token', (req, res, next) => {
 });
 
 var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, './public/static/uploads/profile-avatars/');
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     console.log("file.mimetype.split('/')[1] ", file.mimetype.split('/')[1]);
     const ext = file.mimetype.split('/')[1] === 'jpeg' ? 'jpg' : null;
 
@@ -371,7 +369,7 @@ router.get('/uploadmulter/user_avatar', (req, res, next) => {
   console.log(`req.user`, req.user._id);
 
   try {
-    Image.find({ 'avatar._userId': req.user._id }, function(err, user) {
+    Image.find({ 'avatar._userId': req.user._id }, function (err, user) {
       if (!user) {
         return res.status(404).send({
           msg: ['We were unable to find a avatar for this user.']
