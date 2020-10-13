@@ -4,6 +4,7 @@
         "dev": "NODE_ENV=development nodemon server/index.js",
         "build": "next build",
         "start": "next start -p $PORT",
+        "postbuild": "next-on-netlify",
         "heroku-postbuild": "npm run build"
     },
     "dependencies": {
@@ -45,6 +46,7 @@
         "newrelic": "^6.6.0",
         "next": "^9.3.2",
         "next-images": "^1.4.0",
+        "next-on-netlify": "^2.5.1",
         "next-optimized-images": "^2.6.1",
         "next-page-transitions": "^1.0.0-beta.2",
         "next-redux-wrapper": "^3.0.0",

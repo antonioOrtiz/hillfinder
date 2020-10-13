@@ -102,46 +102,36 @@ function FormComponent({
   function isConfirmation() {
     var [showApi, setShowApi] = useState(true);
 
-    function conirmationCall() {
-      return axios
+    useEffect(() => {
+      let isSubscribed = true;
+      axios
         .get(`/users/confirmation/${match.params.token}`, {
           cancelToken: source.token
         })
         .then(response => {
           if (response.status === 200) {
-            setResponseMessage(response.data.msg);
+            isSubscribed ? setResponseMessage(response.data.msg) : null;
           }
         })
         .catch(function(error) {
-          if (axios.isCancel(error)) {
-            console.log('Request canceled', error.message);
-          } else {
-            // handle error
-            console.log('error.response', error.response);
+          if (error.response.status === 404) {
+            resetUserAcoountVerified();
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          }
 
-            if (error.response.status === 404) {
-              resetUserAcoountVerified();
-              setError(true);
-              setResponseMessage(error.response.data.msg);
-            }
-
-            if (error.response.status === 400) {
-              userHasBeenVerified();
-              setError(true);
-              setResponseMessage(error.response.data.msg);
-            }
+          if (error.response.status === 400) {
+            userHasBeenVerified();
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
           }
         });
-    }
 
-    useEffect(() => {
-      conirmationCall();
       return () => {
         //when the component unmounts
-        console.log('component unmounted');
 
-        // cancel the request (the message parameter is optional)
-        source.cancel('Operation canceled by the user.');
+        isSubscribed = false;
+        setShowApi(prev => !prev);
       };
     }, []);
 
