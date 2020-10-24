@@ -122,8 +122,7 @@ router.get('/user_avatar', (req, res, next) => {
       });
     });
   } catch (error) {
-    console.log('error in /user_avatar', error);
-    res.status(404).json({ error: `User hasn't logged in yet` });
+    res.status(500).json({ error: `User hasn't logged in yet` });
   }
 });
 

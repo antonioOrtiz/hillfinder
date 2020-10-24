@@ -20,7 +20,7 @@ export default function MyMap() {
     setAnimate(animate => !animate);
   }
 
-  var MAPBOX_ACCESS_TOKEN = processx.env.MAPBOX_ACCESS_TOKEN;
+  var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 
   var locateOptions = {
     position: 'topright',

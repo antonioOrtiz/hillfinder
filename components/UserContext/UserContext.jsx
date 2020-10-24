@@ -35,12 +35,16 @@ function UserProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
-    getUserAvatar()
+  if (user.id){
+       getUserAvatar()
       .then(userAvatar => {
         setIsAvatarUploading(false);
         setUser(user => ({ ...user, avatar: userAvatar }));
       })
       .catch(err => console.log('error thrown from getUserAvatar', err));
+  } else {
+    console.log('No user yet!')
+  }
   }, [user.id]);
 
   return (
