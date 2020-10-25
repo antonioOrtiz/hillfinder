@@ -39,7 +39,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
 
     var mailOptions = {
-      from: 'info@hillfinders.com',
+      from: 'hillfinders.com',
       to: `${user.username}`,
       subject: subjectField,
       text: `${textField}${outputTokenInEmail(emailType)}`
