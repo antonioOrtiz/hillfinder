@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
+import L from "leaflet";
+
+
+import "leaflet/dist/leaflet.css";
 
 export default function MyMap() {
-  var [latLng, setlatlng] = useState({ lat: 39.74739, lng: -105 });
+  var [latLng, setlatlng] = useState(null);
   var [zoom, setZoom] = useState(4);
   var [map, setData] = useState([]);
   var [animate, setAnimate] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+  }, []);
+
+
+const customMarker = new L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
+});
 
   function handleClick(e) {
-    console.log('e ', e);
-    setlatlng({ ...latLng, ...e.latlng });
+    setlatlng(e.latlng)
   }
 
   function toggleAnimate() {
@@ -41,16 +50,14 @@ export default function MyMap() {
         />
         Animate panning
       </label>
-      <Map animate={animate} center={latLng} onClick={e => handleClick(e)} zoom={zoom}>
-        {/* <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-        /> */}
-        <Marker position={latLng}>
+
+      <Map animate={animate} zoom={zoom} onClick={handleClick}>
+
+         {latLng && <Marker draggable={true} position={latLng} icon={customMarker}>
           <Popup>
             A pretty CSS3 popup. <br /> Easily customizable.
           </Popup>
-        </Marker>
+        </Marker>}
         <MapboxLayer
           accessToken={MAPBOX_ACCESS_TOKEN}
           style="mapbox://styles/mapbox/streets-v9"

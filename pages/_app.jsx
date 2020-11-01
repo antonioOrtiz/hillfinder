@@ -11,9 +11,10 @@ import nextWithReactRouter from '../next-with-react-router/next-with-react-route
 import reduxStore from '../store/index';
 
 import 'semantic-ui-css/semantic.min.css';
-import 'leaflet/dist/leaflet.css';
 import 'font-awesome/css/font-awesome.min.css';
 import '../styles/styles.scss';
+import 'leaflet/dist/leaflet.css';
+
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
