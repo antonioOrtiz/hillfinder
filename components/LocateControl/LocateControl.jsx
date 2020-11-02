@@ -8,7 +8,6 @@ function LocateControl({ options, startDirectly, leaflet }) {
     const lc = new Locate(options);
 
 
- console.log("lc ", lc);
     lc.addTo(map);
 
     if (startDirectly) {
