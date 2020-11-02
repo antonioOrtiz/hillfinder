@@ -13,7 +13,15 @@ export default function MyMap({getAddressFromLatLong}) {
   var [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-  }, []);
+    if (latLng != null){
+    var geocoder = new L.Control.geocoder();
+    var latLngParser = new L.Control.Geocoder.latLng();
+
+     geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
+        getAddressFromLatLong(address[0].name)
+       }, null)
+  }
+  }, [latLng]);
 
 
 var customMarker = new L.icon({
@@ -21,21 +29,12 @@ var customMarker = new L.icon({
 });
 
 function handleClick(e) {
+  setlatlng(e.latlng);
+}
 
-if (latLng != null){
-    var geocoder = new L.Control.geocoder();
-    var latLngParser = new L.Control.Geocoder.latLng();
-
-     geocoder.options.geocoder.reverse(e.latlng, 5, (address)=>{
-             getAddressFromLatLong(address[0].name)
-       }, null)
-  }
-    setlatlng(e.latlng);
-  }
-
-  function toggleAnimate() {
-    setAnimate(animate => !animate);
-  }
+function toggleAnimate() {
+  setAnimate(animate => !animate);
+}
 
   var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 
@@ -60,10 +59,9 @@ if (latLng != null){
       </label>
 
       <Map animate={animate} zoom={zoom} onClick={handleClick}>
-
-         {latLng && <Marker draggable={true} position={latLng} icon={customMarker}>
+         {latLng && <Marker onDrag={handleClick} draggable={true} position={latLng} icon={customMarker}>
           <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
+            This is your starting point!
           </Popup>
         </Marker>}
         <MapboxLayer

@@ -36,6 +36,8 @@
         "imagemin-optipng": "^8.0.0",
         "indicative": "^7.4.4",
         "leaflet": "^1.6.0",
+        "leaflet-control-geocoder": "^1.13.0",
+        "leaflet-geosearch": "^3.0.6",
         "leaflet.locatecontrol": "^0.72.0",
         "mapbox-gl": "^1.10.0",
         "mapbox-gl-leaflet": "0.0.12",
