@@ -73,8 +73,14 @@ function FormComponent({
   var { userId, setUserId } = useContext(UserContext);
 
   var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
+  var [current_location, setCurrentLocation] = useState('');
 
   function isHillfindersForm() {
+
+   function getAddressFromLatLong(address){
+    setCurrentLocation(address)
+   }
+
     return (
       <>
         <Container>
@@ -84,7 +90,7 @@ function FormComponent({
           <Grid columns={2} stackable className="hillfinder-container">
             <Grid.Column>
               <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-              <Input fluid icon="search" placeholder="Search..." />
+              <Input name="current_location" value={current_location} onChange={e => handleChange(e)} fluid icon="search" placeholder="Search..." />
             </Grid.Column>
             <Grid.Column>
               <p style={{ fontSize: '1.33em' }}>
@@ -94,7 +100,7 @@ function FormComponent({
             </Grid.Column>
           </Grid>
         </Container>
-        <MyMap />
+        <MyMap getAddressFromLatLong={getAddressFromLatLong}/>
       </>
     );
   }
@@ -451,6 +457,12 @@ function FormComponent({
     if (e.target.name === 'password_confirmation') {
       setPasswordConfirmation(e.target.value);
     }
+
+    if (e.target.name === 'current_location') {
+      console.log(e.target.value)
+      setCurrentLocation(e.target.value);
+    }
+
   }
 
   function handleSubmit(event, formType) {
