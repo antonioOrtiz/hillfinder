@@ -34,12 +34,12 @@ const logOutMenuItemHelper = (
   handleSidebarHide
 ) => {
   function mobilelogOutMenuItemHelper(
-    history,
-    modalActive,
-    nav,
-    NavLink,
-    modalStateOn,
-    handleSidebarHide
+      history,
+      modalActive,
+      nav,
+      NavLink,
+      modalStateOn,
+      handleSidebarHide
   ) {
     if (nav.name === 'Log in') {
       return (
@@ -127,7 +127,6 @@ const logOutMenuItemHelper = (
       nav,
       NavLink,
       modalStateOn,
-      modalStateOff,
       handleSidebarHide
     );
   }
@@ -265,7 +264,7 @@ class MobileContainer extends Component {
                 })
                 .map(nav => {
                   return logOutMenuItemHelper(
-                    false,
+                    true,
                     isLoggedIn,
                     history,
                     modalActive,
