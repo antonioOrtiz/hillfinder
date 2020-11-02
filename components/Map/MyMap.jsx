@@ -3,11 +3,10 @@ import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import L from "leaflet";
-
-
+import LCG from 'leaflet-control-geocoder';
 import "leaflet/dist/leaflet.css";
 
-export default function MyMap() {
+export default function MyMap({getAddressFromLatLong}) {
   var [latLng, setlatlng] = useState(null);
   var [zoom, setZoom] = useState(4);
   var [map, setData] = useState([]);
@@ -17,12 +16,21 @@ export default function MyMap() {
   }, []);
 
 
-const customMarker = new L.icon({
+var customMarker = new L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
 });
 
-  function handleClick(e) {
-    setlatlng(e.latlng)
+function handleClick(e) {
+
+if (latLng != null){
+    var geocoder = new L.Control.geocoder();
+    var latLngParser = new L.Control.Geocoder.latLng();
+
+     geocoder.options.geocoder.reverse(e.latlng, 5, (address)=>{
+             getAddressFromLatLong(address[0].name)
+       }, null)
+  }
+    setlatlng(e.latlng);
   }
 
   function toggleAnimate() {
