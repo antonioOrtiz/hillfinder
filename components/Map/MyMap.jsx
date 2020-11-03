@@ -36,6 +36,9 @@ function toggleAnimate() {
   setAnimate(animate => !animate);
 }
 
+
+
+
   var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 
   var locateOptions = {
@@ -68,7 +71,6 @@ function toggleAnimate() {
           accessToken={MAPBOX_ACCESS_TOKEN}
           style="mapbox://styles/mapbox/streets-v9"
         />
-
         <LocateControl options={locateOptions} startDirectly />
       </Map>
     </>
