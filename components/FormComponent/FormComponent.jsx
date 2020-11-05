@@ -74,11 +74,14 @@ function FormComponent({
 
   var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
   var [current_location, setCurrentLocation] = useState('');
+  var [current_destination, setCurrentDestination] = useState('');
+
 
   function isHillfindersForm() {
 
-   function getAddressFromLatLong(address){
-    setCurrentLocation(address)
+   function getAddressFromLatLong(input, address){
+    if (input == 0) setCurrentLocation(address)
+    else setCurrentDestination(address)
    }
 
     return (
@@ -90,13 +93,13 @@ function FormComponent({
           <Grid columns={2} stackable className="hillfinder-container">
             <Grid.Column>
               <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-              <Input name="current_location" value={current_location} onChange={e => handleChange(e)} fluid icon="search" placeholder="Search..." />
+              <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
             </Grid.Column>
             <Grid.Column>
               <p style={{ fontSize: '1.33em' }}>
                 Where you wanna go; Hopefully on a downhill...
               </p>
-              <Input fluid icon="search" placeholder="Search..." />
+              <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
             </Grid.Column>
           </Grid>
         </Container>
@@ -461,6 +464,11 @@ function FormComponent({
     if (e.target.name === 'current_location') {
       console.log(e.target.value)
       setCurrentLocation(e.target.value);
+    }
+
+     if (e.target.name === 'current_destination') {
+      console.log(e.target.value)
+      setCurrentDestination(e.target.value);
     }
 
   }

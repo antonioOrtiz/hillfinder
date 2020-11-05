@@ -11,17 +11,14 @@ export default function MyMap({getAddressFromLatLong}) {
   var [zoom, setZoom] = useState(4);
   var [map, setData] = useState([]);
   var [animate, setAnimate] = useState(false);
-   var [markerOneLatLng, setMarkerOneLatLng] =  useState(null);
-   var [markerTwoLatLng, setMarkerTwoLatLng] =  useState(null);
+  var [draggable, setDraggable] = useState(true);
+  var [markerData, setMarkerData] = useState([]);
+  var [amountOfMarkers, setAmountOfMarkers] = useState(0);
+
 
   useEffect(() => {
     if (latLng != null){
-    var geocoder = new L.Control.geocoder();
-    var latLngParser = new L.Control.Geocoder.latLng();
 
-     geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
-        getAddressFromLatLong(address[0].name)
-       }, null)
   }
   }, [latLng]);
 
@@ -30,26 +27,37 @@ var customMarker = new L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
 });
 
-function handleClick(e) {
-  if (e.target.options.name === "myMap" && markerTwoLatLng === null){
-      setMarkerOneLatLng(e.latlng)
-  }
+function addMarker(e){
 
-    if (e.target.options.name === "myMap" && markerOneLatLng !== null){
-      setMarkerTwoLatLng(e.latlng)
+  var coords = e.latlng;
+  if (amountOfMarkers < 2) {
+    setAmountOfMarkers(amountOfMarkers => amountOfMarkers + 1)
+    updateAddressFromMarker(amountOfMarkers, coords);
+    setMarkerData(markerData => [...markerData, coords])
   }
-
+  else null;
 }
 
-// function handleDrag(e) {
-//     if (e.target.options.name === 'markerOne'){
-//         console.log("markerOne");
-//       setMarkerOneLatLng(e.latlng)
-//     }
-//     if (e.target.options.name === 'markerTwo'){
-//       setMarkerTwoLatLng(e.latlng)
-//     }
-// }
+function updateMarker(e){
+
+ console.log("e.target.options ", e.target);
+  console.log('markerData in updateMarker func', markerData);
+  var markerLatLng = e.target.getLatLng(); //get marker LatLng
+  var markerIndex = e.target.options.marker_index;
+  updateAddressFromMarker(markerIndex, markerLatLng)
+
+  setMarkerData(markerData => {
+   markerData[markerIndex] = markerLatLng;
+   return markerData;
+  })
+}
+
+function updateAddressFromMarker(marker, latLng){
+    var geocoder = new L.Control.geocoder();
+     geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
+      getAddressFromLatLong(marker, address[0].name)
+    }, null)
+}
 
 function toggleAnimate() {
   setAnimate(animate => !animate);
@@ -77,17 +85,17 @@ function toggleAnimate() {
         Animate panning
       </label>
 
-      <Map  name="myMap" animate={animate} zoom={zoom} onClick={handleClick}>
-         {markerOneLatLng && <Marker name="markerOne" onDrag={(e)=>  setMarkerOneLatLng(e.latlng)} draggable={true} position={markerOneLatLng} icon={customMarker}>
-          <Popup>
-            This is your starting point!
-          </Popup>
-        </Marker>}
-         {markerTwoLatLng && <Marker name="markerTwo" onDrag={(e)=> setMarkerTwoLatLng(e.latlng)} draggable={true} position={markerTwoLatLng} icon={customMarker}>
-          <Popup>
-            This is your ending point!
-          </Popup>
-        </Marker>}
+      <Map animate={animate} zoom={zoom} onClick={addMarker}>
+       {markerData.map((element, index) => (
+          <Marker
+            key={index}
+            marker_index={index}
+            position={element}
+            draggable={draggable}
+            onDragend={updateMarker}
+            icon={customMarker}
+          />
+        ))}
         <MapboxLayer
           accessToken={MAPBOX_ACCESS_TOKEN}
           style="mapbox://styles/mapbox/streets-v9"
