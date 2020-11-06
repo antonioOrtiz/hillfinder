@@ -16,6 +16,8 @@ import '../styles/styles.scss';
 import 'leaflet/dist/leaflet.css';
 
 
+
+
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps

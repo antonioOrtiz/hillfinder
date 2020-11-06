@@ -1,9 +1,9 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 
 import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
 
-import { Input, Grid, Message } from 'semantic-ui-react';
+import { Button, Input, Grid, Message } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -79,10 +79,17 @@ function FormComponent({
 
   function isHillfindersForm() {
 
+     var hillfinderFormButtonRef = useRef();
+
+  function handleClick (){
+    return hillfinderFormButtonRef.current();
+  };
+
    function getAddressFromLatLong(input, address){
     if (input == 0) setCurrentLocation(address)
     else setCurrentDestination(address)
    }
+
 
     return (
       <>
@@ -102,8 +109,15 @@ function FormComponent({
               <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
             </Grid.Column>
           </Grid>
+          <Grid columns={1} stackable className="hillfinder-container">
+            <Grid.Column>
+             <Button onClick={handleClick} color="green"  size="medium" >
+               Clear Markers
+             </Button>
+             </Grid.Column>
+          </Grid>
         </Container>
-        <MyMap getAddressFromLatLong={getAddressFromLatLong}/>
+        <MyMap hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
       </>
     );
   }

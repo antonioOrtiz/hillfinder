@@ -38,6 +38,7 @@
         "leaflet": "^1.6.0",
         "leaflet-control-geocoder": "^1.13.0",
         "leaflet-geosearch": "^3.0.6",
+        "leaflet.awesome-markers": "^2.0.5",
         "leaflet.locatecontrol": "^0.72.0",
         "mapbox-gl": "^1.10.0",
         "mapbox-gl-leaflet": "0.0.12",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, forwardRef } from 'react'
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
@@ -6,7 +6,7 @@ import L from "leaflet";
 import LCG from 'leaflet-control-geocoder';
 import "leaflet/dist/leaflet.css";
 
-export default function MyMap({getAddressFromLatLong}) {
+export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef}) {
   var [latLng, setlatlng] = useState(null);
   var [zoom, setZoom] = useState(4);
   var [map, setData] = useState([]);
@@ -14,32 +14,54 @@ export default function MyMap({getAddressFromLatLong}) {
   var [draggable, setDraggable] = useState(true);
   var [markerData, setMarkerData] = useState([]);
   var [amountOfMarkers, setAmountOfMarkers] = useState(0);
-
+  var [showMarkers, setShowMarkers] = useState(false);
 
   useEffect(() => {
-    if (latLng != null){
+  //   if (latLng != null){
+
+  // }
+  hillfinderFormButtonRef.current = clearMarkers;
+
+  return() => {
+      hillfinderFormButtonRef.current = null;
 
   }
-  }, [latLng]);
 
+  });
 
-var customMarker = new L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
+var greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
-function addMarker(e){
+var goldIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
+
+function addMarker(e){
+  // setShowMarkers(showMarkers => !showMarkers)
   var coords = e.latlng;
   if (amountOfMarkers < 2) {
     setAmountOfMarkers(amountOfMarkers => amountOfMarkers + 1)
     updateAddressFromMarker(amountOfMarkers, coords);
+
+ console.log("markerData ", markerData);
     setMarkerData(markerData => [...markerData, coords])
   }
   else null;
 }
 
 function updateMarker(e){
-
  console.log("e.target.options ", e.target);
   console.log('markerData in updateMarker func', markerData);
   var markerLatLng = e.target.getLatLng(); //get marker LatLng
@@ -57,6 +79,12 @@ function updateAddressFromMarker(marker, latLng){
      geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
       getAddressFromLatLong(marker, address[0].name)
     }, null)
+}
+
+function clearMarkers(){
+ console.log("markerData ", markerData);
+  setMarkerData(markerData => [], ...markerData);
+  setAmountOfMarkers(0)
 }
 
 function toggleAnimate() {
@@ -86,14 +114,14 @@ function toggleAnimate() {
       </label>
 
       <Map animate={animate} zoom={zoom} onClick={addMarker}>
-       {markerData.map((element, index) => (
+       { markerData.map((element, index) => (
           <Marker
             key={index}
             marker_index={index}
             position={element}
             draggable={draggable}
             onDragend={updateMarker}
-            icon={customMarker}
+            icon={index === 0 ? goldIcon : greenIcon}
           />
         ))}
         <MapboxLayer
