@@ -14,7 +14,6 @@ import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
 
 const ProfilePage = ({ userData }) => {
-  console.log('userData ', userData);
   return (
     <>
       <Grid container columns={1} relaxed stackable>
