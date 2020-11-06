@@ -3,7 +3,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
 
-import { Button, Input, Grid, Message } from 'semantic-ui-react';
+import { Button, Card, Header,Icon, Input, Segment, Grid,Feed, Divider, Message } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -92,33 +92,89 @@ function FormComponent({
 
 
     return (
-      <>
-        <Container>
+          <>
+      <Grid container columns={1} relaxed stackable>
+        <Grid.Column>
           <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
-          <br />
+        </Grid.Column>
+      </Grid>
+      <Grid container columns={1}  relaxed stackable>
+        <Grid.Column>
+          <Segment  secondary>
+            <Card fluid>
+              <Card.Content>
+                <Grid.Column>
+                  <p style={{ fontSize: '1.33em' }}>Where you are...</p>
+                    <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
+                </Grid.Column>
+              </Card.Content>
+            </Card>
+            <Card fluid>
+              <Card.Content>
+                <Grid.Column>
+                 <p style={{ fontSize: '1.33em' }}>
+                 Where you wanna go; Hopefully on a downhill...
+               </p>
+               <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
+                </Grid.Column>
+              </Card.Content>
+            </Card>
+                <Segment textAlign="center" color='green'>
+                  <Button color="green"  size="large" >Find my hill!</Button>
+                 <Button onClick={handleClick} color="red"  size="large" >Clear Markers</Button>
+                </Segment>
+          </Segment>
+        </Grid.Column>
 
-          <Grid columns={2} stackable className="hillfinder-container">
-            <Grid.Column>
-              <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-              <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
-            </Grid.Column>
-            <Grid.Column>
-              <p style={{ fontSize: '1.33em' }}>
-                Where you wanna go; Hopefully on a downhill...
-              </p>
-              <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
-            </Grid.Column>
-          </Grid>
-          <Grid columns={1} stackable className="hillfinder-container">
-            <Grid.Column>
-             <Button onClick={handleClick} color="green"  size="medium" >
-               Clear Markers
-             </Button>
-             </Grid.Column>
-          </Grid>
-        </Container>
-        <MyMap hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
-      </>
+        <Grid.Column>
+          <Segment  secondary>
+            <Card fluid>
+              <Card.Content>
+                 <Divider horizontal>
+                  <Header as='h4'>
+                    <Icon name='map' color="green" />
+                    Your map!
+                  </Header>
+                </Divider>
+
+               <MyMap setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
+              </Card.Content>
+            </Card>
+          </Segment>
+        </Grid.Column>
+      </Grid>
+    </>
+      // <>
+      //   <Container>
+      //     <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
+      //     <br />
+
+      //     <Grid columns={2} stackable className="hillfinder-container">
+      //       <Grid.Column>
+      //         <p style={{ fontSize: '1.33em' }}>Where you are...</p>
+      //         <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
+      //       </Grid.Column>
+      //       <Grid.Column>
+      //         <p style={{ fontSize: '1.33em' }}>
+      //           Where you wanna go; Hopefully on a downhill...
+      //         </p>
+      //         <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
+      //       </Grid.Column>
+      //     </Grid>
+      //     <Grid columns={1} stackable className="hillfinder-container">
+      //       <Grid.Column textAlign="center">
+      //        <Button  color="green"  size="large" >
+      //          Find my hill!
+      //        </Button>
+
+      //        <Button onClick={handleClick} color="red"  size="large" >
+      //          Clear Markers
+      //        </Button>
+      //        </Grid.Column>
+      //     </Grid>
+      //   </Container>
+      //   <MyMap setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
+      // </>
     );
   }
 
