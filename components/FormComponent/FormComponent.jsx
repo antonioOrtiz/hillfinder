@@ -93,6 +93,7 @@ function FormComponent({
 
     return (
           <>
+
       <Grid container columns={1} relaxed stackable>
         <Grid.Column>
           <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
@@ -100,33 +101,37 @@ function FormComponent({
       </Grid>
       <Grid container columns={1}  relaxed stackable>
         <Grid.Column>
-          <Segment  secondary>
-            <Card fluid>
-              <Card.Content>
-                <Grid.Column>
-                  <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-                    <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
-                </Grid.Column>
-              </Card.Content>
-            </Card>
-            <Card fluid>
-              <Card.Content>
-                <Grid.Column>
-                 <p style={{ fontSize: '1.33em' }}>
-                 Where you wanna go; Hopefully on a downhill...
-               </p>
-               <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
-                </Grid.Column>
-              </Card.Content>
-            </Card>
-                <Segment textAlign="center" color='green'>
-                  <Button color="green"  size="large" >Find my hill!</Button>
-                 <Button onClick={handleClick} color="red"  size="large" >Clear Markers</Button>
+          <Segment>
+            <Card.Content>
+              <Segment  secondary>
+                <Card fluid>
+                  <Card.Content>
+                    <Grid.Column>
+                      <p style={{ fontSize: '1.33em' }}>Where you are...</p>
+                        <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
+                    </Grid.Column>
+                  </Card.Content>
+                </Card>
+                <Card fluid>
+                  <Card.Content>
+                    <Grid.Column>
+                    <p style={{ fontSize: '1.33em' }}>
+                    Where you wanna go; Hopefully on a downhill...
+                  </p>
+                  <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
+                    </Grid.Column>
+                  </Card.Content>
+                </Card>
+                    <Segment textAlign="center" color='green'>
+                      <Button color="green"  size="large" >Find my hill!</Button>
+                    <Button onClick={handleClick} color="red"  size="large" >Clear Markers</Button>
+                    </Segment>
                 </Segment>
+              </Card.Content>
           </Segment>
-        </Grid.Column>
 
-        <Grid.Column>
+        <Segment>
+          <Grid.Column>
           <Segment  secondary>
             <Card fluid>
               <Card.Content>
@@ -142,39 +147,11 @@ function FormComponent({
             </Card>
           </Segment>
         </Grid.Column>
+          </Segment>
+        </Grid.Column>
       </Grid>
-    </>
-      // <>
-      //   <Container>
-      //     <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
-      //     <br />
 
-      //     <Grid columns={2} stackable className="hillfinder-container">
-      //       <Grid.Column>
-      //         <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-      //         <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
-      //       </Grid.Column>
-      //       <Grid.Column>
-      //         <p style={{ fontSize: '1.33em' }}>
-      //           Where you wanna go; Hopefully on a downhill...
-      //         </p>
-      //         <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
-      //       </Grid.Column>
-      //     </Grid>
-      //     <Grid columns={1} stackable className="hillfinder-container">
-      //       <Grid.Column textAlign="center">
-      //        <Button  color="green"  size="large" >
-      //          Find my hill!
-      //        </Button>
-
-      //        <Button onClick={handleClick} color="red"  size="large" >
-      //          Clear Markers
-      //        </Button>
-      //        </Grid.Column>
-      //     </Grid>
-      //   </Container>
-      //   <MyMap setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
-      // </>
+        </>
     );
   }
 
