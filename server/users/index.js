@@ -39,7 +39,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
 
     var mailOptions = {
-      from: 'hillfinders.com',
+      from: process.env.EMAIL_ADDRESS,
       to: `${user.username}`,
       subject: subjectField,
       text: `${textField}${outputTokenInEmail(emailType)}`
