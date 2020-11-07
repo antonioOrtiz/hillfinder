@@ -92,8 +92,7 @@ function FormComponent({
 
 
     return (
-          <>
-
+    <>
       <Grid container columns={1} relaxed stackable>
         <Grid.Column>
           <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
@@ -150,8 +149,7 @@ function FormComponent({
           </Segment>
         </Grid.Column>
       </Grid>
-
-        </>
+    </>
     );
   }
 
