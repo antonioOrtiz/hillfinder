@@ -53,9 +53,11 @@ function UserProvider({ children }) {
         userId: user.id,
         userAvatar: user.avatar,
         userImages: user.images,
+        userMaps: user.maps,
         setUserId: id => setUser({ ...user, id }),
         setUserAvatar: avatar => setUser({ ...user, avatar }),
         setUserImages: images => setUser({ ...user, images }),
+        setUserMaps: maps => setUser([ ...user, maps ]),
         isAvatarUploading: isAvatarUploading
       }}
     >
