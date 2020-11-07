@@ -3,6 +3,7 @@ import { Map, Marker } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import L from "leaflet";
+import LCG from 'leaflet-control-geocoder';
 
 import "leaflet/dist/leaflet.css";
 
