@@ -10,8 +10,8 @@ const MyHeader = ({ mobile, margin, content, textAlign, color }) => (
     style={{
       fontSize: mobile ? '.5em' : '2.5em',
       fontWeight: 'normal',
-      padding: mobile ? '0' : '0',
-      margin: margin ? '1em 0 0 0' : '0',
+      padding: mobile ? '0' : '.005em',
+      margin: margin ? '.25em 0 0 0' : '0',
       color: color ? ' #ffffff' : '#000000'
     }}
   />
