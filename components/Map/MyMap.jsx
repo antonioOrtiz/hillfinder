@@ -1,25 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Map, Marker } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import L from "leaflet";
 import LCG from 'leaflet-control-geocoder';
-
-import "leaflet/dist/leaflet.css";
+import Routing from '../RoutingMachine/RoutingMachine.jsx'
 
 export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, setCurrentLocation, setCurrentDestination}) {
   var [zoom, setZoom] = useState(4);
-  var [map, setData] = useState([]);
+  var [map, setMap] = useState(null);
   var [animate, setAnimate] = useState(false);
   var [draggable, setDraggable] = useState(true);
   var [markerData, setMarkerData] = useState([]);
   var [amountOfMarkers, setAmountOfMarkers] = useState(0);
+  var [markerPointsForRouting, setMarkerPointsForRouting] = useState(null)
 
   useEffect(() => {
     hillfinderFormButtonRef.current = clearMarkers;
 
     return() => {
-        hillfinderFormButtonRef.current = null;
+     hillfinderFormButtonRef.current = null;
+    }
+  });
+
+  useEffect(() => {
+    if (markerData.length === 2){
+      setMarkerPointsForRouting(markerData)
     }
   });
 
@@ -47,8 +53,6 @@ function addMarker(e){
   if (amountOfMarkers < 2) {
     setAmountOfMarkers(amountOfMarkers => amountOfMarkers + 1)
     updateAddressFromMarker(amountOfMarkers, coords);
-
- console.log("markerData ", markerData);
     setMarkerData(markerData => [...markerData, coords])
   }
   else null;
@@ -95,9 +99,18 @@ function toggleAnimate() {
     onActivate: () => {} // callback before engine starts retrieving locations
   };
 
-  return map ? (
-    <>
-        <Map animate={animate} zoom={zoom} onClick={addMarker}>
+    var mapRef = useRef();
+
+    useEffect(()=>{
+      var {current = {}} = mapRef;
+      var { leafletElement: map } = current;
+     setMap(map)
+      console.log("leafletElement ", map);
+    },[mapRef])
+
+  return (
+
+        <Map animate={animate} zoom={zoom} onClick={addMarker} ref={mapRef}>
         { markerData.map((element, index) => (
             <Marker
               key={index}
@@ -114,9 +127,11 @@ function toggleAnimate() {
             style="mapbox://styles/mapbox/streets-v9"
           />
           <LocateControl options={locateOptions} startDirectly />
+ {console.log("map ", map)}
+
+ {console.log("markerPointsForRouting ", markerPointsForRouting)}
+           {markerPointsForRouting && <Routing myMapRef={map} latLng={markerPointsForRouting} />}
         </Map>
-    </>
-  ) : (
-    'Data is Loading...'
-  );
+
+  )
 }

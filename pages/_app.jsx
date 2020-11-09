@@ -15,9 +15,6 @@ import 'font-awesome/css/font-awesome.min.css';
 import '../styles/styles.scss';
 import 'leaflet/dist/leaflet.css';
 
-
-
-
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps
