@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var router = require('express').Router();
 var passport = require('passport');
 var multer = require('multer');
@@ -8,9 +10,9 @@ var crypto = require('crypto');
 var cloudinary = require('cloudinary').v2;
 var { check, body, validationResult } = require('express-validator');
 
-var nodemailer = require('nodemailer');
-var nodemailerMailgun = require('nodemailer-mailgun-transport');
-require('dotenv').config();
+var mailgun = require('mailgun-js')({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
+
+
 
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
@@ -24,36 +26,32 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       return res.status(500).send({ msg: err.message });
     }
 
-    var auth = {
-      auth: {
-        api_key: process.env.MAILGUN_PRIVATE_API,
-        domain: process.env.MAILGUN_DOMAIN
-      }
-    };
-
-    var transporter = nodemailer.createTransport(nodemailerMailgun(auth));
-
     function outputTokenInEmail(emailType) {
       if (emailType !== 'change of password') return `/${token.token}`;
       else return '';
     }
 
-    var mailOptions = {
-      from: process.env.EMAIL_ADDRESS,
-      to: `${user.username}`,
-      subject: subjectField,
-      text: `${textField}${outputTokenInEmail(emailType)}`
-    };
+    var sendMail = function(senderEmail, receiverEmail, emailSubject, emailBody){
+      var data = {
+        "from": senderEmail,
+        "to": receiverEmail,
+        "subject": emailSubject,
+        "text": emailBody
+      };
 
-    transporter.sendMail(mailOptions, function (err) {
-      console.log('mailOptions ', mailOptions);
-      if (err == true) {
-        return res.status(500).send({
-          msg: err.message
-        });
-      }
-      console.log('Message sent successfully!');
-    });
+      mailgun.messages().send(data, (error, body) => {
+        if(error) return res.status(500).send({ msg: err.message });
+        else console.log(body);
+      });
+    }
+
+    var senderEmail =  process.env.EMAIL_ADDRESS;
+    var receiverEmail = `${user.username}`;
+    var emailSubject = subjectField
+    var emailBody = `${textField}${outputTokenInEmail(emailType)}`
+
+    // User-defined function to send email
+    sendMail(senderEmail, receiverEmail, emailSubject, emailBody)
   });
 }
 

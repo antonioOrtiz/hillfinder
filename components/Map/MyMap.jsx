@@ -15,6 +15,9 @@ export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, s
   var [amountOfMarkers, setAmountOfMarkers] = useState(0);
   var [markerPointsForRouting, setMarkerPointsForRouting] = useState(null)
 
+  var [isMapInit, setIsMapInit] = useState(false)
+
+
   useEffect(() => {
     hillfinderFormButtonRef.current = clearMarkers;
 
@@ -25,7 +28,9 @@ export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, s
 
   useEffect(() => {
     if (markerData.length === 2){
-      setMarkerPointsForRouting(markerData)
+      setMarkerPointsForRouting(markerData);
+          setIsMapInit(isMapInit=> !isMapInit)
+
     }
   });
 
@@ -53,7 +58,7 @@ function addMarker(e){
   if (amountOfMarkers < 2) {
     setAmountOfMarkers(amountOfMarkers => amountOfMarkers + 1)
     updateAddressFromMarker(amountOfMarkers, coords);
-    setMarkerData(markerData => [...markerData, coords])
+    setMarkerData(markerData => [...markerData, coords]);
   }
   else null;
 }
@@ -106,7 +111,7 @@ function toggleAnimate() {
       var { leafletElement: map } = current;
      setMap(map)
       console.log("leafletElement ", map);
-    },[mapRef])
+    },[])
 
   return (
 
@@ -130,7 +135,7 @@ function toggleAnimate() {
  {console.log("map ", map)}
 
  {console.log("markerPointsForRouting ", markerPointsForRouting)}
-           {markerPointsForRouting && <Routing myMapRef={map} latLng={markerPointsForRouting} />}
+           {isMapInit && <Routing myMapRef={map} latLng={markerPointsForRouting} />}
         </Map>
 
   )
