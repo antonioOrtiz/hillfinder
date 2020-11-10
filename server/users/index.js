@@ -40,7 +40,7 @@ function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       };
 
       mailgun.messages().send(data, (error, body) => {
-        if(error) return res.status(500).send({ msg: err.message });
+       if(error) console.log(error)
         else console.log(body);
       });
     }

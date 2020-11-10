@@ -14,9 +14,8 @@ export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, s
   var [markerData, setMarkerData] = useState([]);
   var [amountOfMarkers, setAmountOfMarkers] = useState(0);
   var [markerPointsForRouting, setMarkerPointsForRouting] = useState(null)
-
+  var [mapCenter, setMapCenter] = useState(null)
   var [isMapInit, setIsMapInit] = useState(false)
-
 
   useEffect(() => {
     hillfinderFormButtonRef.current = clearMarkers;
@@ -27,10 +26,18 @@ export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, s
   });
 
   useEffect(() => {
+     if (map ){
+
+      map.on('load', function (result) {
+        setMapCenter(mapCenter=> result.sourceTarget._lastCenter)
+      })
+
+     }
+  });
+
+  useEffect(() => {
     if (markerData.length === 2){
       setMarkerPointsForRouting(markerData);
-          setIsMapInit(isMapInit=> !isMapInit)
-
     }
   });
 
@@ -64,8 +71,6 @@ function addMarker(e){
 }
 
 function updateMarker(e){
- console.log("e.target.options ", e.target);
-  console.log('markerData in updateMarker func', markerData);
   var markerLatLng = e.target.getLatLng(); //get marker LatLng
   var markerIndex = e.target.options.marker_index;
   updateAddressFromMarker(markerIndex, markerLatLng)
@@ -84,7 +89,6 @@ function updateAddressFromMarker(marker, latLng){
 }
 
 function clearMarkers(){
- console.log("markerData ", markerData);
   setMarkerData(markerData => [], ...markerData);
   setAmountOfMarkers(0);
   setCurrentLocation(''), setCurrentDestination('')
@@ -109,13 +113,12 @@ function toggleAnimate() {
     useEffect(()=>{
       var {current = {}} = mapRef;
       var { leafletElement: map } = current;
-     setMap(map)
-      console.log("leafletElement ", map);
+      setIsMapInit(isMapInit=> !isMapInit)
+      setMap(map);
     },[])
 
   return (
-
-        <Map animate={animate} zoom={zoom} onClick={addMarker} ref={mapRef}>
+        <Map center={markerPointsForRouting} animate={animate} zoom={zoom} onClick={addMarker} ref={mapRef}>
         { markerData.map((element, index) => (
             <Marker
               key={index}
@@ -132,10 +135,8 @@ function toggleAnimate() {
             style="mapbox://styles/mapbox/streets-v9"
           />
           <LocateControl options={locateOptions} startDirectly />
- {console.log("map ", map)}
 
- {console.log("markerPointsForRouting ", markerPointsForRouting)}
-           {isMapInit && <Routing myMapRef={map} latLng={markerPointsForRouting} />}
+           {markerPointsForRouting && <Routing myMapRef={map} latLng={markerPointsForRouting} />}
         </Map>
 
   )

@@ -11,9 +11,7 @@ function LocateControl({ options, startDirectly, leaflet }) {
     lc.addTo(map);
 
     if (startDirectly) {
-      // request location update and set location
       var message = `Will you allow ${window.location.hostname} to access your location?`;
-
       lc.start();
     }
   }, []);
