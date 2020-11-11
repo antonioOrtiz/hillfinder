@@ -252,9 +252,11 @@ function FormComponent({
   }
 
   function isUpdatePasswordForm() {
+
+ console.log("formType ", formType);
     return (
       <GenericInputForm
-        formHeader=" Update your password"
+        formHeader="Update your password"
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -273,7 +275,7 @@ function FormComponent({
         passwordConfirmationError={passwordConfirmationError}
         passwordConfirmationFeedback={passwordConfirmationFeedback}
         disableButton={disableButton}
-        buttonName=" Update password"
+        buttonName="Update your password"
         isLoading={isLoading}
         responseMessage={responseMessage}
         tokenExpired={tokenExpired}

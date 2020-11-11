@@ -38,6 +38,8 @@ export default function GenericInputForm({
   responseCodeSuccess
 }) {
   let form;
+
+ console.log("formType ", formType);
   switch (buttonName) {
     case 'Log-in':
       form = (
@@ -290,7 +292,7 @@ export default function GenericInputForm({
         </div>
       );
       break;
-    case ' Update your password':
+    case 'Update your password':
       form = (
         <div className="login-form">
           {' '}
