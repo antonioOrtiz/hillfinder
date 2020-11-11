@@ -12,8 +12,6 @@ var { check, body, validationResult } = require('express-validator');
 
 var mailgun = require('mailgun-js')({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
 
-
-
 function nodeMailerFunc(user, subjectField, textField, emailType, res) {
   var token = new Token({
     _userId: user._id,
@@ -329,11 +327,6 @@ var upload = multer({
   },
   fileFilter: multerFilter
 });
-
-/*
-stores image in uploads folder
-using mulkter and creates a reference to the file
-*/
 
 router.post('/uploadmulter', upload.single('imageData'), (req, res, next) => {
   var { path } = req.file.path;
