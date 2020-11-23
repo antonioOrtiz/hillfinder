@@ -14,6 +14,7 @@ import 'semantic-ui-css/semantic.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import '../styles/styles.scss';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {

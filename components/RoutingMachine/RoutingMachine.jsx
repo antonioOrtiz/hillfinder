@@ -1,101 +1,66 @@
-// import L from "leaflet";
-// import "leaflet-routing-machine";
-
-// function Routing({map, latLng}){
-
-//  console.log("myMapRef ", map);
-//   var startingCoords = {
-//     lat: latLng[0].lat,
-//     lng: latLng[0].lng
-//   }
-
-//  console.log("startingCoords.lat ", startingCoords.lat);
-//  console.log("startingCoords.lng", startingCoords.lng);
-
-//   var endingCoords = {
-//     lat: latLng[0].lat,
-//     lng: latLng[1].lng
-//   }
-
-//   let leafletElement =  L.Routing.control({
-//     waypoints: [L.latLng(startingCoords.lat, startingCoords.lng), L.latLng(endingCoords.lat, endingCoords.lng)]
-//   }).addTo(map)
-
-//   return leafletElement.getPlan();
-// }
-
-// export default Routing;
-
-
 import { MapLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
 import { withLeaflet } from "react-leaflet";
 
+
 class Routing extends MapLayer {
-
-
-
+ constructor(props) {
+    super(props);
+  }
 
   createLeafletElement() {
-    const { map, latLng } = this.props;
-    // console.log("map ", map);
-  var startingCoords = {
-    lat: latLng[0].lat,
-    lng: latLng[0].lng
+    const { map, coords, icon,  removeFrom, removeTo } = this.props;
+
+
+    var dStart = L.latLng(coords.fromLat, coords.fromLon);
+    var dGoal = L.latLng(coords.toLat, coords.toLon);
+
+
+    this.leafletElement = L.Routing.control({
+      collapsible: true,
+       lineOptions: {
+      styles: [{color: 'chartreuse', opacity: 1, weight: 5}]
+     },
+      waypoints: [dStart, dGoal],
+      createMarker: function(i, waypoints, n) {
+        if (i === 0) {
+         marker_icon = icon.startIcon;
+        }
+
+
+       var marker_icon;
+        if (i === 0) {
+         marker_icon = icon.startIcon;
+        }
+        else if (i == n - 1) {
+         marker_icon = icon.endIcon
+        }
+        var marker = L.marker(i === 0 ? dStart : dGoal,{
+         draggable: true,
+         icon: marker_icon
+        });
+        return marker;
+     }
+    }).addTo(map.leafletElement);
+
+    return this.leafletElement.getPlan();
   }
 
-//  console.log("startingCoords.lat ", startingCoords.lat);
-//  console.log("startingCoords.lng", startingCoords.lng);
 
-  var endingCoords = {
-    lat: latLng[0].lat,
-    lng: latLng[1].lng
-  }
+  updateLeafletElement(props) {
+    if(this.leafletElement){
+          const { isRoutingDone } = this.props;
 
-  let leafletElement = new L.Routing.control({
-    waypoints: [L.latLng(startingCoords.lat, startingCoords.lng), L.latLng(endingCoords.lat, endingCoords.lng)],
-    routeWhileDragging: true,
-    geocoder: L.Control.Geocoder.nominatim(),
-    createMarker: function(i, wp, nWps) {
-  var greenIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
+      if(isRoutingDone === false){
 
-  var redIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
- console.log("i", i);
- console.log("wp", wp);
- console.log("nWps", nWps);
-    if (i === 0 || i === nWps - 1) {
-      // here change the starting and ending icons
-      return L.marker(wp.latLng, {
-        icon: greenIcon // here pass the custom marker icon instance
-      });
-    } else {
-      // here change all the others
-      return L.marker(wp.latLng, {
-        icon: redIcon
-      });
+ console.log("isRoutingDone ", isRoutingDone);
+        this.leafletElement.routing.spliceWaypoints(0, 2);
+        return this.leafletElement.getPlan();
+      }
     }
   }
 
 
-  }).addTo(map.leafletElement);
-
-  return leafletElement.getPlan();
-
-}
 }
 export default withLeaflet(Routing);

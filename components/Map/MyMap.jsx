@@ -2,45 +2,50 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Map, Marker } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
-import L from "leaflet";
-import LCG from 'leaflet-control-geocoder';
 import Routing from '../RoutingMachine/RoutingMachine.jsx'
 
 export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, setCurrentLocation, setCurrentDestination}) {
-var [zoom, setZoom] = useState(4);
+var [zoom, setZoom] = useState(18);
 var [map, setMap] = useState(null);
 var [animate, setAnimate] = useState(false);
-var [draggable, setDraggable] = useState(true);
+var [userLocation, setUserLocation] = useState(null)
+var [fromLat, setFromLat]  = useState(null);
+var [fromLon, setFromLon]  = useState(null);
+var [toLat, setToLat]  = useState(null);
+var [toLon, setToLon]  = useState(null);
+var [from, setFrom] = useState(0);
+var [to, setTo] = useState(0);
+var [isRoutingDone, setIsRoutingDone] = useState(false);
 var [markerData, setMarkerData] = useState([]);
-var [amountOfMarkers, setAmountOfMarkers] = useState(0);
-var [markerPointsForRouting, setMarkerPointsForRouting] = useState(null)
-var [mapCenter, setMapCenter] = useState()
-var [isMapInit, setIsMapInit] = useState(false)
+var [removeFrom, setRemoveFrom] = useState(null);
+var [removeTo, setRemoveTo] = useState(null);
+var myMapRef = useRef();
+
+  useEffect(()=>{
+    console.log("from ", from);
+    console.log("to ", to);
+    console.log("fromLat ", fromLat);
+    console.log("fromLon ", fromLon);
+
+   console.log("toLat  toLon  ", toLat,  toLon );
+   console.log("markerData ", markerData);
+
+   console.log("isRoutingDone ", isRoutingDone);
+ console.log("map ", map);
+
+  },[from, to, fromLat, fromLon, toLat, toLon, markerData, isRoutingDone]);
+
+
 
   useEffect(() => {
-    hillfinderFormButtonRef.current = clearMarkers;
+   hillfinderFormButtonRef.current = clearMarkers;
 
     return() => {
       hillfinderFormButtonRef.current = null;
     }
-  });
+  }, []);
 
-  useEffect(() => {
-    if (markerData.length === 2){
-      setMarkerPointsForRouting(markerData);
-    }
-  });
-
-  // var mapRef = useRef();
-
-  // useEffect(()=>{
-  //   var {current = {}} = mapRef;
-  //   var { leafletElement: map } = current;
-  //   console.log("leafletElement ", map);
-  //   setMap(map)
-  // },[map])
-
-  var greenIcon = new L.Icon({
+  var startIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
@@ -49,7 +54,7 @@ var [isMapInit, setIsMapInit] = useState(false)
     shadowSize: [41, 41]
   });
 
-  var redIcon = new L.Icon({
+  var endIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
@@ -58,80 +63,121 @@ var [isMapInit, setIsMapInit] = useState(false)
     shadowSize: [41, 41]
   });
 
-  function addMarker(e){
-    var coords = e.latlng;
-    if (amountOfMarkers < 2) {
-      setAmountOfMarkers(amountOfMarkers => amountOfMarkers + 1)
-      updateAddressFromMarker(amountOfMarkers, coords);
-      setMarkerData(markerData => [...markerData, coords]);
+  function setMarkers(e){
+    var {lat, lng} = e.latlng
+    var eventLatLong = e.latlng;
+    var fromOrTwoObj;
+
+    from  < 1  ?  fromOrTwoObj = {...{id: 0}, ...eventLatLong} : fromOrTwoObj = {...{id: 1}, ...eventLatLong}
+
+    if (from < 1 ){
+      setMarkerData(markerData => {
+         return  [...markerData, ...[fromOrTwoObj]]
+      });
+      setFromLat(fromLat => lat);
+      setFromLon(fromLon => lng)
+      setFrom(from => from + 1)
     }
-    else null;
+
+    if (from == 1 && to === 0) {
+      setMarkerData(markerData => {
+         return  [...markerData, ...[fromOrTwoObj]]
+      });
+      setToLat(toLat => lat);
+      setToLon(toLon => lng)
+      setTo(to => to + 1);
+      setIsRoutingDone(()=>true)
+      setMarkerData(markerData => {
+         return  []
+      });
+    }
+
   }
 
   function updateMarker(e){
-    console.log("e.target.options ", e.target);
-    console.log('markerData in updateMarker func', markerData);
     var markerLatLng = e.target.getLatLng(); //get marker LatLng
     var markerIndex = e.target.options.marker_index;
-    updateAddressFromMarker(markerIndex, markerLatLng)
 
-    setMarkerData(markerData => {
-    markerData[markerIndex] = markerLatLng;
-    return markerData;
-    })
+    console.log("markerLatLng ", markerLatLng);
+
+    console.log("markerIndex ", markerIndex);
+    var {lat, lng} = markerLatLng;
+
+
+     console.log("lat, lng ", lat, lng);
+      setFromLat(fromLat => lat);
+      setFromLon(toLon => lng);
+
+      setMarkerData(prevObjs => {
+       return prevObjs.map((o)=>{
+          if (markerIndex === o.id) return {...o, ...markerLatLng};
+          return o;
+        })
+      })
   }
 
-  function updateAddressFromMarker(marker, latLng){
-      var geocoder = new L.Control.geocoder();
-      geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
-        getAddressFromLatLong(marker, address[0].name)
-      }, null)
-  }
 
-  function clearMarkers(){
+function resetHandler (){
+    return myMapRef.current();
+  };
+
+
+function clearMarkers(){
   console.log("markerData ", markerData);
-    setMarkerData(markerData => [], ...markerData);
-    setAmountOfMarkers(0);
-    setCurrentLocation(''), setCurrentDestination('')
-  }
+  setMarkerData(markerData => [], ...markerData);
+  setFromLat(fromLat => null);
+  setFromLon(fromLon => null);
+  setToLat(toLat => null)
+  setToLon(toLon => null)
+  setFrom(from => 0);
+  setTo(to => 0);
+  setIsRoutingDone(false);
+  // setRemoveFrom(removeFrom => null)
+  // setRemoveTo(removeTo => null)
+}
+
 
   function saveMap(map){
-    setMap(map)
-    setIsMapInit(isMapInit => !isMapInit)
+    setMap(map);
+  }
+
+  function handleOnLocationFound(e){
+   setUserLocation(e.latlng)
+  }
+
+  // const marker = useRef(null);
+
+  function markerClick(e){
+   e.originalEvent.view.L.DomEvent.stopPropagation(e)
   }
 
   var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 
-  var locateOptions = {
-    position: 'topright',
-    strings: {
-      title: 'Show me where I am, yo!'
-    },
-    onActivate: () => {} // callback before engine starts retrieving locations
-  };
-
   return (
-  <Map animate={animate} zoom={zoom} onClick={addMarker} ref={markerPointsForRouting ? saveMap: null}>
-   {/* {markerData.map((element, index) => (
+  <Map animate={animate} center={userLocation} onClick={setMarkers} onLocationFound={handleOnLocationFound} zoom={zoom} ref={saveMap}>
+
+     {markerData && markerData.map((element, index) => {
+
+      return (
       <Marker
         key={index}
         marker_index={index}
         position={element}
-        draggable={draggable}
+        draggable={true}
+        onClick={markerClick}
         onDragend={updateMarker}
-        icon={index === 0 ? greenIcon : redIcon}
+        icon={element.id === 0 ? startIcon : endIcon}
       />
-    ))} */}
-
+      )
+     })}
     <MapboxLayer
       accessToken={MAPBOX_ACCESS_TOKEN}
       style="mapbox://styles/mapbox/streets-v9"
     />
-    <LocateControl options={locateOptions} startDirectly />
-    {console.log("map ", map)}
-    { console.log("isMapInit ", isMapInit)}
-    {console.log("markerPointsForRouting ", markerPointsForRouting)}
-      {isMapInit && <Routing map={map}  latLng={markerPointsForRouting} />}
+    <LocateControl startDirectly />
+     {/* {console.log("fromLat, fromLon, toLat, toLon, isRoutingDone ", fromLat, fromLon, toLat, toLon, isRoutingDone)} */}
+
+     {isRoutingDone &&  <Routing isRoutingDone={isRoutingDone} map={map} myMapRef={myMapRef} icon={{startIcon, endIcon}} userLocation={userLocation}  coords={{fromLat, fromLon, toLat, toLon}}  />}
   </Map>
 
   )
