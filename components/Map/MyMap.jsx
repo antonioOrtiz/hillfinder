@@ -15,27 +15,22 @@ var [toLat, setToLat]  = useState(null);
 var [toLon, setToLon]  = useState(null);
 var [from, setFrom] = useState(0);
 var [to, setTo] = useState(0);
-var [isRoutingDone, setIsRoutingDone] = useState(false);
+var [isRoutingVisibile, setIsRoutingVisibile] = useState(false);
+var [removeRoutingMachine, setRemoveRoutingMachine] = useState(false)
 var [markerData, setMarkerData] = useState([]);
-var [removeFrom, setRemoveFrom] = useState(null);
-var [removeTo, setRemoveTo] = useState(null);
-var myMapRef = useRef();
 
-  useEffect(()=>{
-    console.log("from ", from);
-    console.log("to ", to);
-    console.log("fromLat ", fromLat);
-    console.log("fromLon ", fromLon);
+  // useEffect(()=>{
+  //   console.log("from, to ", from, to);
+  //   console.log("fromLat, fromLon", fromLat, fromLon);
+  //   console.log("toLat  toLon  ", toLat,  toLon );
 
-   console.log("toLat  toLon  ", toLat,  toLon );
-   console.log("markerData ", markerData);
+  //   console.log("markerData ", markerData);
 
-   console.log("isRoutingDone ", isRoutingDone);
- console.log("map ", map);
+  //   console.log("isRoutingVisibile ", isRoutingVisibile);
 
-  },[from, to, fromLat, fromLon, toLat, toLon, markerData, isRoutingDone]);
+  //   console.log("removeRoutingMachine ", removeRoutingMachine);
 
-
+  // },[from, to, fromLat, fromLon, toLat, toLon, markerData, isRoutingVisibile, removeRoutingMachine]);
 
   useEffect(() => {
    hillfinderFormButtonRef.current = clearMarkers;
@@ -69,7 +64,7 @@ var myMapRef = useRef();
     var fromOrTwoObj;
 
     from  < 1  ?  fromOrTwoObj = {...{id: 0}, ...eventLatLong} : fromOrTwoObj = {...{id: 1}, ...eventLatLong}
-
+   setRemoveRoutingMachine(()=> false)
     if (from < 1 ){
       setMarkerData(markerData => {
          return  [...markerData, ...[fromOrTwoObj]]
@@ -86,25 +81,19 @@ var myMapRef = useRef();
       setToLat(toLat => lat);
       setToLon(toLon => lng)
       setTo(to => to + 1);
-      setIsRoutingDone(()=>true)
+      setIsRoutingVisibile(()=>true)
       setMarkerData(markerData => {
          return  []
       });
     }
-
   }
 
   function updateMarker(e){
     var markerLatLng = e.target.getLatLng(); //get marker LatLng
     var markerIndex = e.target.options.marker_index;
 
-    console.log("markerLatLng ", markerLatLng);
-
-    console.log("markerIndex ", markerIndex);
     var {lat, lng} = markerLatLng;
 
-
-     console.log("lat, lng ", lat, lng);
       setFromLat(fromLat => lat);
       setFromLon(toLon => lng);
 
@@ -116,14 +105,7 @@ var myMapRef = useRef();
       })
   }
 
-
-function resetHandler (){
-    return myMapRef.current();
-  };
-
-
 function clearMarkers(){
-  console.log("markerData ", markerData);
   setMarkerData(markerData => [], ...markerData);
   setFromLat(fromLat => null);
   setFromLon(fromLon => null);
@@ -131,11 +113,9 @@ function clearMarkers(){
   setToLon(toLon => null)
   setFrom(from => 0);
   setTo(to => 0);
-  setIsRoutingDone(false);
-  // setRemoveFrom(removeFrom => null)
-  // setRemoveTo(removeTo => null)
+  setRemoveRoutingMachine(true);
+  setIsRoutingVisibile(false)
 }
-
 
   function saveMap(map){
     setMap(map);
@@ -144,8 +124,6 @@ function clearMarkers(){
   function handleOnLocationFound(e){
    setUserLocation(e.latlng)
   }
-
-  // const marker = useRef(null);
 
   function markerClick(e){
    e.originalEvent.view.L.DomEvent.stopPropagation(e)
@@ -157,19 +135,19 @@ function clearMarkers(){
   <Map animate={animate} center={userLocation} onClick={setMarkers} onLocationFound={handleOnLocationFound} zoom={zoom} ref={saveMap}>
 
      {markerData && markerData.map((element, index) => {
-
       return (
-      <Marker
-        key={index}
-        marker_index={index}
-        position={element}
-        draggable={true}
-        onClick={markerClick}
-        onDragend={updateMarker}
-        icon={element.id === 0 ? startIcon : endIcon}
-      />
+        <Marker
+          key={index}
+          marker_index={index}
+          position={element}
+          draggable={true}
+          onClick={markerClick}
+          onDragend={updateMarker}
+          icon={element.id === 0 ? startIcon : endIcon}
+        />
       )
      })}
+
     <MapboxLayer
       accessToken={MAPBOX_ACCESS_TOKEN}
       style="mapbox://styles/mapbox/streets-v9"
@@ -177,8 +155,7 @@ function clearMarkers(){
     <LocateControl startDirectly />
      {/* {console.log("fromLat, fromLon, toLat, toLon, isRoutingDone ", fromLat, fromLon, toLat, toLon, isRoutingDone)} */}
 
-     {isRoutingDone &&  <Routing isRoutingDone={isRoutingDone} map={map} myMapRef={myMapRef} icon={{startIcon, endIcon}} userLocation={userLocation}  coords={{fromLat, fromLon, toLat, toLon}}  />}
+     {isRoutingVisibile ?  <Routing removeRoutingMachine={removeRoutingMachine} map={map} icon={{startIcon, endIcon}} userLocation={userLocation}  coords={{fromLat, fromLon, toLat, toLon}}  /> : null}
   </Map>
-
   )
 }

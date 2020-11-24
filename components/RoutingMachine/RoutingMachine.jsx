@@ -9,27 +9,24 @@ class Routing extends MapLayer {
     super(props);
   }
 
-  createLeafletElement() {
-    const { map, coords, icon,  removeFrom, removeTo } = this.props;
-
+  createLeafletElement(props) {
+    const { map, coords, icon } = this.props;
 
     var dStart = L.latLng(coords.fromLat, coords.fromLon);
     var dGoal = L.latLng(coords.toLat, coords.toLon);
 
 
-    this.leafletElement = L.Routing.control({
+     if (this.props.map && !this.routing) {
+
+    this.routing = L.Routing.control({
       collapsible: true,
        lineOptions: {
       styles: [{color: 'chartreuse', opacity: 1, weight: 5}]
      },
       waypoints: [dStart, dGoal],
       createMarker: function(i, waypoints, n) {
-        if (i === 0) {
-         marker_icon = icon.startIcon;
-        }
+        var marker_icon;
 
-
-       var marker_icon;
         if (i === 0) {
          marker_icon = icon.startIcon;
         }
@@ -42,25 +39,28 @@ class Routing extends MapLayer {
         });
         return marker;
      }
-    }).addTo(map.leafletElement);
+    });
 
-    return this.leafletElement.getPlan();
+      this.props.map.leafletElement.addControl(this.routing);
+    }
+
+    return this.routing.getPlan();
   }
 
-
-  updateLeafletElement(props) {
-    if(this.leafletElement){
-          const { isRoutingDone } = this.props;
-
-      if(isRoutingDone === false){
-
- console.log("isRoutingDone ", isRoutingDone);
-        this.leafletElement.routing.spliceWaypoints(0, 2);
-        return this.leafletElement.getPlan();
+    updateLeafletElement(fromProps, toProps){
+      if (toProps.removeRoutingMachine !== false){
+        this.routing.setWaypoints([]);
       }
     }
+
+  componentWillUnmount() {
+    this.destroyRouting();
   }
 
-
+  destroyRouting() {
+    if (this.props.map) {
+      this.props.map.leafletElement.removeControl(this.routing);
+    }
+  }
 }
 export default withLeaflet(Routing);
