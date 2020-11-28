@@ -20,6 +20,7 @@ class Routing extends MapLayer {
 
     this.routing = L.Routing.control({
       collapsible: true,
+      position: 'bottomleft',
        lineOptions: {
       styles: [{color: 'chartreuse', opacity: 1, weight: 5}]
      },
@@ -47,11 +48,11 @@ class Routing extends MapLayer {
     return this.routing.getPlan();
   }
 
-    updateLeafletElement(fromProps, toProps){
-      if (toProps.removeRoutingMachine !== false){
-        this.routing.setWaypoints([]);
-      }
+  updateLeafletElement(fromProps, toProps){
+    if (toProps.removeRoutingMachine !== false){
+      this.routing.setWaypoints([]);
     }
+  }
 
   componentWillUnmount() {
     this.destroyRouting();
@@ -63,4 +64,5 @@ class Routing extends MapLayer {
     }
   }
 }
+
 export default withLeaflet(Routing);

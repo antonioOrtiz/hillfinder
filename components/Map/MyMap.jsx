@@ -1,42 +1,50 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Map, Marker } from 'react-leaflet';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx'
+import Search from '../Search/SearchBox.jsx'
 
-export default function MyMap({getAddressFromLatLong, hillfinderFormButtonRef, setCurrentLocation, setCurrentDestination}) {
-var [zoom, setZoom] = useState(18);
-var [map, setMap] = useState(null);
-var [animate, setAnimate] = useState(false);
-var [userLocation, setUserLocation] = useState(null)
-var [fromLat, setFromLat]  = useState(null);
-var [fromLon, setFromLon]  = useState(null);
-var [toLat, setToLat]  = useState(null);
-var [toLon, setToLon]  = useState(null);
-var [from, setFrom] = useState(0);
-var [to, setTo] = useState(0);
-var [isRoutingVisibile, setIsRoutingVisibile] = useState(false);
-var [removeRoutingMachine, setRemoveRoutingMachine] = useState(false)
-var [markerData, setMarkerData] = useState([]);
+import L from "leaflet";
+import LCG from 'leaflet-control-geocoder';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-  // useEffect(()=>{
-  //   console.log("from, to ", from, to);
-  //   console.log("fromLat, fromLon", fromLat, fromLon);
-  //   console.log("toLat  toLon  ", toLat,  toLon );
+export default function MyMap({locationDestinationInputFields, getAddressFromLatLong, hillfinderRefs, setCurrentLocation, setCurrentDestination}) {
+  var [zoom, setZoom] = useState(18);
+  var [map, setMap] = useState(null);
+  var [animate, setAnimate] = useState(false);
+  var [userLocation, setUserLocation] = useState(null)
+  var [fromLat, setFromLat]  = useState(null);
+  var [fromLon, setFromLon]  = useState(null);
+  var [toLat, setToLat]  = useState(null);
+  var [toLon, setToLon]  = useState(null);
+  var [from, setFrom] = useState(0);
+  var [to, setTo] = useState(0);
+  var [isRoutingVisibile, setIsRoutingVisibile] = useState(false);
+  var [removeRoutingMachine, setRemoveRoutingMachine] = useState(false)
+  var [markerData, setMarkerData] = useState([]);
+  var geocoder = new L.Control.geocoder();
+  var geoSearch = L.Control.Geocoder.nominatim();
 
-  //   console.log("markerData ", markerData);
+  useEffect(()=>{
 
-  //   console.log("isRoutingVisibile ", isRoutingVisibile);
+   console.log("locationDestinationInputFields ", locationDestinationInputFields);
 
-  //   console.log("removeRoutingMachine ", removeRoutingMachine);
-
-  // },[from, to, fromLat, fromLon, toLat, toLon, markerData, isRoutingVisibile, removeRoutingMachine]);
+  },[locationDestinationInputFields]);
 
   useEffect(() => {
-   hillfinderFormButtonRef.current = clearMarkers;
+    hillfinderRefs.hillfinderClearButtonRef.current = clearMarkers;
 
     return() => {
-      hillfinderFormButtonRef.current = null;
+      hillfinderRefs.hillfinderClearButtonRef.current = null;
+    }
+  }, []);
+
+    useEffect(() => {
+    hillfinderRefs.hillfinderFindMyHillButtonRef.current = setMarkersAndInputFieldsFromGeoFunction;
+
+    return() => {
+      hillfinderRefs.hillfinderFindMyHillButtonRef.current = null;
     }
   }, []);
 
@@ -70,8 +78,9 @@ var [markerData, setMarkerData] = useState([]);
          return  [...markerData, ...[fromOrTwoObj]]
       });
       setFromLat(fromLat => lat);
-      setFromLon(fromLon => lng)
-      setFrom(from => from + 1)
+      setFromLon(fromLon => lng);
+      setFrom(from => from + 1);
+      setMarkersAndInputFieldsFromGeoFunction(markerData.length, e.latlng)
     }
 
     if (from == 1 && to === 0) {
@@ -81,7 +90,8 @@ var [markerData, setMarkerData] = useState([]);
       setToLat(toLat => lat);
       setToLon(toLon => lng)
       setTo(to => to + 1);
-      setIsRoutingVisibile(()=>true)
+      setIsRoutingVisibile(() => true);
+      setMarkersAndInputFieldsFromGeoFunction(markerData.length, e.latlng)
       setMarkerData(markerData => {
          return  []
       });
@@ -89,8 +99,10 @@ var [markerData, setMarkerData] = useState([]);
   }
 
   function updateMarker(e){
-    var markerLatLng = e.target.getLatLng(); //get marker LatLng
     var markerIndex = e.target.options.marker_index;
+    var markerLatLng = e.target.getLatLng(); //get marker LatLng
+
+    setMarkersAndInputFieldsFromGeoFunction(markerIndex, markerLatLng);
 
     var {lat, lng} = markerLatLng;
 
@@ -105,6 +117,22 @@ var [markerData, setMarkerData] = useState([]);
       })
   }
 
+  function setMarkersAndInputFieldsFromGeoFunction(marker, latLng){
+   if (Number.isInteger(marker)) {
+     geocoder.options.geocoder.reverse(latLng, 5, (address)=>{
+      getAddressFromLatLong(marker, address[0].name)
+    }, null)
+  } else {
+   if (setCurrentDestination){
+
+//  console.log("geoSearch.geocode ", geoSearch);
+     geoSearch.geocode(locationDestinationInputFields.current_location, function(address){
+    //  console.log('address', address)
+   }, null )
+   }
+  }
+}
+
 function clearMarkers(){
   setMarkerData(markerData => [], ...markerData);
   setFromLat(fromLat => null);
@@ -114,27 +142,29 @@ function clearMarkers(){
   setFrom(from => 0);
   setTo(to => 0);
   setRemoveRoutingMachine(true);
-  setIsRoutingVisibile(false)
+  setIsRoutingVisibile(false);
+  setCurrentLocation(''); setCurrentDestination('')
 }
 
-  function saveMap(map){
-    setMap(map);
-  }
+function saveMap(map){
+  setMap(map);
+}
 
-  function handleOnLocationFound(e){
-   setUserLocation(e.latlng)
-  }
+function handleOnLocationFound(e){
+  setUserLocation(e.latlng)
+}
 
-  function markerClick(e){
-   e.originalEvent.view.L.DomEvent.stopPropagation(e)
-  }
+function markerClick(e){
+  e.originalEvent.view.L.DomEvent.stopPropagation(e)
+}
 
-  var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
+var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
+
 
   return (
-  <Map animate={animate} center={userLocation} onClick={setMarkers} onLocationFound={handleOnLocationFound} zoom={zoom} ref={saveMap}>
+    <Map animate={animate} center={userLocation} onClick={setMarkers} onLocationFound={handleOnLocationFound} zoom={zoom} ref={saveMap}>
 
-     {markerData && markerData.map((element, index) => {
+      {markerData && markerData.map((element, index) => {
       return (
         <Marker
           key={index}
@@ -146,16 +176,17 @@ function clearMarkers(){
           icon={element.id === 0 ? startIcon : endIcon}
         />
       )
-     })}
+      })}
 
     <MapboxLayer
       accessToken={MAPBOX_ACCESS_TOKEN}
       style="mapbox://styles/mapbox/streets-v9"
     />
     <LocateControl startDirectly />
-     {/* {console.log("fromLat, fromLon, toLat, toLon, isRoutingDone ", fromLat, fromLon, toLat, toLon, isRoutingDone)} */}
+      <Search provider={new OpenStreetMapProvider()} />
+      {/* {console.log("fromLat, fromLon, toLat, toLon, isRoutingDone ", fromLat, fromLon, toLat, toLon, isRoutingDone)} */}
 
-     {isRoutingVisibile ?  <Routing removeRoutingMachine={removeRoutingMachine} map={map} icon={{startIcon, endIcon}} userLocation={userLocation}  coords={{fromLat, fromLon, toLat, toLon}}  /> : null}
-  </Map>
+      {isRoutingVisibile ?  <Routing removeRoutingMachine={removeRoutingMachine} map={map} icon={{startIcon, endIcon}} userLocation={userLocation}  coords={{fromLat, fromLon, toLat, toLon}}  /> : null}
+    </Map>
   )
 }

@@ -79,13 +79,21 @@ function FormComponent({
 
   function isHillfindersForm() {
 
-     var hillfinderFormButtonRef = useRef();
+     var hillfinderClearButtonRef = useRef();
+     var hillfinderFindMyHillButtonRef = useRef();
 
-  function handleClick (){
-    return hillfinderFormButtonRef.current();
+  function handleFindHillButton (e){
+   return hillfinderFindMyHillButtonRef.current();
   };
 
+  function handleClearButton (e){
+    return hillfinderClearButtonRef.current();
+  };
+
+
    function getAddressFromLatLong(input, address){
+
+    console.log("input, address ", input, address);
     if (input == 0) setCurrentLocation(address)
     else setCurrentDestination(address)
    }
@@ -122,8 +130,8 @@ function FormComponent({
                   </Card.Content>
                 </Card>
                     <Segment textAlign="center" color='green'>
-                      <Button color="green"  size="large" >Find my hill!</Button>
-                    <Button onClick={handleClick} color="red"  size="large" >Clear Markers</Button>
+                      <Button onClick={handleFindHillButton} color="green"  size="large" >Find my hill!</Button>
+                      <Button onClick={handleClearButton} color="red"  size="large" >Clear Markers</Button>
                     </Segment>
                 </Segment>
               </Card.Content>
@@ -141,7 +149,7 @@ function FormComponent({
                   </Header>
                 </Divider>
 
-               <MyMap setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderFormButtonRef={hillfinderFormButtonRef} getAddressFromLatLong={getAddressFromLatLong}/>
+               <MyMap locationDestinationInputFields={{current_location, current_destination}} setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderRefs={{hillfinderFindMyHillButtonRef, hillfinderClearButtonRef}} getAddressFromLatLong={getAddressFromLatLong}/>
               </Card.Content>
             </Card>
           </Segment>
