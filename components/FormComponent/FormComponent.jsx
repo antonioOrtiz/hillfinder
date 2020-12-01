@@ -3,7 +3,18 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
 
-import { Button, Card, Header,Icon, Input, Segment, Grid,Feed, Divider, Message } from 'semantic-ui-react';
+import {
+  Button,
+  Card,
+  Header,
+  Icon,
+  Input,
+  Segment,
+  Grid,
+  Feed,
+  Divider,
+  Message
+} from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -22,7 +33,6 @@ const source = CancelToken.source();
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Container } from 'next/app';
 import UserContext from '../UserContext/UserContext.jsx';
 
 import dynamic from 'next/dynamic';
@@ -76,88 +86,45 @@ function FormComponent({
   var [current_location, setCurrentLocation] = useState('');
   var [current_destination, setCurrentDestination] = useState('');
 
-
   function isHillfindersForm() {
-
-     var hillfinderClearButtonRef = useRef();
-     var hillfinderFindMyHillButtonRef = useRef();
-
-  function handleFindHillButton (e){
-   return hillfinderFindMyHillButtonRef.current();
-  };
-
-  function handleClearButton (e){
-    return hillfinderClearButtonRef.current();
-  };
-
-
-   function getAddressFromLatLong(input, address){
-
-    console.log("input, address ", input, address);
-    if (input == 0) setCurrentLocation(address)
-    else setCurrentDestination(address)
-   }
-
+    function getAddressFromLatLong(input, address) {
+      console.log('input, address ', input, address);
+      if (input == 0) setCurrentLocation(address);
+      else setCurrentDestination(address);
+    }
 
     return (
-    <>
-      <Grid container columns={1} relaxed stackable>
-        <Grid.Column>
-          <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
-        </Grid.Column>
-      </Grid>
-      <Grid container columns={1}  relaxed stackable>
-        <Grid.Column>
-          <Segment>
-            <Card.Content>
-              <Segment  secondary>
-                <Card fluid>
-                  <Card.Content>
-                    <Grid.Column>
-                      <p style={{ fontSize: '1.33em' }}>Where you are...</p>
-                        <Input name="current_location" fluid icon="search" value={current_location} onChange={e => handleChange(e)}  placeholder="Current location..." />
-                    </Grid.Column>
-                  </Card.Content>
-                </Card>
-                <Card fluid>
-                  <Card.Content>
-                    <Grid.Column>
-                    <p style={{ fontSize: '1.33em' }}>
-                    Where you wanna go; Hopefully on a downhill...
-                  </p>
-                  <Input name="current_destination" fluid icon="search" value={current_destination} onChange={e => handleChange(e)} placeholder="Destination..." />
-                    </Grid.Column>
-                  </Card.Content>
-                </Card>
-                    <Segment textAlign="center" color='green'>
-                      <Button onClick={handleFindHillButton} color="green"  size="large" >Find my hill!</Button>
-                      <Button onClick={handleClearButton} color="red"  size="large" >Clear Markers</Button>
-                    </Segment>
-                </Segment>
-              </Card.Content>
-          </Segment>
-
-        <Segment>
+      <>
+        <Grid container columns={1} stackable style={{ height: '100vh' }}>
           <Grid.Column>
-          <Segment  secondary>
+            <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
             <Card fluid>
               <Card.Content>
-                 <Divider horizontal>
-                  <Header as='h4'>
-                    <Icon name='map' color="green" />
+                <Divider horizontal>
+                  <Header as="h4">
+                    <Icon name="map" color="green" />
                     Your map!
                   </Header>
                 </Divider>
 
-               <MyMap locationDestinationInputFields={{current_location, current_destination}} setCurrentLocation={setCurrentLocation} setCurrentDestination={setCurrentDestination} hillfinderRefs={{hillfinderFindMyHillButtonRef, hillfinderClearButtonRef}} getAddressFromLatLong={getAddressFromLatLong}/>
+                <MyMap
+                  locationDestinationInputFields={{
+                    current_location,
+                    current_destination
+                  }}
+                  setCurrentLocation={setCurrentLocation}
+                  setCurrentDestination={setCurrentDestination}
+                  hillfinderRefs={{
+                    hillfinderFindMyHillButtonRef,
+                    hillfinderClearButtonRef
+                  }}
+                  getAddressFromLatLong={getAddressFromLatLong}
+                />
               </Card.Content>
             </Card>
-          </Segment>
-        </Grid.Column>
-          </Segment>
-        </Grid.Column>
-      </Grid>
-    </>
+          </Grid.Column>
+        </Grid>
+      </>
     );
   }
 
@@ -260,8 +227,7 @@ function FormComponent({
   }
 
   function isUpdatePasswordForm() {
-
- console.log("formType ", formType);
+    console.log('formType ', formType);
     return (
       <GenericInputForm
         formHeader="Update your password"
@@ -517,15 +483,14 @@ function FormComponent({
     }
 
     if (e.target.name === 'current_location') {
-      console.log(e.target.value)
+      console.log(e.target.value);
       setCurrentLocation(e.target.value);
     }
 
-     if (e.target.name === 'current_destination') {
-      console.log(e.target.value)
+    if (e.target.name === 'current_destination') {
+      console.log(e.target.value);
       setCurrentDestination(e.target.value);
     }
-
   }
 
   function handleSubmit(event, formType) {
