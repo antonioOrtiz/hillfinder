@@ -37,7 +37,6 @@
         "imagemin-optipng": "^8.0.0",
         "indicative": "^7.4.4",
         "leaflet": "^1.7.1",
-        "leaflet-control-geocoder": "^1.13.0",
         "leaflet-geosearch": "^3.0.6",
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.awesome-markers": "^2.0.5",
