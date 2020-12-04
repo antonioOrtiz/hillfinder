@@ -39,7 +39,7 @@ export default function GenericInputForm({
 }) {
   let form;
 
- console.log("formType ", formType);
+  console.log('formType ', formType);
   switch (buttonName) {
     case 'Log-in':
       form = (
@@ -49,7 +49,7 @@ export default function GenericInputForm({
           </style>
           <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
             <Grid.Column style={{ maxWidth: 450 }}>
-              <Header as="h2" color="green" textAlign="center">
+              <Header as="h2" textAlign="center">
                 {formHeader}
               </Header>
 
@@ -92,7 +92,7 @@ export default function GenericInputForm({
                   >
                     <Message error content={passwordFeedback} />
                   </Transition>
-                  <Button color="green" fluid size="large" disabled={disableButton}>
+                  <Button fluid size="large" disabled={disableButton}>
                     {buttonName}
                   </Button>
                   <br />
@@ -185,7 +185,7 @@ export default function GenericInputForm({
           </style>
           <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
             <Grid.Column style={{ maxWidth: 450 }}>
-              <Header as="h2" color="green" textAlign="center">
+              <Header as="h2" textAlign="center">
                 {formHeader}
               </Header>
 
@@ -235,7 +235,7 @@ export default function GenericInputForm({
                     <Message error content={passwordFeedback} />
                   </Transition>
 
-                  <Button color="green" fluid size="large" disabled={disableButton}>
+                  <Button fluid size="large" disabled={disableButton}>
                     Register
                   </Button>
 
@@ -302,7 +302,7 @@ export default function GenericInputForm({
           </style>
           <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
             <Grid.Column style={{ maxWidth: 450 }}>
-              <Header as="h2" color="green" textAlign="center">
+              <Header as="h2" textAlign="center">
                 Update your password
               </Header>
               <Message color="olive">
@@ -355,7 +355,7 @@ export default function GenericInputForm({
                     <Message error content={passwordConfirmationFeedback} />
                   </Transition>
 
-                  <Button color="green" fluid size="large" disabled={disableButton}>
+                  <Button fluid size="large" disabled={disableButton}>
                     {buttonName}
                   </Button>
 
@@ -422,7 +422,7 @@ export default function GenericInputForm({
           </style>
           <Grid textAlign="center" style={{ height: '100%' }} verticalAlign="middle">
             <Grid.Column style={{ maxWidth: 450 }}>
-              <Header as="h2" color="green" textAlign="center">
+              <Header as="h2" textAlign="center">
                 {formHeader}
               </Header>
               <Message color="olive">
@@ -455,7 +455,7 @@ export default function GenericInputForm({
                     <Message error content={usernameFeedback} />
                   </Transition>
 
-                  <Button color="green" fluid size="large" disabled={disableButton}>
+                  <Button fluid size="large" disabled={disableButton}>
                     {buttonName}
                   </Button>
 
