@@ -12,11 +12,32 @@ import reduxStore from '../store/index';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'font-awesome/css/font-awesome.min.css';
-import '../styles/styles.scss';
+
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
+import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
+
+import '../styles/styles.scss';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
 class MyApp extends App {
+  componentDidMount() {
+    /* initial kickOff of Service Worker !*/
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/serviceWorker.js').then(
+          function(registration) {
+            console.log(
+              'Service Worker registration successful with scope: ',
+              registration.scope
+            );
+          },
+          function(err) {
+            console.log('Service Worker registration failed: ', err);
+          }
+        );
+      });
+    }
+  }
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)

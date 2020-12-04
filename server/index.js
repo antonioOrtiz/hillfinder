@@ -13,6 +13,7 @@ var morgan = require('morgan');
 var HttpStatus = require('http-status-codes');
 var compression = require('compression');
 var helmet = require('helmet');
+var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
 
 var PORT = process.env.PORT || 8016;
@@ -119,6 +120,9 @@ async function start() {
   // server.use('/images', require('./images'));
 
   // Redirect all requests to main entrypoint pages/index.js
+  server.get('/serviceWorker.js', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../public', 'serviceWorker.js'));
+  });
   server.get('/*', async (req, res, next) => {
     try {
       // @NOTE code duplication from here
@@ -162,7 +166,9 @@ async function start() {
 
   if (process.env.NODE_ENV === 'production') {
     server.use(express.static('.next/static'));
-
+    server.get('/service-worker.js', (req, res) => {
+      res.sendFile(path.resolve(__dirname, 'public', 'serviceWorker.js'));
+    });
     server.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));
     });
