@@ -1,25 +1,16 @@
-.ui.stacked.segment {
-    padding-bottom: 1.5em;
-}
-
-
-/* error message */
-
-.ui.error.message p {
-    font-weight: 500;
-    text-align: center;
-}
-
-
-/* text fields */
-
-.ui.message .header+p {
-    font-weight: 500;
-    text-align: center;
-}
-
-
 /* main application styling */
+
+
+/*headers*/
+
+.main-heading {
+    text-transform: uppercase;
+    text-align: center;
+    color: white;
+}
+
+
+/* main-container */
 
 .ui.grid.hillfinder-container {
     padding: 0 2rem;
@@ -28,12 +19,6 @@
 .main-container {
     padding: 3rem;
     background-color: lightblue;
-}
-
-.main-heading {
-    text-transform: uppercase;
-    text-align: center;
-    color: white;
 }
 
 .image-container {
@@ -77,19 +62,81 @@
     font-weight: bold;
 }
 
+input.animate-panning {
+    margin-right: 0.5rem;
+}
+
+
+/* buttons */
+
+.ui.large.button,
+.ui.large.buttons .button,
+.ui.large.buttons .or {
+    background: #56ab2f;
+    color: #fff;
+}
+
+
+/* h2 headers */
+
+h2.ui.center.aligned.header,
+button.ui.inverted.button a:hover {
+    color: #56ab2f;
+}
+
+.ui.inverted.menu {
+    background: #80e750;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to top, #21ba45, #469023);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to top, #21ba45, #469023);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.ui.large.inverted.pointing.secondary.menu,
+.ui.inverted.vertical.center.aligned.segment,
+.ui.inverted.vertical.segment,
+.ui.large.top.fixed.menu {
+    background: #469023;
+}
+
+button.ui.inverted.button a {
+    color: #fff;
+}
+
+
+/* card styles */
+
+.ui.card>.image,
+.ui.cards>.card>.image {
+    height: auto;
+    width: 100%;
+}
+
+
+/* form error messages */
+
+.ui.error.message p {
+    font-weight: 500;
+    text-align: center;
+}
+
+
+/* confirmation page */
+
+.ui.message.confirmation {
+    height: 3.5em;
+}
+
+
+/* map styles */
+
 .leaflet-container {
     height: 400px;
     width: 100%;
     margin: 2rem auto 0;
     border-radius: 0.28571429rem;
 }
-
-input.animate-panning {
-    margin-right: 0.5rem;
-}
-
-
-/* map styles */
 
 @media only screen and (min-width: 0px) {
     .leaflet-container.leaflet-touch.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom {
@@ -106,15 +153,13 @@ input.animate-panning {
     }
 }
 
-
-/* confirmation page */
-
-.ui.message.confirmation {
-    height: 3.5em;
+.geocoder-control-input {
+    background-image: url(/static/media/search@2x.png);
 }
 
-// #success.ui.success.message.confirmation.success {
-//     height: 10em;
-//     background-color: #fcfff5 !important;
-//     color: #2c662d !important;
-// }
+
+/* semantic-ui overriders */
+
+.ui.stacked.segment {
+    padding-bottom: 1.5em;
+}
