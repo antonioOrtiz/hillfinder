@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { withLeaflet } from 'react-leaflet';
 import Locate from 'leaflet.locatecontrol';
 
-function LocateControl({  startDirectly, leaflet }) {
+function LocateControl({ startDirectly, leaflet }) {
   var options = {
-    position: 'topleft',
+    position: 'topright',
     strings: {
       title: 'Show me where I am, yo!'
     },
@@ -24,4 +24,4 @@ function LocateControl({  startDirectly, leaflet }) {
   return null;
 }
 
-export default withLeaflet(LocateControl)
+export default withLeaflet(LocateControl);
