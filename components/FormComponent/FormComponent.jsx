@@ -3,18 +3,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
 
-import {
-  Button,
-  Card,
-  Header,
-  Icon,
-  Input,
-  Segment,
-  Grid,
-  Feed,
-  Divider,
-  Message
-} from 'semantic-ui-react';
+import { Card, Header, Icon, Grid, Divider, Message } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -114,10 +103,6 @@ function FormComponent({
                   }}
                   setCurrentLocation={setCurrentLocation}
                   setCurrentDestination={setCurrentDestination}
-                  hillfinderRefs={{
-                    hillfinderFindMyHillButtonRef,
-                    hillfinderClearButtonRef
-                  }}
                   getAddressFromLatLong={getAddressFromLatLong}
                 />
               </Card.Content>
