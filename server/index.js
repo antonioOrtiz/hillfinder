@@ -74,7 +74,10 @@ async function start() {
   await app
     .prepare()
     .then(() => {
-      mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true });
+      mongoose.connect(db, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
       mongoose.Promise = global.Promise;
 
       mongoose.connection
@@ -93,7 +96,11 @@ async function start() {
 
   server.use('/uploads', express.static(__dirname + '/uploads'));
   server.use(express.json());
-  server.use(bodyParser.urlencoded({ extended: false }));
+  server.use(
+    bodyParser.urlencoded({
+      extended: false
+    })
+  );
   server.use(bodyParser.json());
   server.use(morgan('dev'));
 
@@ -104,7 +111,9 @@ async function start() {
       secret: 'very secret 12345',
       resave: false,
       saveUninitialized: false,
-      store: new MongoStore({ mongooseConnection: mongoose.connection })
+      store: new MongoStore({
+        mongooseConnection: mongoose.connection
+      })
     })
   );
 
@@ -117,16 +126,21 @@ async function start() {
 
   server.use(cors());
   server.use('/users', require('./users'));
-  // server.use('/images', require('./images'));
-
-  // Redirect all requests to main entrypoint pages/index.js
-  server.get('/serviceWorker.js', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../public', 'serviceWorker.js'));
+  server.get('/service-worker.js', (req, res) => {
+    res.sendFile('.next/service-worker.js', { root: './' });
   });
   server.get('/*', async (req, res, next) => {
     try {
-      // @NOTE code duplication from here
-      // https://github.com/zeit/next.js/blob/cc6fe5fdf92c9c618a739128fbd5192a6d397afa/packages/next-server/server/next-server.ts#L405
+      // server.get('/service-worker.js', (req, res) => {
+      //   console.log('service worker called');
+      //   // Don't cache service worker is a best practice (otherwise clients wont get emergency bug fix)
+      //   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      //   res.set('Content-Type', 'application/javascript');
+
+      //   // const filePath = path.join(__dirname, './next/service-worker.js');
+      //   console.log('filePath ', './next/service-worker.js');
+      //   app.serveStatic(req, res, './next/service-worker.js');
+      // });
       const pathName = req.originalUrl;
       if (isInternalUrl(req.url)) {
         return app.handleRequest(req, res, req.originalUrl);
@@ -166,9 +180,16 @@ async function start() {
 
   if (process.env.NODE_ENV === 'production') {
     server.use(express.static('.next/static'));
-    server.get('/service-worker.js', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'public', 'serviceWorker.js'));
-    });
+
+    // handle GET request to /service-worker.js
+    if (pathname === '/service-worker.js') {
+      const filePath = join(__dirname, '.next', pathname);
+
+      app.serveStatic(req, res, filePath);
+    } else {
+      handle(req, res, parsedUrl);
+    }
+
     server.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));
     });
