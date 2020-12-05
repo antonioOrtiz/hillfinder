@@ -17,7 +17,11 @@ const HomepageLayout = () => {
         style={{ minHeight: 'auto', padding: '4.5em 0em 5em' }}
         vertical
       >
-        <MyHeader color={'white'} content="Welcome to Hillfinders!" textAlign={'center'} />
+        <MyHeader
+          color={'white'}
+          content="Welcome to Hillfinders!"
+          textAlign={'center'}
+        />
         <p style={{ fontSize: '1.33em' }}>
           An app on the decline! <br />
           er about finding declines... Register!
