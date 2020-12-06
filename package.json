@@ -3,7 +3,7 @@
     "scripts": {
         "dev": "NODE_ENV=development nodemon server/index.js",
         "build": "next build",
-        "start": "next start -p $PORT",
+        "start": "next start -p 5150",
         "heroku-postbuild": "npm run build"
     },
     "dependencies": {
