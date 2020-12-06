@@ -18,7 +18,7 @@ const ProfilePage = ({ userData }) => {
     <>
       <Grid container columns={1} relaxed stackable>
         <Grid.Column>
-          <MyHeader as="h2" content="Foo" textAlign="left" />
+          <MyHeader as="h2" content="Welcome!" textAlign="left" />
         </Grid.Column>
       </Grid>
 
@@ -52,7 +52,6 @@ const ProfilePage = ({ userData }) => {
               <Card.Content>
                 <Feed>
                   <Feed.Event>
-                    <Feed.Label image="/images/avatar/small/jenny.jpg" />
                     <Feed.Content>
                       <Feed.Date content="1 day ago" />
                       <Feed.Summary>
@@ -62,7 +61,6 @@ const ProfilePage = ({ userData }) => {
                   </Feed.Event>
 
                   <Feed.Event>
-                    <Feed.Label image="/images/avatar/small/molly.png" />
                     <Feed.Content>
                       <Feed.Date content="3 days ago" />
                       <Feed.Summary>
@@ -72,7 +70,6 @@ const ProfilePage = ({ userData }) => {
                   </Feed.Event>
 
                   <Feed.Event>
-                    <Feed.Label image="/images/avatar/small/elliot.jpg" />
                     <Feed.Content>
                       <Feed.Date content="4 days ago" />
                       <Feed.Summary>
@@ -88,9 +85,6 @@ const ProfilePage = ({ userData }) => {
           <Segment>
             <Feed>
               <Feed.Event>
-                <Feed.Label>
-                  <img src="/images/avatar/small/elliot.jpg" />
-                </Feed.Label>
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.User>Elliot Fu</Feed.User> added you as a friend
@@ -105,20 +99,12 @@ const ProfilePage = ({ userData }) => {
               </Feed.Event>
 
               <Feed.Event>
-                <Feed.Label image="/images/avatar/small/helen.jpg" />
                 <Feed.Content>
                   <Feed.Summary>
                     <a>Helen Troy</a> added <a>2 new illustrations</a>
                     <Feed.Date>4 days ago</Feed.Date>
                   </Feed.Summary>
-                  <Feed.Extra images>
-                    <a>
-                      <img src="/images/wireframe/image.png" />
-                    </a>
-                    <a>
-                      <img src="/images/wireframe/image.png" />
-                    </a>
-                  </Feed.Extra>
+
                   <Feed.Meta>
                     <Feed.Like>
                       <Icon name="like" />1 Like
@@ -128,7 +114,6 @@ const ProfilePage = ({ userData }) => {
               </Feed.Event>
 
               <Feed.Event>
-                <Feed.Label image="/images/avatar/small/jenny.jpg" />
                 <Feed.Content>
                   <Feed.Summary
                     date="2 Days Ago"
@@ -144,7 +129,6 @@ const ProfilePage = ({ userData }) => {
               </Feed.Event>
 
               <Feed.Event>
-                <Feed.Label image="/images/avatar/small/joe.jpg" />
                 <Feed.Content>
                   <Feed.Summary>
                     <a>Joe Henderson</a> posted on his page
@@ -165,20 +149,12 @@ const ProfilePage = ({ userData }) => {
               </Feed.Event>
 
               <Feed.Event>
-                <Feed.Label image="/images/avatar/small/justen.jpg" />
                 <Feed.Content>
                   <Feed.Summary>
                     <a>Justen Kitsune</a> added <a>2 new photos</a> of you
                     <Feed.Date>4 days ago</Feed.Date>
                   </Feed.Summary>
-                  <Feed.Extra images>
-                    <a>
-                      <img src="/images/wireframe/image.png" />
-                    </a>
-                    <a>
-                      <img src="/images/wireframe/image.png" />
-                    </a>
-                  </Feed.Extra>
+
                   <Feed.Meta>
                     <Feed.Like>
                       <Icon name="like" />
