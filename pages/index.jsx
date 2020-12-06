@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { Redirect } from 'react-router';
 
-import LinkNavWithLayout from './LinkNavWithLayout-b';
+import LinkNavWithLayout from './LinkNavWithLayout';
 import Index from './home';
 import Profile from './profile';
 import Dashboard from './dashboard';
