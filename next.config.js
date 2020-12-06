@@ -10,16 +10,24 @@ module.exports = withOffline(
       withCSS(
         withSass({
           // useFileSystemPublicRoutes: false,
+          // generateSw: false, // this allows all your workboxOpts to be passed in injectManifest
           generateInDevMode: true,
           workboxOpts: {
             swDest: './service-worker.js', // this is the important part,
-            exclude: [/.+error\.js$/, /\.map$/],
+            exclude: [/.+error\.js$/, /\.map$/, /\.(?:png|jpg|jpeg|svg)$/],
             runtimeCaching: [
+              {
+                urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'hillfinder-images'
+                }
+              },
               {
                 urlPattern: /^https?.*/,
                 handler: 'NetworkFirst',
                 options: {
-                  cacheName: 'https-calls',
+                  cacheName: 'hillfinder-https-calls',
                   networkTimeoutSeconds: 15,
                   expiration: {
                     maxEntries: 150,
