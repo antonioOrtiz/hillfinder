@@ -16,7 +16,7 @@ class Routing extends MapLayer {
     var dGoal = L.latLng(coords.toLat, coords.toLon);
 
 
-     if (this.props.map && !this.routing) {
+     if (map && !this.routing) {
 
     this.routing = L.Routing.control({
       collapsible: true,
@@ -42,10 +42,16 @@ class Routing extends MapLayer {
      }
     });
 
-      this.props.map.leafletElement.addControl(this.routing);
     }
 
     return this.routing.getPlan();
+  }
+
+  componentDidMount(){
+    const { map } = this.props;
+
+ console.log("map ", map);
+    map.addControl(this.routing);
   }
 
   updateLeafletElement(fromProps, toProps){
@@ -60,7 +66,7 @@ class Routing extends MapLayer {
 
   destroyRouting() {
     if (this.props.map) {
-      this.props.map.leafletElement.removeControl(this.routing);
+      this.props.map.removeControl(this.routing);
     }
   }
 }
