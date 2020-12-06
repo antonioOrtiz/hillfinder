@@ -12,7 +12,7 @@
         "axios": "^0.19.2",
         "axios-hooks": "^2.0.0",
         "babel-plugin-transform-class-properties": "^6.24.1",
-        "bcrypt": "^3.0.8",
+        "bcrypt": "^5.0.0",
         "body-parser": "^1.18.3",
         "cloudinary": "^1.22.0",
         "cloudinary-core": "^2.8.2",
