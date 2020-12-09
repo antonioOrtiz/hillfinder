@@ -126,9 +126,9 @@ async function start() {
 
   server.use(cors());
   server.use('/users', require('./users'));
-  server.get('/service-worker.js', (req, res) => {
-    res.sendFile('.next/service-worker.js', { root: './' });
-  });
+  // server.get('/service-worker.js', (req, res) => {
+  //   res.sendFile('.next/service-worker.js', { root: './' });
+  // });
   server.get('/*', async (req, res, next) => {
     try {
       // server.get('/service-worker.js', (req, res) => {
@@ -182,13 +182,13 @@ async function start() {
     server.use(express.static('.next/static'));
 
     // handle GET request to /service-worker.js
-    if (pathname === '/service-worker.js') {
-      const filePath = join(__dirname, '.next', pathname);
+    // if (pathname === '/service-worker.js') {
+    //   const filePath = join(__dirname, '.next', pathname);
 
-      app.serveStatic(req, res, filePath);
-    } else {
-      handle(req, res, parsedUrl);
-    }
+    //   app.serveStatic(req, res, filePath);
+    // } else {
+    //   handle(req, res, parsedUrl);
+    // }
 
     server.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));

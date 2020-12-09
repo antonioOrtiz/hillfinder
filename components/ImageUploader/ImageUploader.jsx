@@ -38,7 +38,7 @@ function ImageUploader() {
   };
 
   useEffect(() => {
-    console.log('isAvatarUploading in imageUploaderUseEffect', isAvatarUploading);
+    // console.log('isAvatarUploading in imageUploaderUseEffect', isAvatarUploading);
     return () => {};
   });
 

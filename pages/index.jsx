@@ -18,15 +18,8 @@ import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 import Register from './register';
 
 class App extends Component {
-  static getInitialProps({
-    store,
-    accountNotVerified,
-    isLoggedIn,
-    logInUser,
-    logOutUser
-  }) {
+  static getInitialProps({ accountNotVerified, isLoggedIn, logInUser, logOutUser }) {
     return {
-      store,
       accountNotVerified,
       isLoggedIn,
       logInUser,
@@ -41,6 +34,7 @@ class App extends Component {
   render() {
     const { isLoggedIn, accountNotVerified } = this.props;
 
+    console.log('isLoggedIn 44 ', isLoggedIn);
     let navBars = [
       { name: 'Home', path: '/' },
       { name: 'Profile', path: '/profile' },
@@ -50,11 +44,13 @@ class App extends Component {
     ];
 
     function PrivateRoute({ children, ...rest }) {
+      var { name } = children.props.data[0];
+
       return (
         <Route
           {...rest}
           render={({ location }) =>
-            isLoggedIn && !accountNotVerified ? (
+            name == 'Home' || (isLoggedIn && !accountNotVerified) ? (
               { ...children }
             ) : (
               <Redirect
@@ -72,48 +68,43 @@ class App extends Component {
     return (
       <>
         <Switch>
-          <Route
-            path="/"
-            isLoggedIn={isLoggedIn}
-            exact
-            render={props => (
-              <LinkNavWithLayout {...props} data={navBars}>
-                <Index />
-              </LinkNavWithLayout>
-            )}
-          />
+          <PrivateRoute path="/" exact>
+            <LinkNavWithLayout data={navBars}>
+              <Index isLoggedIn={isLoggedIn} />
+            </LinkNavWithLayout>
+          </PrivateRoute>
 
-          <PrivateRoute path="/profile/" isLoggedIn={isLoggedIn}>
+          <PrivateRoute path="/profile" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout data={navBars}>
               <Profile user />
             </LinkNavWithLayout>
           </PrivateRoute>
 
-          <PrivateRoute path="/dashboard/" isLoggedIn={isLoggedIn}>
+          <PrivateRoute path="/dashboard" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout data={navBars}>
               <Dashboard />
             </LinkNavWithLayout>
           </PrivateRoute>
 
           <Route
-            path="/login/"
+            path="/login"
             render={props => <Login accountNotVerified={accountNotVerified} {...props} />}
           />
 
           <Route
-            path="/forgot_password/"
+            path="/forgot_password"
             render={props => <ForgotPassword {...props} />}
           />
 
           <PrivateRoute path="/update_password/:token/" component={UpdatePassword} />
 
           <PrivateRoute
-            path="/confirmed/:token/"
+            path="/confirmed/:token"
             accountNotVerified={accountNotVerified}
             component={Confirmation}
           />
 
-          <Route path="/register/" render={props => <Register {...props} />} />
+          <Route path="/register" render={props => <Register {...props} />} />
 
           <Route
             component={({ location }) => (
