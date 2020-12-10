@@ -14,7 +14,6 @@ var HttpStatus = require('http-status-codes');
 var compression = require('compression');
 var helmet = require('helmet');
 var path = require('path');
-var MongoClient = require('mongodb').MongoClient;
 
 var PORT = process.env.PORT || 8016;
 
