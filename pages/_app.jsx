@@ -18,17 +18,14 @@ import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
 
 import '../styles/styles.scss';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
-import { register, unregister } from 'next-offline/runtime';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 class MyApp extends App {
   componentDidMount() {
     /* initial kickOff of Service Worker !*/
-    register();
   }
 
-  componentWillUnmount() {
-    unregister();
-  }
+  componentWillUnmount() {}
 
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps
