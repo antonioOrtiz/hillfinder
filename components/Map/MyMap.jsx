@@ -168,8 +168,6 @@ export default function MyMap({
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
   }
 
-  var MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
-
   return (
     <Map
       animate={animate}
@@ -193,19 +191,18 @@ export default function MyMap({
           );
         })}
 
+      {console.log('process.env.MAPBOX_ACCESS_TOKEN ', process.env.MAPBOX_ACCESS_TOKEN)}
       <MapboxLayer
-        accessToken={MAPBOX_ACCESS_TOKEN}
+        accessToken={process.env.MAPBOX_ACCESS_TOKEN}
         style="mapbox://styles/mapbox/streets-v9"
       />
       <LocateControl startDirectly />
-
       {/* <GeoSearch map={map} markerInfo={{markerData, handleOnClickSetMarkers, handleOnDragEndUpdateMarker, handleOnClickMarkerClick, startIcon, endIcon}} /> */}
       <Control position="bottomleft">
         <Button onClick={handleOnClickClearMarkers} color="red" size="small">
           clear
         </Button>
       </Control>
-
       {isRoutingVisibile ? (
         <Routing
           removeRoutingMachine={removeRoutingMachine}
