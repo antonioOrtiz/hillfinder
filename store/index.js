@@ -5,7 +5,7 @@ import ui, { uiStartState } from './reducers/ui/index';
 import users, { usersStartState } from './reducers/users/index';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { createMigrate, persistStore } from 'redux-persist';
+import { persistStore } from 'redux-persist';
 
 import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
