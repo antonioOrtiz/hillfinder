@@ -128,6 +128,14 @@ async function start() {
   // server.get('/service-worker.js', (req, res) => {
   //   res.sendFile('.next/service-worker.js', { root: './' });
   // });
+
+  // server.get('./server-worker.js', (req, res) => {
+  //   console.log('service worker called');
+  //   // Don't cache service worker is a best practice (otherwise clients wont get emergency bug fix)
+
+  //   res.sendFile(path.resolve(__dirname, 'public', 'service-worker.js'));
+  // });
+
   server.get('/*', async (req, res, next) => {
     try {
       // server.get('/service-worker.js', (req, res) => {
