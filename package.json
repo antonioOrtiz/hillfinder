@@ -3,7 +3,7 @@
     "scripts": {
         "dev": "NODE_ENV=development nodemon server/index.js",
         "build": "next build",
-        "start": "next start -p $PORT",
+        "start": "next start -p 5051",
         "heroku-postbuild": "npm run build"
     },
     "dependencies": {
@@ -45,6 +45,7 @@
         "next": "^9.3.2",
         "next-images": "^1.4.0",
         "next-optimized-images": "^2.6.1",
+        "next-pwa": "^5.0.0",
         "next-redux-wrapper": "^3.0.0",
         "next-server": "^9.0.5",
         "node-sass": "^4.14.1",
