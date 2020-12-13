@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Button } from 'semantic-ui-react';
 
 import L from 'leaflet';
@@ -9,13 +9,9 @@ import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
+import UserContext from '../UserContext/UserContext.jsx';
 
-export default function MyMap({
-  locationDestinationInputFields,
-  getAddressFromLatLong,
-  setCurrentLocation,
-  setCurrentDestination
-}) {
+export default function MyMap({}) {
   var [zoom, setZoom] = useState(18);
   var [map, setMap] = useState(null);
   var [animate, setAnimate] = useState(false);
@@ -31,6 +27,20 @@ export default function MyMap({
   var [markerData, setMarkerData] = useState([]);
   var mapRef = useRef();
   var handleOnClickSetMarkersRef = useRef(handleOnClickSetMarkers);
+  var { userId, userMaps, setUserMaps } = useContext(UserContext);
+
+  useEffect(() => {
+    if (userMaps.length) {
+      setMarkerData(userMaps);
+      setFromLat(userMaps[0].lat);
+      setFromLon(userMaps[0].lng);
+      setToLat(userMaps[1].lat);
+      setToLon(userMaps[1].lat);
+      setIsRoutingVisibile(true);
+    } else {
+      setUserMaps(markerData);
+    }
+  }, [userMaps]);
 
   useEffect(() => {
     handleOnClickSetMarkersRef.current = handleOnClickSetMarkers;
@@ -56,7 +66,6 @@ export default function MyMap({
 
   useEffect(() => {
     console.log('markerData ', markerData);
-    console.log('from, to, ', from, to);
   }, [from, to, markerData]);
 
   var startIcon = new L.Icon({
@@ -85,37 +94,35 @@ export default function MyMap({
     if (markerData === null) return null;
 
     if (e.latlng) {
-      console.log('line 56');
       var { lat, lng } = e.latlng;
       var eventLatLongObj = e.latlng;
     }
 
     if (e.marker) {
-      console.log('line 79');
       var { lat, lng } = e.marker._latlng;
       var eventLatLongObj = e.marker._latlng;
     }
 
-    console.log('eventLatLongObj ', eventLatLongObj);
-    var fromOrTwoObj;
+    var fromOrTooObj;
 
     from < 1
-      ? (fromOrTwoObj = { ...{ id: 0 }, ...eventLatLongObj })
-      : (fromOrTwoObj = { ...{ id: 1 }, ...eventLatLongObj });
+      ? (fromOrTooObj = { ...{ id: 0 }, ...eventLatLongObj })
+      : (fromOrTooObj = { ...{ id: 1 }, ...eventLatLongObj });
     setRemoveRoutingMachine(() => false);
 
     if (from < 1) {
       setMarkerData(markerData => {
-        return [...markerData, ...[fromOrTwoObj]];
+        return [...markerData, ...[fromOrTooObj]];
       });
       setFromLat(fromLat => lat);
       setFromLon(fromLon => lng);
+
       setFrom(from => from + 1);
     }
 
     if (from === 1 && to === 0) {
       setMarkerData(markerData => {
-        return [...markerData, ...[fromOrTwoObj]];
+        return [...markerData, ...[fromOrTooObj]];
       });
       setToLat(toLat => lat);
       setToLon(toLon => lng);
@@ -152,8 +159,6 @@ export default function MyMap({
     setTo(to => 0);
     setRemoveRoutingMachine(true);
     setIsRoutingVisibile(false);
-    setCurrentLocation('');
-    setCurrentDestination('');
   }
 
   function saveMap(map) {
@@ -191,7 +196,6 @@ export default function MyMap({
           );
         })}
 
-      {console.log('process.env.MAPBOX_ACCESS_TOKEN ', process.env.MAPBOX_ACCESS_TOKEN)}
       <MapboxLayer
         accessToken={process.env.MAPBOX_ACCESS_TOKEN}
         style="mapbox://styles/mapbox/streets-v9"

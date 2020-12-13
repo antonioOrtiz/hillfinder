@@ -35,16 +35,16 @@ function UserProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
-  if (user.id){
-       getUserAvatar()
-      .then(userAvatar => {
-        setIsAvatarUploading(false);
-        setUser(user => ({ ...user, avatar: userAvatar }));
-      })
-      .catch(err => console.log('error thrown from getUserAvatar', err));
-  } else {
-    console.log('No user yet!')
-  }
+    if (user.id) {
+      getUserAvatar()
+        .then(userAvatar => {
+          setIsAvatarUploading(false);
+          setUser(user => ({ ...user, avatar: userAvatar }));
+        })
+        .catch(err => console.log('error thrown from getUserAvatar', err));
+    } else {
+      console.log('No user yet!');
+    }
   }, [user.id]);
 
   return (
@@ -57,7 +57,7 @@ function UserProvider({ children }) {
         setUserId: id => setUser({ ...user, id }),
         setUserAvatar: avatar => setUser({ ...user, avatar }),
         setUserImages: images => setUser({ ...user, images }),
-        setUserMaps: maps => setUser([ ...user, maps ]),
+        setUserMaps: maps => setUser({ ...user, maps }),
         isAvatarUploading: isAvatarUploading
       }}
     >
