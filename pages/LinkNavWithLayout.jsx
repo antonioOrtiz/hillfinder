@@ -66,7 +66,6 @@ function logOutMenuItemHelper(
         </React.Fragment>
       );
     } else {
-      console.log('nav.path ', nav.path);
       return (
         <Menu.Item
           exact
@@ -172,39 +171,48 @@ function LayoutContainer({
   var hideFixedMenu = () => setFixed(false);
   var showFixedMenu = () => setFixed(true);
 
-  useEffect(() => {
-    console.log('isToggled ', isToggled);
-  }, [isToggled]);
+  // useEffect(() => {
+  //   console.log('isToggled ', isToggled);
+  // }, [isToggled]);
 
   useEffect(() => {
-    console.log('window.innerWidth in first render', window.innerWidth);
+    let mounted = true;
+
     if (window.innerWidth < 768) {
-      setIsMobile(true);
-      setIsDesktop(false);
+      if (mounted) {
+        setIsMobile(true);
+        setIsDesktop(false);
+      }
     } else {
-      setIsDesktop(true);
-      setIsMobile(false);
+      if (mounted) {
+        setIsDesktop(true);
+        setIsMobile(false);
+      }
     }
-    console.log('isMobile, isDesktop 192', isMobile, isDesktop);
+    return () => (mounted = false);
   }, []);
 
   useEffect(() => {
+    let mounted = true;
     window.addEventListener(
       'resize',
       function(e) {
         if (e.target.innerWidth < 768) {
-          setIsMobile(isMobile => true);
-          setIsDesktop(isDesktop => false);
+          if (mounted) {
+            setIsDesktop(isDesktop => false);
+            setIsMobile(isMobile => true);
+          }
         }
-
         if (e.target.innerWidth > 767) {
-          setIsDesktop(isDesktop => true);
-          setIsMobile(isMobile => false);
+          if (mounted) {
+            setIsMobile(isMobile => false);
+            setIsDesktop(isDesktop => true);
+          }
         }
       },
       false
     );
-    console.log('isMobile, isDesktop Line 194', isMobile, isDesktop);
+    return () => (mounted = false);
   }, [isMobile, isDesktop]);
 
   useEffect(() => {
