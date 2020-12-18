@@ -3,7 +3,7 @@ import { Button } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
-import { Map, Marker } from 'react-leaflet';
+import { Map, Marker, TileLayer } from 'react-leaflet';
 
 import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
@@ -20,27 +20,13 @@ export default function MyMap({}) {
   var [fromLon, setFromLon] = useState(null);
   var [toLat, setToLat] = useState(null);
   var [toLon, setToLon] = useState(null);
-  var [from, setFrom] = useState(0);
-  var [to, setTo] = useState(0);
   var [isRoutingVisibile, setIsRoutingVisibile] = useState(false);
   var [removeRoutingMachine, setRemoveRoutingMachine] = useState(false);
-  var [markerData, setMarkerData] = useState([]);
   var mapRef = useRef();
   var handleOnClickSetMarkersRef = useRef(handleOnClickSetMarkers);
-  var { userId, userMaps, setUserMaps } = useContext(UserContext);
-
-  useEffect(() => {
-    if (userMaps.length) {
-      setMarkerData(userMaps);
-      setFromLat(userMaps[0].lat);
-      setFromLon(userMaps[0].lng);
-      setToLat(userMaps[1].lat);
-      setToLon(userMaps[1].lat);
-      setIsRoutingVisibile(true);
-    } else {
-      setUserMaps(markerData);
-    }
-  }, [userMaps]);
+  var { userMarkers, deleteUserMarkers, setUserMarkers, updateUserMarker } = useContext(
+    UserContext
+  );
 
   useEffect(() => {
     handleOnClickSetMarkersRef.current = handleOnClickSetMarkers;
@@ -64,10 +50,6 @@ export default function MyMap({}) {
     };
   }, []);
 
-  useEffect(() => {
-    console.log('markerData ', markerData);
-  }, [from, to, markerData]);
-
   var startIcon = new L.Icon({
     iconUrl:
       'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -90,9 +72,33 @@ export default function MyMap({}) {
     shadowSize: [41, 41]
   });
 
-  function handleOnClickSetMarkers(e) {
-    if (markerData === null) return null;
+  //   function handleGetUserMaps(userMarkerslength) {
+  //   var typeOfState = {
+  //     '1': function() {
+  //       console.log('1 ', 0);
+  //       setFromLat(userMarkers[0].lat);
+  //       setFromLon(userMarkers[0].lng);
+  //       // setMarkerData(markerData => [...markerData, ...userMarkers]);
+  //     },
+  //     '2': function() {
+  //       console.log('1 ', 1);
+  //       // setFromLat(userMarkers[0].lat);
+  //       // setFromLon(userMarkers[0].lng);
+  //       setToLat(userMarkers[1].lat);
+  //       setToLon(userMarkers[1].lng);
+  //       // setMarkerData(markerData => [...markerData, ...userMarkers]);
 
+  //       setIsRoutingVisibile(() => true);
+  //     },
+  //     default() {
+  //       console.log('default');
+  //     }
+  //   };
+
+  //   return typeOfState[userMarkerslength] || typeOfState['default']();
+  // }
+
+  function handleOnClickSetMarkers(e) {
     if (e.latlng) {
       var { lat, lng } = e.latlng;
       var eventLatLongObj = e.latlng;
@@ -105,30 +111,24 @@ export default function MyMap({}) {
 
     var fromOrTooObj;
 
-    from < 1
+    userMarkers.length < 1
       ? (fromOrTooObj = { ...{ id: 0 }, ...eventLatLongObj })
       : (fromOrTooObj = { ...{ id: 1 }, ...eventLatLongObj });
     setRemoveRoutingMachine(() => false);
 
-    if (from < 1) {
-      setMarkerData(markerData => {
-        return [...markerData, ...[fromOrTooObj]];
-      });
+    if (userMarkers.length < 1) {
+      setUserMarkers(fromOrTooObj);
+
       setFromLat(fromLat => lat);
       setFromLon(fromLon => lng);
-
-      setFrom(from => from + 1);
     }
 
-    if (from === 1 && to === 0) {
-      setMarkerData(markerData => {
-        return [...markerData, ...[fromOrTooObj]];
-      });
+    if (userMarkers.length === 1) {
+      setUserMarkers(fromOrTooObj);
       setToLat(toLat => lat);
       setToLon(toLon => lng);
-      setTo(to => to + 1);
       setIsRoutingVisibile(() => true);
-      setMarkerData(null);
+      deleteUserMarkers();
     }
   }
 
@@ -141,22 +141,15 @@ export default function MyMap({}) {
     setFromLat(fromLat => lat);
     setFromLon(toLon => lng);
 
-    setMarkerData(prevObjs => {
-      return prevObjs.map(o => {
-        if (markerIndex === o.id) return { ...o, ...markerLatLng };
-        return o;
-      });
-    });
+    updateUserMarker(markerLatLng, markerIndex);
   }
 
   function handleOnClickClearMarkers() {
-    setMarkerData(() => []);
+    deleteUserMarkers();
     setFromLat(fromLat => null);
     setFromLon(fromLon => null);
     setToLat(toLat => null);
     setToLon(toLon => null);
-    setFrom(from => 0);
-    setTo(to => 0);
     setRemoveRoutingMachine(true);
     setIsRoutingVisibile(false);
   }
@@ -173,6 +166,10 @@ export default function MyMap({}) {
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
   }
 
+  function handleIfArray(a) {
+    return Array.isArray(a);
+  }
+
   return (
     <Map
       animate={animate}
@@ -181,8 +178,8 @@ export default function MyMap({}) {
       zoom={zoom}
       ref={mapRef}
     >
-      {markerData &&
-        markerData.map((element, index) => {
+      {handleIfArray(userMarkers) &&
+        userMarkers.map((element, index) => {
           return (
             <Marker
               key={index}
@@ -191,14 +188,16 @@ export default function MyMap({}) {
               draggable={true}
               onClick={handleOnClickMarkerClick}
               onDragend={handleOnDragEndUpdateMarker}
-              icon={element.id === 0 ? startIcon : endIcon}
+              icon={element != null ? (element.id === 0 ? startIcon : endIcon) : null}
             />
           );
         })}
 
-      <MapboxLayer
-        accessToken={process.env.MAPBOX_ACCESS_TOKEN}
-        style="mapbox://styles/mapbox/streets-v9"
+      <TileLayer
+        attribution='copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url={`https://api.mapbox.com/styles/v1/antonioportiz/cka75143q171h1imlxaw4ywzg/tiles/256/{z}/{x}/{y}@2x?access_token=${
+          process.env.MAPBOX_ACCESS_TOKEN
+        }`}
       />
       <LocateControl startDirectly />
       {/* <GeoSearch map={map} markerInfo={{markerData, handleOnClickSetMarkers, handleOnDragEndUpdateMarker, handleOnClickMarkerClick, startIcon, endIcon}} /> */}
