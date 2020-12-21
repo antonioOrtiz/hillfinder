@@ -6,13 +6,18 @@ import { withLeaflet } from 'react-leaflet';
 class Routing extends MapLayer {
   constructor(props) {
     super(props);
+    this.state = {
+      waypointLength: 0
+    };
   }
 
   createLeafletElement(props) {
-    const { map, coords, icon } = this.props;
+    const { map, userCoords, icon } = this.props;
 
-    var dStart = L.latLng(coords.fromLat, coords.fromLon);
-    var dGoal = L.latLng(coords.toLat, coords.toLon);
+    if (Array.isArray(userCoords) && userCoords.length === 2) {
+      var dStart = L.latLng(userCoords[0].lat, userCoords[0].lng);
+      var dGoal = L.latLng(userCoords[1].lat, userCoords[1].lng);
+    }
 
     if (map && !this.routing) {
       this.routing = L.Routing.control({
@@ -43,7 +48,7 @@ class Routing extends MapLayer {
   }
 
   componentDidMount() {
-    const { map } = this.props;
+    const { map } = this.props.leaflet;
 
     map.addControl(this.routing);
   }
@@ -55,12 +60,16 @@ class Routing extends MapLayer {
   }
 
   componentWillUnmount() {
+    this.setState(() => {
+      this.waypointLength = 2;
+    });
     this.destroyRouting();
   }
 
   destroyRouting() {
-    if (this.props.map) {
-      this.props.map.removeControl(this.routing);
+    const { map } = this.props.leaflet;
+    if (map) {
+      map.removeControl(this.routing);
     }
   }
 }

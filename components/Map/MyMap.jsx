@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, useCallback } from 'react';
 import { Button } from 'semantic-ui-react';
 
 import L from 'leaflet';
@@ -20,19 +20,33 @@ export default function MyMap({}) {
 
   var mapRef = useRef();
   var handleOnClickSetMarkersRef = useRef(handleOnClickSetMarkers);
+
   var {
-    isRoutingVisibile,
-    removeRoutingMachine,
-    toggler,
-    userMap,
-    userCoords,
     userMarkers,
-    setUserCurrentMap,
+    removeRoutingMachine,
+    isRoutingVisibile,
+    setIsRoutingVisibileTrue,
+    setIsRoutingVisibileFalse,
+    setRemoveRoutingTrue,
+    setRemoveRoutingFalse,
+    userCoords,
+    userMap,
     setUserCoords,
+    updateUserCoords,
+    resetUserCoords,
+    setUserCurrentMap,
     deleteUserMarkers,
     setUserMarkers,
-    updateUserMarker
+    updateUserMarker,
+    resetUserCoords
   } = useContext(UserContext);
+  var userMarkersRef = useRef(userMarkers);
+
+  useEffect(() => {
+    console.log('userCoords; ', userCoords);
+
+    console.log('userMarkers ', userMarkers);
+  }, [JSON.stringify(userMarkers)]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -84,33 +98,6 @@ export default function MyMap({}) {
     shadowSize: [41, 41]
   });
 
-  useEffect(() => {
-    console.log('userMarkers.length ', userMarkers.length);
-
-    console.log('userCoords ', userCoords);
-    handleGetUserMaps(userMarkers);
-
-    return () => {};
-  }, []);
-
-  function handleGetUserMaps(userMarkers) {
-    var typeOfState = {
-      '1': function() {
-        setUserCoords(userMarkers[0], 'from');
-      },
-      '2': function() {
-        // setFromLon(userMarkers[0].lng);
-        setUserCoords(userMarkers[1], 'to');
-        setIsRoutingVisibile(() => true);
-      },
-      default() {
-        console.log('default');
-      }
-    };
-
-    return typeOfState[userMarkers.length] || typeOfState['default']();
-  }
-
   function handleOnClickSetMarkers(e) {
     if (e.latlng) {
       var { lat, lng } = e.latlng;
@@ -123,53 +110,39 @@ export default function MyMap({}) {
     }
 
     var fromOrTooObj;
-
-    userMarkers.length < 1
-      ? (fromOrTooObj = {
+    if (userMarkers.length === 0) {
+      setUserMarkers(
+        (fromOrTooObj = {
           ...{
             id: 0
           },
           ...eventLatLongObj
         })
-      : (fromOrTooObj = {
+      );
+    }
+    if (userMarkers.length === 1) {
+      setUserMarkers(
+        (fromOrTooObj = {
           ...{
             id: 1
           },
           ...eventLatLongObj
-        });
-    setRemoveRoutingMachine(() => false);
-
-    if (userMarkers.length < 1) {
-      setUserMarkers(fromOrTooObj);
-      setUserCoords(userMarkers[0], 'from');
-    }
-
-    if (userMarkers.length === 1) {
-      setUserMarkers(fromOrTooObj);
-      setUserCoords(userMarkers[1], 'to');
-      toggler(isRoutingVisibile);
+        })
+      );
     }
   }
 
   function handleOnDragEndUpdateMarker(e) {
+    console.log('e ', e);
     var markerIndex = e.target.options.marker_index;
     var markerLatLng = e.target.getLatLng(); //get marker LatLng
-
-    var { lat, lng } = markerLatLng;
+    markerLatLng.id = markerIndex;
     updateUserMarker(markerLatLng, markerIndex);
-
-    if (markerIndex === 0) {
-      markerCoordsSetter(userMarkers, 'from', 0);
-    } else {
-      markerCoordsSetter(userMarkers, 'to', 1);
-    }
   }
 
   function handleOnClickClearMarkers() {
+    console.log(`handleOnClickClearMarkers click`);
     deleteUserMarkers();
-    resetUserCoords();
-    toggler(removeRoutingMachine);
-    toggler(isRoutingVisibile);
   }
 
   function saveMap(map) {
@@ -192,7 +165,7 @@ export default function MyMap({}) {
       zoom={zoom}
       ref={mapRef}
     >
-      {userMarkers &&
+      {Array.isArray(userMarkers) &&
         userMarkers.map((element, index) => {
           return (
             <Marker
@@ -215,7 +188,7 @@ export default function MyMap({}) {
       {/* <GeoSearch map={map} markerInfo={{markerData, handleOnClickSetMarkers, handleOnDragEndUpdateMarker, handleOnClickMarkerClick, startIcon, endIcon}} /> */}
       <Control position="bottomleft">
         <Button onClick={handleOnClickClearMarkers} color="red" size="small">
-          clear
+          clear!
         </Button>
       </Control>
       {isRoutingVisibile ? (
@@ -226,8 +199,9 @@ export default function MyMap({}) {
             startIcon,
             endIcon
           }}
+          userMarkers={userMarkers}
           userLocation={userLocation}
-          coords={userCoords}
+          userCoords={userCoords}
         />
       ) : null}
     </Map>

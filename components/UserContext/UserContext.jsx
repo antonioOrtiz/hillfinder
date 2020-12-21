@@ -6,23 +6,7 @@ var initialState = {
   removeRoutingMachine: false,
   markers: [],
   currentMap: {},
-  currentCoords: {
-    from: {
-      lat: null,
-      lng: null
-    },
-    to: {
-      lat: null,
-      lng: null
-    }
-  }
-};
-
-var useToggle = initialState => {
-  const [isToggled, setIsToggled] = React.useState(initialState);
-  const toggle = useCallback(() => setIsToggled(state => !state), [setIsToggled]);
-
-  return [isToggled, toggle];
+  currentCoords: []
 };
 
 var UserContext = React.createContext();
@@ -46,8 +30,8 @@ function setLocalStorage(key, value) {
 
   // value = !isJson(value) ? value : JSON.stringify(value);
 
-  console.log('isJson(value) ', isJson(value));
-  console.log('value ', value);
+  // console.log('isJson(value) ', isJson(value));
+  // console.log('value ', value);
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (errors) {
@@ -95,43 +79,55 @@ function UserProvider({ children }) {
         userAvatar: user.avatar,
         userImages: user.images,
         userMarkers: user.markers,
-        isRoutingVisibile: user.isRoutingVisibile,
         removeRoutingMachine: user.removeRoutingMachine,
-        toggler: useToggle,
+        isRoutingVisibile: user.isRoutingVisibile,
+        setIsRoutingVisibileTrue: () => setUser({ ...user, isRoutingVisibile: true }),
+        setIsRoutingVisibileFalse: () => setUser({ ...user, isRoutingVisibile: false }),
+        setRemoveRoutingTrue: () => setUser({ ...user, removeRoutingMachine: true }),
+        setRemoveRoutingFalse: () => setUser({ ...user, removeRoutingMachine: false }),
         userCoords: user.currentCoords,
         userMap: user.currentMap,
-        setUserCoords: (coords, fromOrTo) =>
-          setUser({ ...user, currentCoords: { ...user.coords, ...coords[fromOrTo] } }),
+        setUserCoords: coords =>
+          setUser({ ...user, currentCoords: [...user.currentCoords, coords] }),
+        updateUserCoords: (marker, markerIndex) => {
+          setUser({
+            ...user,
+            currentCoords: [{ ...user.currentCoords[markerIndex], ...marker }]
+          });
+        },
         resetUserCoords: () =>
           setUser({
             ...user,
-            currentCoords: {
-              from: {
-                lat: null,
-                lng: null
-              },
-              to: {
-                lat: null,
-                lng: null
-              }
-            }
+            currentCoords: []
           }),
         setUserCurrentMap: map =>
           setUser({ ...user, currentMap: { ...user.currentMap, map } }),
-        deleteUserMarkers: () => setUser({ ...user, markers: [] }),
+
+        deleteUserMarkers: () => {
+          setUser({
+            ...user,
+            markers: [
+              ...user.markers.filter(function(e, i, a) {
+                return e !== a[a.length - 1];
+              })
+            ]
+          });
+        },
         setUserId: id => setUser({ ...user, id }),
         setUserAvatar: avatar => setUser({ ...user, avatar }),
         setUserImages: images => setUser({ ...user, images }),
         setUserMarkers: markers =>
           setUser({ ...user, markers: [...user.markers, markers] }),
+
         updateUserMarker: (marker, markerIndex) => {
-          user.markers.map(o => {
-            if (markerIndex === o.id)
-              return {
-                ...o,
-                ...marker
-              };
-            return o;
+          let updatedMarkers = user.markers.map(element =>
+            element.id == markerIndex ? { ...element, ...marker } : element
+          );
+
+          console.log('updatedMarkers ', updatedMarkers);
+          setUser({
+            ...user,
+            markers: [...updatedMarkers]
           });
         },
         isAvatarUploading: isAvatarUploading
