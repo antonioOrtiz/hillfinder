@@ -76,12 +76,6 @@ function FormComponent({
   var [current_destination, setCurrentDestination] = useState('');
 
   function isHillfindersForm() {
-    function getAddressFromLatLong(input, address) {
-      console.log('input, address ', input, address);
-      if (input == 0) setCurrentLocation(address);
-      else setCurrentDestination(address);
-    }
-
     return (
       <>
         <Grid container columns={1} stackable style={{ height: '100vh' }}>
@@ -96,15 +90,7 @@ function FormComponent({
                   </Header>
                 </Divider>
 
-                <MyMap
-                  locationDestinationInputFields={{
-                    current_location,
-                    current_destination
-                  }}
-                  setCurrentLocation={setCurrentLocation}
-                  setCurrentDestination={setCurrentDestination}
-                  getAddressFromLatLong={getAddressFromLatLong}
-                />
+                <MyMap />
               </Card.Content>
             </Card>
           </Grid.Column>

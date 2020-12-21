@@ -12,8 +12,14 @@ function LocateControl({ startDirectly, leaflet }) {
   };
   useEffect(() => {
     var { map } = leaflet;
+
+    // console.log('map; ', map);
+
     const lc = new Locate(options);
 
+    // console.log('lc ', lc);
+
+    // console.log('startDirectly ', startDirectly);
     lc.addTo(map);
 
     if (startDirectly) {

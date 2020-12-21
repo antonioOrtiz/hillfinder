@@ -33,8 +33,6 @@ class App extends Component {
 
   render() {
     const { isLoggedIn, accountNotVerified } = this.props;
-
-    console.log('isLoggedIn 44 ', isLoggedIn);
     let navBars = [
       { name: 'Home', path: '/' },
       { name: 'Profile', path: '/profile' },
@@ -48,9 +46,10 @@ class App extends Component {
 
       return (
         <Route
+          key={document.location.href}
           {...rest}
           render={({ location }) =>
-            name == 'Home' || (isLoggedIn && !accountNotVerified) ? (
+            isLoggedIn && !accountNotVerified ? (
               { ...children }
             ) : (
               <Redirect
@@ -68,11 +67,16 @@ class App extends Component {
     return (
       <>
         <Switch>
-          <PrivateRoute path="/" exact>
-            <LinkNavWithLayout data={navBars}>
-              <Index isLoggedIn={isLoggedIn} />
-            </LinkNavWithLayout>
-          </PrivateRoute>
+          <Route
+            path="/"
+            isLoggedIn={isLoggedIn}
+            exact
+            render={props => (
+              <LinkNavWithLayout {...props} data={navBars}>
+                <Index />
+              </LinkNavWithLayout>
+            )}
+          />
 
           <PrivateRoute path="/profile" isLoggedIn={isLoggedIn}>
             <LinkNavWithLayout data={navBars}>
