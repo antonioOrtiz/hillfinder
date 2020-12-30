@@ -5,8 +5,7 @@ var initialState = {
   isRoutingVisible: false,
   removeRoutingMachine: false,
   markers: [],
-  currentMap: {},
-  currentCoords: []
+  currentMap: {}
 };
 
 var UserContext = React.createContext();
@@ -91,7 +90,7 @@ function UserProvider({ children }) {
         userMarkers: user.markers,
         setUserMarkers: markers =>
           setUser({ ...user, markers: [...user.markers, markers] }),
-        updateUserMarker: (marker, markerIndex) => {
+        setUpdateUserMarker: (marker, markerIndex) => {
           let updatedMarkers = user.markers.map(element =>
             element.id == markerIndex ? { ...element, ...marker } : element
           );
@@ -122,7 +121,6 @@ function UserProvider({ children }) {
               ? { ...element, ...{ lat: null, lng: null } }
               : element
           );
-
           setUser({
             ...user,
             markers: [],
@@ -134,7 +132,6 @@ function UserProvider({ children }) {
             ...user,
             markers: null
           }),
-
         userMap: user.currentMap,
         setUserCurrentMap: map =>
           setUser({ ...user, currentMap: { ...user.currentMap, map } }),
@@ -162,23 +159,7 @@ function UserProvider({ children }) {
             ...user,
             isRoutingVisible: false
           });
-        },
-
-        userCoords: user.currentCoords,
-        updateUserCoords: (marker, markerIndex) => {
-          setUser({
-            ...user,
-            currentCoords: [{ ...user.currentCoords[markerIndex], ...marker }]
-          });
-        },
-
-        setUserCoords: coords =>
-          setUser({ ...user, currentCoords: [...user.currentCoords, coords] }),
-        resetUserCoords: () =>
-          setUser({
-            ...user,
-            currentCoords: []
-          })
+        }
       }}
     >
       {children}
