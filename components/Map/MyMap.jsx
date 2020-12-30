@@ -4,6 +4,7 @@ import { Button } from 'semantic-ui-react';
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
 import { Map, Marker } from 'react-leaflet';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
@@ -12,41 +13,47 @@ import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import UserContext from '../UserContext/UserContext.jsx';
 
 import { parse, stringify } from 'flatted';
+import { string } from 'prop-types';
 
 export default function MyMap({}) {
   var [zoom, setZoom] = useState(18);
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
+  var [from, setFrom] = useState(0);
+  var [to, setTo] = useState(0);
 
   var mapRef = useRef();
   var handleOnClickSetMarkersRef = useRef(handleOnClickSetMarkers);
 
   var {
     userMarkers,
-    removeRoutingMachine,
-    isRoutingVisibile,
-    setIsRoutingVisibileTrue,
-    setIsRoutingVisibileFalse,
-    setRemoveRoutingTrue,
-    setRemoveRoutingFalse,
-    userCoords,
-    userMap,
-    setUserCoords,
-    updateUserCoords,
-    resetUserCoords,
-    setUserCurrentMap,
-    deleteUserMarkers,
     setUserMarkers,
-    updateUserMarker,
-    resetUserCoords
+    deleteUserMarkers,
+    resetUserMarkers,
+    setUserMarkersToNull,
+    userMap,
+    setUserCurrentMap,
+    userCoords,
+    setUserCoords,
+    removeRoutingMachine,
+    setRemoveRoutingMachine,
+    isRoutingVisibile,
+    setIsRoutingVisibileToTrue,
+    setIsRoutingVisibileToFalse,
+    updateUserCoords,
+    updateUserMarker
   } = useContext(UserContext);
+  var userCoordsRef = useRef(userCoords);
+
   var userMarkersRef = useRef(userMarkers);
 
   useEffect(() => {
-    console.log('userCoords; ', userCoords);
-
-    console.log('userMarkers ', userMarkers);
-  }, [JSON.stringify(userMarkers)]);
+    console.log('userMarkers; ', userMarkers);
+    if (userMarkers === null) {
+      setIsRoutingVisibileToTrue();
+    }
+    return () => {};
+  }, [stringify(userMarkers)]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -99,36 +106,39 @@ export default function MyMap({}) {
   });
 
   function handleOnClickSetMarkers(e) {
+    userMarkersRef.current = userMarkers;
+    if (userMarkers === null) return null;
+
     if (e.latlng) {
-      var { lat, lng } = e.latlng;
       var eventLatLongObj = e.latlng;
     }
 
     if (e.marker) {
-      var { lat, lng } = e.marker._latlng;
       var eventLatLongObj = e.marker._latlng;
     }
 
-    var fromOrTooObj;
-    if (userMarkers.length === 0) {
-      setUserMarkers(
-        (fromOrTooObj = {
-          ...{
-            id: 0
-          },
-          ...eventLatLongObj
-        })
-      );
+    var fromOrToObj;
+
+    if (from < 1) {
+      fromOrToObj = {
+        ...{
+          id: 0
+        },
+        ...eventLatLongObj
+      };
+
+      setUserMarkers(fromOrToObj);
+      setFrom(from => from + 1);
     }
-    if (userMarkers.length === 1) {
-      setUserMarkers(
-        (fromOrTooObj = {
-          ...{
-            id: 1
-          },
-          ...eventLatLongObj
-        })
-      );
+    if (from === 1 && to === 0) {
+      fromOrToObj = {
+        ...{
+          id: 1
+        },
+        ...eventLatLongObj
+      };
+      setUserMarkers(fromOrToObj);
+      setTo(to => to + 1);
     }
   }
 
@@ -140,9 +150,14 @@ export default function MyMap({}) {
     updateUserMarker(markerLatLng, markerIndex);
   }
 
-  function handleOnClickClearMarkers() {
+  function handleOnClickClearOneMarkerAtTime() {
     console.log(`handleOnClickClearMarkers click`);
     deleteUserMarkers();
+  }
+
+  function handleOnClickClearAllMarkers() {
+    console.log(`handleOnClickClearMarkers click`);
+    resetUserMarkers();
   }
 
   function saveMap(map) {
@@ -157,41 +172,35 @@ export default function MyMap({}) {
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
   }
 
-  return (
+  return !mapRef ? (
+    <Dimmer active inverted>
+      <Loader />
+    </Dimmer>
+  ) : (
     <Map
       animate={animate}
-      onClick={handleOnClickSetMarkers}
       onLocationFound={handleOnLocationFound}
       zoom={zoom}
       ref={mapRef}
     >
-      {Array.isArray(userMarkers) &&
-        userMarkers.map((element, index) => {
-          return (
-            <Marker
-              key={index}
-              marker_index={index}
-              position={element}
-              draggable={true}
-              onClick={handleOnClickMarkerClick}
-              onDragend={handleOnDragEndUpdateMarker}
-              icon={element.id === 0 ? startIcon : endIcon}
-            />
-          );
-        })}
-
       <MapboxLayer
         accessToken={process.env.MAPBOX_ACCESS_TOKEN}
         style="mapbox://styles/mapbox/streets-v9"
       />
       <LocateControl startDirectly />
-      {/* <GeoSearch map={map} markerInfo={{markerData, handleOnClickSetMarkers, handleOnDragEndUpdateMarker, handleOnClickMarkerClick, startIcon, endIcon}} /> */}
       <Control position="bottomleft">
-        <Button onClick={handleOnClickClearMarkers} color="red" size="small">
-          clear!
+        <Button onClick={handleOnClickClearOneMarkerAtTime} color="orange" size="small">
+          delete one marker!
         </Button>
       </Control>
-      {isRoutingVisibile ? (
+      <Control position="bottomright">
+        <Button onClick={handleOnClickClearAllMarkers} color="red" size="small">
+          clear all!
+        </Button>
+      </Control>
+
+      {console.log('userLocation ', userLocation)}
+      {true && (
         <Routing
           removeRoutingMachine={removeRoutingMachine}
           map={userMap}
@@ -199,11 +208,9 @@ export default function MyMap({}) {
             startIcon,
             endIcon
           }}
-          userMarkers={userMarkers}
           userLocation={userLocation}
-          userCoords={userCoords}
         />
-      ) : null}
+      )}
     </Map>
   );
 }

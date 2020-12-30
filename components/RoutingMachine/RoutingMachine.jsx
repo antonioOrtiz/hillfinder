@@ -6,42 +6,76 @@ import { withLeaflet } from 'react-leaflet';
 class Routing extends MapLayer {
   constructor(props) {
     super(props);
-    this.state = {
-      waypointLength: 0
-    };
   }
 
   createLeafletElement(props) {
-    const { map, userCoords, icon } = this.props;
-
-    if (Array.isArray(userCoords) && userCoords.length === 2) {
-      var dStart = L.latLng(userCoords[0].lat, userCoords[0].lng);
-      var dGoal = L.latLng(userCoords[1].lat, userCoords[1].lng);
-    }
+    const { userMarkers, icon, userLocation } = this.props;
+    const { map } = this.props.leaflet;
 
     if (map && !this.routing) {
       this.routing = L.Routing.control({
         collapsible: true,
+        show: true,
         position: 'bottomleft',
         lineOptions: {
           styles: [{ color: 'chartreuse', opacity: 1, weight: 5 }]
         },
-        waypoints: [dStart, dGoal],
-        createMarker: function(i, waypoints, n) {
-          var marker_icon;
+        waypoints: [null],
 
+        createMarker: function(i, wp, nWps) {
+          console.log('i', i);
           if (i === 0) {
-            marker_icon = icon.startIcon;
-          } else if (i == n - 1) {
-            marker_icon = icon.endIcon;
+            return L.marker(wp.latLng, {
+              icon: icon.startIcon,
+              draggable: true
+            });
           }
-          var marker = L.marker(i === 0 ? dStart : dGoal, {
-            draggable: true,
-            icon: marker_icon
-          });
-          return marker;
+          if (i === nWps - 1) {
+            return L.marker(wp.latLng, {
+              icon: icon.endIcon,
+              draggable: true
+            });
+          }
         }
       });
+
+      map.on(
+        'click',
+        function(e) {
+          var container = L.DomUtil.create('div'),
+            startBtn = createButton('Start from this location', container),
+            destBtn = createButton('Go to this location', container);
+
+          L.popup()
+            .setContent(container)
+            .setLatLng(e.latlng)
+            .openOn(map);
+
+          L.DomEvent.on(
+            startBtn,
+            'click',
+            function() {
+              this.spliceWaypoints(0, 1, e.latlng);
+              map.closePopup();
+            }.bind(this)
+          );
+          L.DomEvent.on(
+            destBtn,
+            'click',
+            function() {
+              this.spliceWaypoints(this.getWaypoints().length - 1, 1, e.latlng);
+              map.closePopup();
+            }.bind(this)
+          );
+        }.bind(this.routing)
+      );
+    }
+
+    function createButton(label, container) {
+      var btn = L.DomUtil.create('button', '', container);
+      btn.setAttribute('type', 'button');
+      btn.innerHTML = label;
+      return btn;
     }
 
     return this.routing.getPlan();
@@ -49,6 +83,8 @@ class Routing extends MapLayer {
 
   componentDidMount() {
     const { map } = this.props.leaflet;
+
+    console.log('map ', map);
 
     map.addControl(this.routing);
   }
@@ -60,9 +96,6 @@ class Routing extends MapLayer {
   }
 
   componentWillUnmount() {
-    this.setState(() => {
-      this.waypointLength = 2;
-    });
     this.destroyRouting();
   }
 

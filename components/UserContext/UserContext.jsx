@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getUserAvatar } from '../../utils/index';
 var initialState = {
   avatar: '/static/uploads/profile-avatars/placeholder.jpg',
-  isRoutingVisibile: false,
+  isRoutingVisible: false,
   removeRoutingMachine: false,
   markers: [],
   currentMap: {},
@@ -60,6 +60,12 @@ function UserProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
+    console.log('user.isRoutingVisibile ', user.isRoutingVisibile);
+  }, [user.isRoutingVisibile]);
+
+  // var [isRoutingVisible, setIsRoutingVisibleToggle] = useState(user.isRoutingVisibile);
+
+  useEffect(() => {
     if (user.id) {
       getUserAvatar()
         .then(userAvatar => {
@@ -76,33 +82,25 @@ function UserProvider({ children }) {
     <UserContext.Provider
       value={{
         userId: user.id,
+        setUserId: id => setUser({ ...user, id }),
         userAvatar: user.avatar,
+        setUserAvatar: avatar => setUser({ ...user, avatar }),
+        isAvatarUploading: isAvatarUploading,
         userImages: user.images,
+        setUserImages: images => setUser({ ...user, images }),
         userMarkers: user.markers,
-        removeRoutingMachine: user.removeRoutingMachine,
-        isRoutingVisibile: user.isRoutingVisibile,
-        setIsRoutingVisibileTrue: () => setUser({ ...user, isRoutingVisibile: true }),
-        setIsRoutingVisibileFalse: () => setUser({ ...user, isRoutingVisibile: false }),
-        setRemoveRoutingTrue: () => setUser({ ...user, removeRoutingMachine: true }),
-        setRemoveRoutingFalse: () => setUser({ ...user, removeRoutingMachine: false }),
-        userCoords: user.currentCoords,
-        userMap: user.currentMap,
-        setUserCoords: coords =>
-          setUser({ ...user, currentCoords: [...user.currentCoords, coords] }),
-        updateUserCoords: (marker, markerIndex) => {
+        setUserMarkers: markers =>
+          setUser({ ...user, markers: [...user.markers, markers] }),
+        updateUserMarker: (marker, markerIndex) => {
+          let updatedMarkers = user.markers.map(element =>
+            element.id == markerIndex ? { ...element, ...marker } : element
+          );
+          console.log('updatedMarkers ', updatedMarkers);
           setUser({
             ...user,
-            currentCoords: [{ ...user.currentCoords[markerIndex], ...marker }]
+            markers: [...updatedMarkers]
           });
         },
-        resetUserCoords: () =>
-          setUser({
-            ...user,
-            currentCoords: []
-          }),
-        setUserCurrentMap: map =>
-          setUser({ ...user, currentMap: { ...user.currentMap, map } }),
-
         deleteUserMarkers: () => {
           setUser({
             ...user,
@@ -110,27 +108,77 @@ function UserProvider({ children }) {
               ...user.markers.filter(function(e, i, a) {
                 return e !== a[a.length - 1];
               })
+            ],
+            currentCoords: [
+              ...user.currentCoords.filter(function(e, i, a) {
+                return e !== a[a.length - 1];
+              })
             ]
           });
         },
-        setUserId: id => setUser({ ...user, id }),
-        setUserAvatar: avatar => setUser({ ...user, avatar }),
-        setUserImages: images => setUser({ ...user, images }),
-        setUserMarkers: markers =>
-          setUser({ ...user, markers: [...user.markers, markers] }),
-
-        updateUserMarker: (marker, markerIndex) => {
-          let updatedMarkers = user.markers.map(element =>
-            element.id == markerIndex ? { ...element, ...marker } : element
+        resetUserMarkers: () => {
+          var updatedCoords = user.currentCoords.map(element =>
+            element.lat != null && element.lng != null
+              ? { ...element, ...{ lat: null, lng: null } }
+              : element
           );
 
-          console.log('updatedMarkers ', updatedMarkers);
           setUser({
             ...user,
-            markers: [...updatedMarkers]
+            markers: [],
+            currentCoords: [...updatedCoords]
           });
         },
-        isAvatarUploading: isAvatarUploading
+        setUserMarkersToNull: () =>
+          setUser({
+            ...user,
+            markers: null
+          }),
+
+        userMap: user.currentMap,
+        setUserCurrentMap: map =>
+          setUser({ ...user, currentMap: { ...user.currentMap, map } }),
+        removeRoutingMachine: user.removeRoutingMachine,
+        setRemoveRoutingMachine: () => {
+          console.log('fired setIsRoutingVisibileToTrue');
+          setUser({
+            ...user,
+            removeRoutingMachine: true
+          });
+        },
+        isRoutingVisibile: user.isRoutingVisible,
+
+        setIsRoutingVisibileToTrue: () => {
+          console.log('fired setIsRoutingVisibileToTrue');
+          setUser({
+            ...user,
+            isRoutingVisible: true
+          });
+        },
+
+        setIsRoutingVisibileToFalse: () => {
+          console.log('fired setIsRoutingVisibileToFalse');
+          setUser({
+            ...user,
+            isRoutingVisible: false
+          });
+        },
+
+        userCoords: user.currentCoords,
+        updateUserCoords: (marker, markerIndex) => {
+          setUser({
+            ...user,
+            currentCoords: [{ ...user.currentCoords[markerIndex], ...marker }]
+          });
+        },
+
+        setUserCoords: coords =>
+          setUser({ ...user, currentCoords: [...user.currentCoords, coords] }),
+        resetUserCoords: () =>
+          setUser({
+            ...user,
+            currentCoords: []
+          })
       }}
     >
       {children}
