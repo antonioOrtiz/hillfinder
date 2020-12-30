@@ -6,16 +6,80 @@ import { withLeaflet } from 'react-leaflet';
 class Routing extends MapLayer {
   constructor(props) {
     super(props);
+
+    this.state = {
+      from: 0,
+      to: 0
+    };
+    this.handleFromIncrement = this.handleFromIncrement.bind(this);
+    this.handleResetFrom = this.handleResetFrom.bind(this);
+    this.handleOnClickSetMarkers = this.handleOnClickSetMarkers.bind(this);
+  }
+
+  handleFromIncrement() {
+    this.setState(function(prevState) {
+      return { from: prevState.from + 1 };
+    });
+  }
+
+  handleResetFrom() {
+    this.setState({ from: (this.state.from = 0) });
+  }
+
+  handleOnClickSetMarkers(e) {
+    var { from, to } = this.state;
+
+    console.log('this.state ', this.state);
+    var { setUpdateUserMarker, setUserMarkers } = this.props;
+
+    console.log('e ', e);
+
+    if (e.latlng) {
+      var eventLatLongObj = e.latlng;
+    }
+    setUserMarkers(eventLatLongObj);
+    // console.log('eventLatLongObj ', eventLatLongObj);
+    // if (from < 1) {
+    //   setUserMarkers(eventLatLongObj, 0);
+    //   this.handleFromIncrement();
+    // }
+    // if (from === 1 && to === 0) {
+    //   setUpdateUserMarker(eventLatLongObj, 1);
+    //   this.handleResetFrom();
+    // }
   }
 
   createLeafletElement(props) {
-    const { userMarkers, icon, userLocation } = this.props;
+    const { userMarkers } = this.props;
     const { map } = this.props.leaflet;
+
+    console.log('userMarkers ', userMarkers);
+    var startIcon = new L.Icon({
+      iconUrl:
+        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    var endIcon = new L.Icon({
+      iconUrl:
+        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
 
     if (map && !this.routing) {
       this.routing = L.Routing.control({
         collapsible: true,
-        show: true,
+        show: false,
         position: 'bottomleft',
         lineOptions: {
           styles: [{ color: 'chartreuse', opacity: 1, weight: 5 }]
@@ -26,13 +90,13 @@ class Routing extends MapLayer {
           console.log('i', i);
           if (i === 0) {
             return L.marker(wp.latLng, {
-              icon: icon.startIcon,
+              icon: startIcon,
               draggable: true
             });
           }
           if (i === nWps - 1) {
             return L.marker(wp.latLng, {
-              icon: icon.endIcon,
+              icon: endIcon,
               draggable: true
             });
           }
@@ -55,19 +119,27 @@ class Routing extends MapLayer {
             startBtn,
             'click',
             function() {
-              this.spliceWaypoints(0, 1, e.latlng);
+              this.routing.spliceWaypoints(0, 1, e.latlng);
+              this.handleOnClickSetMarkers(e);
               map.closePopup();
             }.bind(this)
           );
+
           L.DomEvent.on(
             destBtn,
             'click',
             function() {
-              this.spliceWaypoints(this.getWaypoints().length - 1, 1, e.latlng);
+              this.routing.spliceWaypoints(
+                this.routing.getWaypoints().length - 1,
+                1,
+                e.latlng
+              );
+              this.handleOnClickSetMarkers(e);
+
               map.closePopup();
             }.bind(this)
           );
-        }.bind(this.routing)
+        }.bind(this)
       );
     }
 
@@ -84,7 +156,7 @@ class Routing extends MapLayer {
   componentDidMount() {
     const { map } = this.props.leaflet;
 
-    console.log('map ', map);
+    console.log('this', this);
 
     map.addControl(this.routing);
   }
