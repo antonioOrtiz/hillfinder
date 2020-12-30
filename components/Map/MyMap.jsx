@@ -3,7 +3,7 @@ import { Button } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
-import { Map, Marker } from 'react-leaflet';
+import { Map } from 'react-leaflet';
 import { Dimmer, Loader } from 'semantic-ui-react';
 
 import Control from 'react-leaflet-control';
@@ -13,7 +13,6 @@ import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import UserContext from '../UserContext/UserContext.jsx';
 
 import { parse, stringify } from 'flatted';
-import { string } from 'prop-types';
 
 export default function MyMap({}) {
   var [zoom, setZoom] = useState(18);
@@ -23,27 +22,22 @@ export default function MyMap({}) {
   var [to, setTo] = useState(0);
 
   var mapRef = useRef();
-  var handleOnClickSetMarkersRef = useRef(handleOnClickSetMarkers);
 
   var {
     userMarkers,
     setUserMarkers,
     deleteUserMarkers,
     resetUserMarkers,
-    setUserMarkersToNull,
     userMap,
     setUserCurrentMap,
-    userCoords,
-    setUserCoords,
     removeRoutingMachine,
     setRemoveRoutingMachine,
     isRoutingVisibile,
     setIsRoutingVisibileToTrue,
     setIsRoutingVisibileToFalse,
     updateUserCoords,
-    updateUserMarker
+    setUpdateUserMarker
   } = useContext(UserContext);
-  var userCoordsRef = useRef(userCoords);
 
   var userMarkersRef = useRef(userMarkers);
 
@@ -79,77 +73,6 @@ export default function MyMap({}) {
     };
   }, []);
 
-  useEffect(() => {
-    handleOnClickSetMarkersRef.current = handleOnClickSetMarkers;
-  }); // update after each render
-
-  var startIcon = new L.Icon({
-    iconUrl:
-      'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-    shadowUrl:
-      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-
-  var endIcon = new L.Icon({
-    iconUrl:
-      'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-    shadowUrl:
-      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-
-  function handleOnClickSetMarkers(e) {
-    userMarkersRef.current = userMarkers;
-    if (userMarkers === null) return null;
-
-    if (e.latlng) {
-      var eventLatLongObj = e.latlng;
-    }
-
-    if (e.marker) {
-      var eventLatLongObj = e.marker._latlng;
-    }
-
-    var fromOrToObj;
-
-    if (from < 1) {
-      fromOrToObj = {
-        ...{
-          id: 0
-        },
-        ...eventLatLongObj
-      };
-
-      setUserMarkers(fromOrToObj);
-      setFrom(from => from + 1);
-    }
-    if (from === 1 && to === 0) {
-      fromOrToObj = {
-        ...{
-          id: 1
-        },
-        ...eventLatLongObj
-      };
-      setUserMarkers(fromOrToObj);
-      setTo(to => to + 1);
-    }
-  }
-
-  function handleOnDragEndUpdateMarker(e) {
-    console.log('e ', e);
-    var markerIndex = e.target.options.marker_index;
-    var markerLatLng = e.target.getLatLng(); //get marker LatLng
-    markerLatLng.id = markerIndex;
-    updateUserMarker(markerLatLng, markerIndex);
-  }
-
   function handleOnClickClearOneMarkerAtTime() {
     console.log(`handleOnClickClearMarkers click`);
     deleteUserMarkers();
@@ -158,10 +81,6 @@ export default function MyMap({}) {
   function handleOnClickClearAllMarkers() {
     console.log(`handleOnClickClearMarkers click`);
     resetUserMarkers();
-  }
-
-  function saveMap(map) {
-    setMap(map);
   }
 
   function handleOnLocationFound(e) {
@@ -178,6 +97,7 @@ export default function MyMap({}) {
     </Dimmer>
   ) : (
     <Map
+      onClick={setIsRoutingVisibileToTrue}
       animate={animate}
       onLocationFound={handleOnLocationFound}
       zoom={zoom}
@@ -199,15 +119,12 @@ export default function MyMap({}) {
         </Button>
       </Control>
 
-      {console.log('userLocation ', userLocation)}
-      {true && (
+      {isRoutingVisibile && (
         <Routing
+          userMarkers={userMarkers}
+          setUserMarkers={setUserMarkers}
           removeRoutingMachine={removeRoutingMachine}
           map={userMap}
-          icon={{
-            startIcon,
-            endIcon
-          }}
           userLocation={userLocation}
         />
       )}
