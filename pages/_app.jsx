@@ -2,7 +2,8 @@ import React from 'react';
 import { CloudinaryContext } from 'cloudinary-react';
 
 import { Provider } from 'react-redux';
-import { UserProvider } from '../components/UserContext/UserContext';
+import { UserProvider } from '../components/Context/UserContext';
+import { UIProvider } from '../components/Context/UIContext';
 import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -38,13 +39,15 @@ class MyApp extends App {
 
     return (
       <UserProvider>
-        <Provider store={store}>
-          <PersistGate persistor={store.__PERSISTOR} loading={null}>
-            <CloudinaryContext cloudName="hillfinders">
-              <Component {...pageProps} />
-            </CloudinaryContext>
-          </PersistGate>
-        </Provider>
+        <UIProvider>
+          <Provider store={store}>
+            <PersistGate persistor={store.__PERSISTOR} loading={null}>
+              <CloudinaryContext cloudName="hillfinders">
+                <Component {...pageProps} />
+              </CloudinaryContext>
+            </PersistGate>
+          </Provider>
+        </UIProvider>
       </UserProvider>
     );
   }
