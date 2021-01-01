@@ -15,7 +15,8 @@ import {
 import { connect } from 'react-redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 
-import UserContext from '../components/UserContext/UserContext.jsx';
+import UserContext from '../components/Context/UserContext.jsx';
+import UIContext from '../components/Context/UIContext.jsx';
 
 const getWidth = () => {
   const isSSR = typeof window === 'undefined';
@@ -154,14 +155,13 @@ function LayoutContainer({
     return [isToggled, toggle];
   };
 
+  var { isMobile, isDesktop, setIsMobile, setIsDesktop } = useContext(UIContext);
+
   var [data, setData] = useState(data);
 
   var [fixed, setFixed] = useState(null);
   var [isToggled, toggle] = useToggle(false);
   var [Content, setContent] = useState(null);
-
-  var [isMobile, setIsMobile] = useState(false);
-  var [isDesktop, setIsDesktop] = useState(false);
 
   function handleSidebarHide() {
     if (isToggled == true) return toggle();
@@ -199,14 +199,14 @@ function LayoutContainer({
       function(e) {
         if (e.target.innerWidth < 768) {
           if (mounted) {
-            setIsDesktop(isDesktop => false);
-            setIsMobile(isMobile => true);
+            setIsDesktop(false);
+            setIsMobile(true);
           }
         }
         if (e.target.innerWidth > 767) {
           if (mounted) {
-            setIsMobile(isMobile => false);
-            setIsDesktop(isDesktop => true);
+            setIsMobile(false);
+            setIsDesktop(true);
           }
         }
       },
