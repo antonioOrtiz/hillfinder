@@ -11,11 +11,18 @@ var UIContext = React.createContext();
 function UIProvider({ children }) {
   const [ui, setUI] = useState(initialState);
 
+  useEffect(() => {
+    console.log('ui.isMobile ', ui.isMobile);
+    console.log('ui.isDesktop ', ui.isDesktop);
+  }, [ui.isMobile, ui.isDesktop]);
+
   return (
     <UIContext.Provider
       value={{
         isMobile: ui.isMobile,
-        isDesktop: ui.isDesktop
+        isDesktop: ui.isDesktop,
+        setIsMobile: bool => setUI({ ...ui, isMobile: bool }),
+        setIsDesktop: bool => setUI({ ...ui, isDesktop: bool })
       }}
     >
       {children}
