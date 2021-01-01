@@ -38,8 +38,6 @@ export default function GenericInputForm({
   responseCodeSuccess
 }) {
   let form;
-
-  console.log('formType ', formType);
   switch (buttonName) {
     case 'Log-in':
       form = (

@@ -22,7 +22,7 @@ const source = CancelToken.source();
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import UserContext from '../UserContext/UserContext.jsx';
+import UserContext from '../Context/UserContext.jsx';
 
 import dynamic from 'next/dynamic';
 
