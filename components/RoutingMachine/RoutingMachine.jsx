@@ -3,17 +3,21 @@ import L from 'leaflet';
 import 'leaflet-routing-machine';
 import { withLeaflet } from 'react-leaflet';
 
+import { Dimmer, Loader } from 'semantic-ui-react';
+
 class Routing extends MapLayer {
   constructor(props) {
     super(props);
 
     this.state = {
       from: 0,
-      to: 0
+      to: 0,
+      showSpinner: false
     };
     this.handleFromIncrement = this.handleFromIncrement.bind(this);
     this.handleResetFrom = this.handleResetFrom.bind(this);
-    this.handleOnClickSetMarkers = this.handleOnClickSetMarkers.bind(this);
+    // this.handleOnClickSetMarkers = this.handleOnClickSetMarkers.bind(this);
+    this.handleLoader = this.handleLoader.bind(this);
   }
 
   handleFromIncrement() {
@@ -22,35 +26,45 @@ class Routing extends MapLayer {
     });
   }
 
+  handleLoader() {
+    var { showSpinner } = this.state;
+
+    console.log('showSpinner ', showSpinner);
+    if (this.state.showSpinner === false) {
+      this.setState(function(prevState) {
+        return { showSpinner: !prevState.showSpinner };
+      });
+      return (
+        <Dimmer active inverted>
+          <Loader />
+        </Dimmer>
+      );
+    }
+    this.setState(function(prevState) {
+      return { showSpinner: (prevState.showSpinner = true) };
+    });
+  }
+
   handleResetFrom() {
     this.setState({ from: (this.state.from = 0) });
   }
 
-  handleOnClickSetMarkers(e) {
-    var { from, to } = this.state;
+  // handleOnClickSetMarkers(e) {
+  //   var { from, to } = this.state;
 
-    console.log('this.state ', this.state);
-    var { setUpdateUserMarker, setUserMarkers } = this.props;
+  //   console.log('this.state ', this.state);
+  //   var { setUpdateUserMarker, setUserMarkers } = this.props;
 
-    console.log('e ', e);
+  //   console.log('e ', e);
 
-    if (e.latlng) {
-      var eventLatLongObj = e.latlng;
-    }
-    setUserMarkers(eventLatLongObj);
-    // console.log('eventLatLongObj ', eventLatLongObj);
-    // if (from < 1) {
-    //   setUserMarkers(eventLatLongObj, 0);
-    //   this.handleFromIncrement();
-    // }
-    // if (from === 1 && to === 0) {
-    //   setUpdateUserMarker(eventLatLongObj, 1);
-    //   this.handleResetFrom();
-    // }
-  }
+  //   if (e.latlng) {
+  //     var eventLatLongObj = e.latlng;
+  //   }
+  //   setUserMarkers(eventLatLongObj);
+  // }
 
   createLeafletElement(props) {
-    const { userMarkers } = this.props;
+    const { userMarkers, setUserMarkers } = this.props;
     const { map } = this.props.leaflet;
 
     console.log('userMarkers ', userMarkers);
@@ -76,18 +90,17 @@ class Routing extends MapLayer {
       shadowSize: [41, 41]
     });
 
-    if (map && !this.routing) {
-      this.routing = L.Routing.control({
+    if (map && !this.control) {
+      this.control = L.Routing.control({
         collapsible: true,
         show: false,
         position: 'bottomleft',
         lineOptions: {
           styles: [{ color: 'chartreuse', opacity: 1, weight: 5 }]
         },
-        waypoints: [null],
+        waypoints: [],
 
         createMarker: function(i, wp, nWps) {
-          console.log('i', i);
           if (i === 0) {
             return L.marker(wp.latLng, {
               icon: startIcon,
@@ -101,7 +114,15 @@ class Routing extends MapLayer {
             });
           }
         }
-      });
+      })
+        .on('routingstart', this.handleLoader.bind(this))
+        .on('routeselected', function(e) {
+          setUserMarkers(e.route.waypoints[0].latLng, e.route.waypoints[1].latLng);
+          var route = e.route;
+        })
+        .on('routesfound routingerror', this.handleLoader.bind(this));
+
+      L.Routing.errorControl(this.control).addTo(map);
 
       map.on(
         'click',
@@ -119,8 +140,7 @@ class Routing extends MapLayer {
             startBtn,
             'click',
             function() {
-              this.routing.spliceWaypoints(0, 1, e.latlng);
-              this.handleOnClickSetMarkers(e);
+              this.control.spliceWaypoints(0, 1, e.latlng);
               map.closePopup();
             }.bind(this)
           );
@@ -129,12 +149,11 @@ class Routing extends MapLayer {
             destBtn,
             'click',
             function() {
-              this.routing.spliceWaypoints(
-                this.routing.getWaypoints().length - 1,
+              this.control.spliceWaypoints(
+                this.control.getWaypoints().length - 1,
                 1,
                 e.latlng
               );
-              this.handleOnClickSetMarkers(e);
 
               map.closePopup();
             }.bind(this)
@@ -150,7 +169,7 @@ class Routing extends MapLayer {
       return btn;
     }
 
-    return this.routing.getPlan();
+    return this.control.getPlan();
   }
 
   componentDidMount() {
@@ -158,12 +177,13 @@ class Routing extends MapLayer {
 
     console.log('this', this);
 
-    map.addControl(this.routing);
+    map.addControl(this.control);
   }
 
   updateLeafletElement(fromProps, toProps) {
+    console.log('fromProps, toProps; ', fromProps, toProps);
     if (toProps.removeRoutingMachine !== false) {
-      this.routing.setWaypoints([]);
+      this.control.setWaypoints([]);
     }
   }
 
@@ -174,7 +194,7 @@ class Routing extends MapLayer {
   destroyRouting() {
     const { map } = this.props.leaflet;
     if (map) {
-      map.removeControl(this.routing);
+      map.removeControl(this.control);
     }
   }
 }
