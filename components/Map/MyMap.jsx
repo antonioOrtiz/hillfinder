@@ -10,7 +10,8 @@ import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
-import UserContext from '../UserContext/UserContext.jsx';
+import UserContext from '../Context/UserContext.jsx';
+import UIContext from '../Context/UIContext.jsx';
 
 import { parse, stringify } from 'flatted';
 
@@ -39,15 +40,17 @@ export default function MyMap({}) {
     setUpdateUserMarker
   } = useContext(UserContext);
 
+  var { isMobile, isDesktop } = useContext(UIContext);
+
   var userMarkersRef = useRef(userMarkers);
 
   useEffect(() => {
-    console.log('userMarkers; ', userMarkers);
+    console.log('isMobile, isDesktop ', isMobile, isDesktop);
     if (userMarkers === null) {
       setIsRoutingVisibileToTrue();
     }
     return () => {};
-  }, [stringify(userMarkers)]);
+  }, [stringify(userMarkers), isMobile, isDesktop]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -126,6 +129,8 @@ export default function MyMap({}) {
           removeRoutingMachine={removeRoutingMachine}
           map={userMap}
           userLocation={userLocation}
+          isMobile={isMobile}
+          isDesktop={isDesktop}
         />
       )}
     </Map>
