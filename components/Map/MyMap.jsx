@@ -44,13 +44,12 @@ export default function MyMap({}) {
 
   var userMarkersRef = useRef(userMarkers);
 
-  useEffect(() => {
-    console.log('isMobile, isDesktop ', isMobile, isDesktop);
-    if (userMarkers === null) {
-      setIsRoutingVisibileToTrue();
-    }
-    return () => {};
-  }, [stringify(userMarkers), isMobile, isDesktop]);
+  // useEffect(() => {
+  //   if (userMarkers === null) {
+  //     setIsRoutingVisibileToTrue();
+  //   }
+  //   return () => {};
+  // }, [stringify(userMarkers), isMobile, isDesktop]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
