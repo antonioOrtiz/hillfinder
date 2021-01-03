@@ -5,7 +5,7 @@ import {
 } from '../CloudinaryService/CloudinaryService.jsx';
 
 import { Button, Card, Dimmer, Icon, Image, Loader, Segment } from 'semantic-ui-react';
-import UserContext from '../UserContext/UserContext.jsx';
+import UserContext from '../Context/UserContext.jsx';
 
 function ImageUploader() {
   const { userId, userAvatar, setUserAvatar, isAvatarUploading } = useContext(
