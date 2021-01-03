@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getUserAvatar } from '../../utils/index';
+
+import { parse, stringify } from 'flatted';
+
 var initialState = {
   avatar: '/static/uploads/profile-avatars/placeholder.jpg',
   isRoutingVisible: false,
@@ -27,10 +30,6 @@ function setLocalStorage(key, value) {
     return false;
   }
 
-  // value = !isJson(value) ? value : JSON.stringify(value);
-
-  // console.log('isJson(value) ', isJson(value));
-  // console.log('value ', value);
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (errors) {
@@ -44,7 +43,6 @@ function getLocalStorage(key, initialValue) {
     const value = window.localStorage.getItem(key);
     return value ? JSON.parse(value) : initialValue;
   } catch (e) {
-    // if error, return initial value
     return initialValue;
   }
 }
@@ -52,6 +50,10 @@ function getLocalStorage(key, initialValue) {
 function UserProvider({ children }) {
   const [user, setUser] = useState(() => getLocalStorage('user', initialState));
   const [isAvatarUploading, setIsAvatarUploading] = useState(true);
+  const [
+    isLengthOfUserMarkersLessThanTwo,
+    setIsLengthOfUserMarkersLessThanTwo
+  ] = useState(true);
 
   // console.log('user ', user);
   useEffect(() => {
@@ -62,7 +64,14 @@ function UserProvider({ children }) {
     console.log('user.isRoutingVisibile ', user.isRoutingVisibile);
   }, [user.isRoutingVisibile]);
 
-  // var [isRoutingVisible, setIsRoutingVisibleToggle] = useState(user.isRoutingVisibile);
+  useEffect(() => {
+    console.log('user.markers.length ', user.markers.length);
+    if (user.markers.length === 2) {
+      setIsLengthOfUserMarkersLessThanTwo(false);
+    }
+
+    return () => {};
+  }, [JSON.stringify(user.markers)]);
 
   useEffect(() => {
     if (user.id) {
@@ -88,17 +97,19 @@ function UserProvider({ children }) {
         userImages: user.images,
         setUserImages: images => setUser({ ...user, images }),
         userMarkers: user.markers,
-        setUserMarkers: markers =>
-          setUser({ ...user, markers: [...user.markers, markers] }),
-        setUpdateUserMarker: (marker, markerIndex) => {
-          let updatedMarkers = user.markers.map(element =>
-            element.id == markerIndex ? { ...element, ...marker } : element
+        setUserMarkers: marker => {
+          console.log('marker ', marker);
+
+          console.log(
+            'isLengthOfUserMarkersLessThanTwo ',
+            isLengthOfUserMarkersLessThanTwo
           );
-          console.log('updatedMarkers ', updatedMarkers);
-          setUser({
-            ...user,
-            markers: [...updatedMarkers]
-          });
+          isLengthOfUserMarkersLessThanTwo === true
+            ? setUser(user => ({
+                ...user,
+                markers: [...user.markers, marker]
+              }))
+            : () => null;
         },
         deleteUserMarkers: () => {
           setUser({
