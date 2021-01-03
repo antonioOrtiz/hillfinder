@@ -3,7 +3,7 @@ import { Button, Container, Grid, Header, List, Segment } from 'semantic-ui-reac
 import MyHeader from '../Header/Header.jsx';
 import { useContext } from 'react';
 
-import UserContext from '../UserContext/UserContext.jsx';
+import UserContext from '../Context/UserContext.jsx';
 
 const HomepageLayout = () => {
   var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
