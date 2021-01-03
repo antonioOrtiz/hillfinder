@@ -49,23 +49,26 @@ class Routing extends MapLayer {
     this.setState({ from: (this.state.from = 0) });
   }
 
-  // handleOnClickSetMarkers(e) {
-  //   var { from, to } = this.state;
-
-  //   console.log('this.state ', this.state);
-  //   var { setUpdateUserMarker, setUserMarkers } = this.props;
-
-  //   console.log('e ', e);
-
-  //   if (e.latlng) {
-  //     var eventLatLongObj = e.latlng;
-  //   }
-  //   setUserMarkers(eventLatLongObj);
   // }
 
   createLeafletElement(props) {
     const { userMarkers, setUserMarkers } = this.props;
     const { map } = this.props.leaflet;
+
+    function returnNullIfMarkersEmpty(userMarkers, index) {
+      if (
+        userMarkers[index] !== undefined &&
+        userMarkers[index] !== null &&
+        typeof userMarkers[index] === 'object'
+      ) {
+        return userMarkers[index];
+      } else {
+        return null;
+      }
+    }
+
+    var defaultWaypointsStart = returnNullIfMarkersEmpty(userMarkers, 0);
+    var defaultWaypointsDestination = returnNullIfMarkersEmpty(userMarkers, 1);
 
     console.log('userMarkers ', userMarkers);
     var startIcon = new L.Icon({
@@ -98,8 +101,7 @@ class Routing extends MapLayer {
         lineOptions: {
           styles: [{ color: 'chartreuse', opacity: 1, weight: 5 }]
         },
-        waypoints: [],
-
+        waypoints: [null],
         createMarker: function(i, wp, nWps) {
           if (i === 0) {
             return L.marker(wp.latLng, {
@@ -117,7 +119,6 @@ class Routing extends MapLayer {
       })
         .on('routingstart', this.handleLoader.bind(this))
         .on('routeselected', function(e) {
-          setUserMarkers(e.route.waypoints[0].latLng, e.route.waypoints[1].latLng);
           var route = e.route;
         })
         .on('routesfound routingerror', this.handleLoader.bind(this));
@@ -131,6 +132,10 @@ class Routing extends MapLayer {
             startBtn = createButton('Start from this location', container),
             destBtn = createButton('Go to this location', container);
 
+          function createMarkerHelper(marker) {
+            setUserMarkers(marker);
+          }
+
           L.popup()
             .setContent(container)
             .setLatLng(e.latlng)
@@ -141,6 +146,7 @@ class Routing extends MapLayer {
             'click',
             function() {
               this.control.spliceWaypoints(0, 1, e.latlng);
+              createMarkerHelper(e.latlng);
               map.closePopup();
             }.bind(this)
           );
@@ -154,6 +160,7 @@ class Routing extends MapLayer {
                 1,
                 e.latlng
               );
+              createMarkerHelper(e.latlng);
 
               map.closePopup();
             }.bind(this)
@@ -174,8 +181,6 @@ class Routing extends MapLayer {
 
   componentDidMount() {
     const { map } = this.props.leaflet;
-
-    console.log('this', this);
 
     map.addControl(this.control);
   }
