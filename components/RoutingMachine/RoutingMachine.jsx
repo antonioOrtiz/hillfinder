@@ -16,7 +16,7 @@ class Routing extends MapLayer {
     };
     this.handleFromIncrement = this.handleFromIncrement.bind(this);
     this.handleResetFrom = this.handleResetFrom.bind(this);
-    // this.handleOnClickSetMarkers = this.handleOnClickSetMarkers.bind(this);
+
     this.handleLoader = this.handleLoader.bind(this);
   }
 
@@ -29,7 +29,7 @@ class Routing extends MapLayer {
   handleLoader() {
     var { showSpinner } = this.state;
 
-    console.log('showSpinner ', showSpinner);
+    // console.log('showSpinner ', showSpinner);
     if (this.state.showSpinner === false) {
       this.setState(function(prevState) {
         return { showSpinner: !prevState.showSpinner };
@@ -49,28 +49,14 @@ class Routing extends MapLayer {
     this.setState({ from: (this.state.from = 0) });
   }
 
-  // }
-
   createLeafletElement(props) {
-    const { userMarkers, setUserMarkers } = this.props;
+    const { markers, dispatch } = this.props;
+
+    console.log('this.props; ', this.props);
+
     const { map } = this.props.leaflet;
 
-    function returnNullIfMarkersEmpty(userMarkers, index) {
-      if (
-        userMarkers[index] !== undefined &&
-        userMarkers[index] !== null &&
-        typeof userMarkers[index] === 'object'
-      ) {
-        return userMarkers[index];
-      } else {
-        return null;
-      }
-    }
-
-    var defaultWaypointsStart = returnNullIfMarkersEmpty(userMarkers, 0);
-    var defaultWaypointsDestination = returnNullIfMarkersEmpty(userMarkers, 1);
-
-    console.log('userMarkers ', userMarkers);
+    console.log('markers 56', markers);
     var startIcon = new L.Icon({
       iconUrl:
         'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -106,13 +92,32 @@ class Routing extends MapLayer {
           if (i === 0) {
             return L.marker(wp.latLng, {
               icon: startIcon,
-              draggable: true
+              draggable: true,
+              keyboard: true,
+              alt: 'current location'
+            }).on('drag', function(e) {
+              console.log('dragggon! roar!', e);
+              e.latlng.alt = 'current location';
+
+              dispatch({
+                type: 'updateMarkers',
+                payload: { marker: e.latlng }
+              });
             });
           }
           if (i === nWps - 1) {
             return L.marker(wp.latLng, {
               icon: endIcon,
-              draggable: true
+              draggable: true,
+              alt: 'destination'
+            }).on('drag', function(e) {
+              console.log('dragggon! roar!', e);
+
+              e.latlng.alt = 'destination';
+              dispatch({
+                type: 'updateMarkers',
+                payload: { marker: e.latlng }
+              });
             });
           }
         }
@@ -128,13 +133,15 @@ class Routing extends MapLayer {
       map.on(
         'click',
         function(e) {
+          dispatch({
+            type: 'setIsRoutingVisible',
+            payload: {
+              isRoutingVisible: true
+            }
+          });
           var container = L.DomUtil.create('div'),
             startBtn = createButton('Start from this location', container),
             destBtn = createButton('Go to this location', container);
-
-          function createMarkerHelper(marker) {
-            setUserMarkers(marker);
-          }
 
           L.popup()
             .setContent(container)
@@ -146,7 +153,17 @@ class Routing extends MapLayer {
             'click',
             function() {
               this.control.spliceWaypoints(0, 1, e.latlng);
-              createMarkerHelper(e.latlng);
+
+              console.log('e ', e);
+              e.latlng.alt = 'current location';
+              console.log('e.latlng ', e.latlng);
+
+              dispatch({
+                type: 'addMarker',
+                payload: {
+                  marker: e.latlng
+                }
+              });
               map.closePopup();
             }.bind(this)
           );
@@ -160,8 +177,14 @@ class Routing extends MapLayer {
                 1,
                 e.latlng
               );
-              createMarkerHelper(e.latlng);
-
+              e.latlng.alt = 'current destination';
+              console.log('e.latlng ', e.latlng);
+              dispatch({
+                type: 'addMarker',
+                payload: {
+                  marker: e.latlng
+                }
+              });
               map.closePopup();
             }.bind(this)
           );
@@ -186,7 +209,8 @@ class Routing extends MapLayer {
   }
 
   updateLeafletElement(fromProps, toProps) {
-    console.log('fromProps, toProps; ', fromProps, toProps);
+    const { map } = this.props.leaflet;
+
     if (toProps.removeRoutingMachine !== false) {
       this.control.setWaypoints([]);
     }

@@ -15,7 +15,6 @@ import {
 import { connect } from 'react-redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 
-import UserContext from '../components/Context/UserContext.jsx';
 import UIContext from '../components/Context/UIContext.jsx';
 
 const getWidth = () => {
@@ -171,10 +170,6 @@ function LayoutContainer({
   var hideFixedMenu = () => setFixed(false);
   var showFixedMenu = () => setFixed(true);
 
-  // useEffect(() => {
-  //   console.log('isToggled ', isToggled);
-  // }, [isToggled]);
-
   useEffect(() => {
     let mounted = true;
 
@@ -311,7 +306,7 @@ function LayoutContainer({
                 </Container>
               </Segment>
 
-              {React.cloneElement(children, { userData })}
+              {React.cloneElement(children)}
             </Sidebar.Pusher>
           </Responsive>
         );
@@ -372,7 +367,7 @@ function LayoutContainer({
               </Menu>
             </Segment>
           </Visibility>
-          {React.cloneElement(children, { userData })}
+          {React.cloneElement(children)}
         </Responsive>
       ));
     }
@@ -390,7 +385,6 @@ const LinkNavWithLayout = ({
   modalStateOff,
   isLoggedIn
 }) => {
-  var userData = useContext(UserContext);
   return (
     <React.Fragment>
       <LayoutContainer
@@ -400,7 +394,6 @@ const LinkNavWithLayout = ({
         modalStateOn={modalStateOn}
         modalStateOff={modalStateOff}
         isLoggedIn={isLoggedIn}
-        userData={userData}
       >
         {children}
       </LayoutContainer>

@@ -1,14 +1,8 @@
 import { Button, Container, Grid, Header, List, Segment } from 'semantic-ui-react';
 
 import MyHeader from '../Header/Header.jsx';
-import { useContext } from 'react';
-
-import UserContext from '../Context/UserContext.jsx';
 
 const HomepageLayout = () => {
-  var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
-
-  console.log('userId ', userId);
   return (
     <>
       <Segment

@@ -5,15 +5,38 @@ import {
 } from '../CloudinaryService/CloudinaryService.jsx';
 
 import { Button, Card, Dimmer, Icon, Image, Loader, Segment } from 'semantic-ui-react';
-import UserContext from '../Context/UserContext.jsx';
+import { userState, userDispatch } from '../Context/UserContext.jsx';
+import { getUserAvatar } from '../../utils/index';
 
 function ImageUploader() {
-  const { userId, userAvatar, setUserAvatar, isAvatarUploading } = useContext(
-    UserContext
-  );
+  var { id, avatar } = userState();
+  var dispatch = userDispatch();
+
+  useEffect(() => {
+    if (id) {
+      getUserAvatar()
+        .then(userAvatar => {
+          console.log('userAvatar ', userAvatar);
+          dispatch({
+            type: 'setIsAvatarUploading',
+            payload: { isAvatarUploading: false }
+          });
+          dispatch({
+            type: 'setAvatar',
+            payload: { avatar: userAvatar }
+          });
+        })
+        .catch(err => console.log('error thrown from getUserAvatar', err));
+    } else {
+      console.log('No user yet!');
+    }
+  }, [id]);
 
   function avatarUpdater(avatarPath) {
-    setUserAvatar(avatarPath);
+    dispatch({
+      type: 'setAvatar',
+      payload: { avatar: avatarPath }
+    });
   }
 
   const beginUpload = tag => {
@@ -38,23 +61,23 @@ function ImageUploader() {
   };
 
   useEffect(() => {
-    // console.log('isAvatarUploading in imageUploaderUseEffect', isAvatarUploading);
+    console.log('avatar ', avatar);
     return () => {};
-  });
+  }, [avatar]);
 
   return (
     <>
       <Segment>
         <Card fluid>
-          {isAvatarUploading ? (
+          {avatar == false ? (
             <Dimmer active inverted>
               <Loader />
             </Dimmer>
           ) : (
-            <Image src={userAvatar} />
+            <Image src={avatar} />
           )}
           <Segment>
-            <Button className="process__upload-btn" onClick={() => beginUpload(userId)}>
+            <Button className="process__upload-btn" onClick={() => beginUpload(id)}>
               Upload your Avatar!
             </Button>
           </Segment>

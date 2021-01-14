@@ -10,46 +10,33 @@ import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
-import UserContext from '../Context/UserContext.jsx';
+import { userState, userDispatch } from '../Context/UserContext.jsx';
+
 import UIContext from '../Context/UIContext.jsx';
 
-import { parse, stringify } from 'flatted';
+import { stringify } from 'flatted';
 
 export default function MyMap({}) {
   var [zoom, setZoom] = useState(18);
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
-  var [from, setFrom] = useState(0);
-  var [to, setTo] = useState(0);
 
   var mapRef = useRef();
 
+  console.log('userState() ', userState());
   var {
-    userMarkers,
-    setUserMarkers,
-    deleteUserMarkers,
-    resetUserMarkers,
-    userMap,
-    setUserCurrentMap,
-    removeRoutingMachine,
-    setRemoveRoutingMachine,
-    isRoutingVisibile,
-    setIsRoutingVisibileToTrue,
-    setIsRoutingVisibileToFalse,
-    updateUserCoords,
-    setUpdateUserMarker
-  } = useContext(UserContext);
+    avatar,
+    currentMap,
+    id,
+    isLengthOfMarkersLessThanTwo,
+    isRoutingVisible,
+    markers,
+    removeRoutingMachine
+  } = userState();
+
+  var dispatch = userDispatch();
 
   var { isMobile, isDesktop } = useContext(UIContext);
-
-  var userMarkersRef = useRef(userMarkers);
-
-  // useEffect(() => {
-  //   if (userMarkers === null) {
-  //     setIsRoutingVisibileToTrue();
-  //   }
-  //   return () => {};
-  // }, [stringify(userMarkers), isMobile, isDesktop]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -66,8 +53,13 @@ export default function MyMap({}) {
 
     searchControl.on('results', cb);
 
-    if (Object.keys(userMap).length === 0) {
-      setUserCurrentMap(stringify(map));
+    if (Object.keys(currentMap).length === 0) {
+      dispatch({
+        type: 'setMap',
+        payload: {
+          curerntMap: stringify(map)
+        }
+      });
     }
 
     return () => {
@@ -75,14 +67,38 @@ export default function MyMap({}) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isRoutingVisible === false) {
+      dispatch({
+        type: 'setIsRoutingVisible',
+        payload: {
+          isRoutingVisible: true
+        }
+      });
+    }
+  });
+
+  useEffect(() => {
+    if (markers.length === 2) {
+      dispatch({
+        type: 'isLengthOfMarkersLessThanTwoFalse',
+        payload: { isLengthOfMarkersLessThanTwo: false }
+      });
+    }
+  }, [JSON.stringify(markers)]);
+
   function handleOnClickClearOneMarkerAtTime() {
     console.log(`handleOnClickClearMarkers click`);
-    deleteUserMarkers();
+    dispatch({
+      type: 'deleteUserMarkers'
+    });
   }
 
   function handleOnClickClearAllMarkers() {
     console.log(`handleOnClickClearMarkers click`);
-    resetUserMarkers();
+    dispatch({
+      type: 'resetUserMarkers'
+    });
   }
 
   function handleOnLocationFound(e) {
@@ -90,16 +106,12 @@ export default function MyMap({}) {
   }
 
   function handleOnClickMarkerClick(e) {
+    console.log('e ', e);
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
   }
 
-  return !mapRef ? (
-    <Dimmer active inverted>
-      <Loader />
-    </Dimmer>
-  ) : (
+  return (
     <Map
-      onClick={setIsRoutingVisibileToTrue}
       animate={animate}
       onLocationFound={handleOnLocationFound}
       zoom={zoom}
@@ -121,12 +133,12 @@ export default function MyMap({}) {
         </Button>
       </Control>
 
-      {isRoutingVisibile && (
+      {isRoutingVisible && (
         <Routing
-          userMarkers={userMarkers}
-          setUserMarkers={setUserMarkers}
+          markers={markers}
+          dispatch={dispatch}
           removeRoutingMachine={removeRoutingMachine}
-          map={userMap}
+          map={currentMap}
           userLocation={userLocation}
           isMobile={isMobile}
           isDesktop={isDesktop}

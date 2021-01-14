@@ -1,9 +1,8 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 
-import MyHeader from '../Header/Header.jsx';
 import GenericInputForm from './FormElements.jsx';
 
-import { Card, Header, Icon, Grid, Divider, Message } from 'semantic-ui-react';
+import { Message } from 'semantic-ui-react';
 
 import {
   logInUser,
@@ -22,13 +21,7 @@ const source = CancelToken.source();
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import UserContext from '../Context/UserContext.jsx';
-
-import dynamic from 'next/dynamic';
-
-const MyMap = dynamic(() => import('../Map/MyMap.jsx'), {
-  ssr: false
-});
+import { userState, userDispatch } from '../Context/UserContext.jsx';
 
 function FormComponent({
   formType,
@@ -42,7 +35,6 @@ function FormComponent({
 }) {
   /* This is an object which is used to store the relevant form views for each page/component  */
   var Forms = {
-    Hillfinders: [isHillfindersForm],
     Confirmation: [isConfirmation],
     ForgotPassword: [isForgotPasswordForm, forgotPasswordSubmit],
     Login: [isLoginForm, loginSubmit],
@@ -69,35 +61,12 @@ function FormComponent({
   var [tokenExpired, setTokenExpired] = useState(false);
   var [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   var [error, setError] = useState(false);
-  var { userId, setUserId } = useContext(UserContext);
 
-  var { userId, setUserId, userAvatar, setUserAvatar } = useContext(UserContext);
   var [current_location, setCurrentLocation] = useState('');
   var [current_destination, setCurrentDestination] = useState('');
 
-  function isHillfindersForm() {
-    return (
-      <>
-        <Grid container columns={1} stackable style={{ height: '100vh' }}>
-          <Grid.Column>
-            <MyHeader content="Go find a hill!" margin={'0'} textAlign={'center'} />
-            <Card fluid>
-              <Card.Content>
-                <Divider horizontal>
-                  <Header as="h4">
-                    <Icon name="map" color="green" />
-                    Your map!
-                  </Header>
-                </Divider>
-
-                <MyMap />
-              </Card.Content>
-            </Card>
-          </Grid.Column>
-        </Grid>
-      </>
-    );
-  }
+  var { id } = userState();
+  var dispatch = userDispatch();
 
   function isConfirmation() {
     var [showApi, setShowApi] = useState(true);
@@ -143,9 +112,9 @@ function FormComponent({
 
   function isLoginForm() {
     useEffect(() => {
-      console.log('userId in LoginForm ', userId);
+      console.log('userId in LoginForm ', id);
       resetUserAcoountVerified();
-    }, []);
+    }, [id]);
 
     return (
       <GenericInputForm
@@ -291,8 +260,11 @@ function FormComponent({
       })
       .then(response => {
         if (response.status === 200) {
+          dispatch({
+            type: 'setUserId',
+            payload: { id: response.data.userId }
+          });
           setTimeout(() => {
-            setUserId(response.data.userId);
             logInUser();
             history.push('/profile');
           }, 5000);
@@ -307,6 +279,7 @@ function FormComponent({
         }
       })
       .catch(function(error) {
+        console.log('error ', error);
         if (error.response.statusText === 'Unauthorized') {
           setUsername('');
           setPassword('');

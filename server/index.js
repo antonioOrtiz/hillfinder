@@ -125,29 +125,9 @@ async function start() {
 
   server.use(cors());
   server.use('/users', require('./users'));
-  // server.get('/service-worker.js', (req, res) => {
-  //   res.sendFile('.next/service-worker.js', { root: './' });
-  // });
-
-  // server.get('./server-worker.js', (req, res) => {
-  //   console.log('service worker called');
-  //   // Don't cache service worker is a best practice (otherwise clients wont get emergency bug fix)
-
-  //   res.sendFile(path.resolve(__dirname, 'public', 'service-worker.js'));
-  // });
 
   server.get('/*', async (req, res, next) => {
     try {
-      // server.get('/service-worker.js', (req, res) => {
-      //   console.log('service worker called');
-      //   // Don't cache service worker is a best practice (otherwise clients wont get emergency bug fix)
-      //   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      //   res.set('Content-Type', 'application/javascript');
-
-      //   // const filePath = path.join(__dirname, './next/service-worker.js');
-      //   console.log('filePath ', './next/service-worker.js');
-      //   app.serveStatic(req, res, './next/service-worker.js');
-      // });
       const pathName = req.originalUrl;
       if (isInternalUrl(req.url)) {
         return app.handleRequest(req, res, req.originalUrl);

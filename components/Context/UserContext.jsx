@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { getUserAvatar } from '../../utils/index';
-
-import { parse, stringify } from 'flatted';
+import React, { useState, useEffect, useContext, useReducer } from 'react';
 
 var initialState = {
   avatar: '/static/uploads/profile-avatars/placeholder.jpg',
+  id: null,
   isRoutingVisible: false,
   removeRoutingMachine: false,
+  isLengthOfMarkersLessThanTwo: true,
+  isAvatarUploading: true,
+
   markers: [],
   currentMap: {}
 };
 
-var UserContext = React.createContext();
+var UserStateContext = React.createContext();
+var UserContextDispatch = React.createContext();
 
 function setLocalStorage(key, value) {
   function isJson(item) {
@@ -48,136 +50,149 @@ function getLocalStorage(key, initialValue) {
 }
 
 function UserProvider({ children }) {
+  function userReducer(state, { type, payload }) {
+    console.log('state, type, payload ', state, type, payload);
+
+    switch (type) {
+      case 'setUserId': {
+        return { ...state, ...{ id: payload.id } };
+      }
+
+      case 'setAvatar': {
+        return {
+          ...state,
+          ...{ avatar: payload.avatar }
+        };
+      }
+
+      case 'setIsRoutingVisible': {
+        return {
+          ...state,
+          ...{ isRoutingVisible: payload.isRoutingVisible }
+        };
+      }
+
+      case 'setIsAvatarUploading': {
+        return {
+          ...state,
+          ...{ isAvatarUploading: payload.isAvatarUploading }
+        };
+      }
+
+      case 'setRemoveRoutingMachine': {
+        return {
+          ...state,
+          ...{
+            removeRoutingMachine: payload.removeRoutingMachine
+          }
+        };
+      }
+
+      case 'isLengthOfMarkersLessThanTwoFalse': {
+        return {
+          ...state,
+          ...{
+            isLengthOfMarkersLessThanTwo: payload.isLengthOfMarkersLessThanTwo
+          }
+        };
+      }
+
+      case 'addMarker': {
+        user.isLengthOfMarkersLessThanTwo
+          ? {
+              ...state,
+              markers: user.markers.concat(payload.marker)
+            }
+          : null;
+        break;
+      }
+
+      case 'deleteUserMarkers': {
+        return {
+          ...state,
+          ...{
+            markers: user.markers.filter(function(e, i, a) {
+              return e !== a[a.length - 1];
+            })
+          }
+        };
+      }
+
+      case 'updateMarkers': {
+        console.log('type, payload ', type, payload);
+        return {
+          ...state,
+
+          ...{
+            markers: user.markers.map(element => {
+              console.log('element, payload ', element, payload.marker);
+              console.log(
+                'element.alt ===  payload.marker.alt ',
+                element.alt === payload.marker.alt
+              );
+              if (element.alt === payload.marker.alt) {
+                return { ...element, ...payload.marker };
+              } else {
+                return element;
+              }
+            })
+          }
+        };
+      }
+
+      case 'resetUserMarkers': {
+        return {
+          ...state,
+          removeRoutingMachine: true,
+          isRoutingVisible: false,
+          markers: []
+        };
+      }
+
+      case 'setMap': {
+        return {
+          ...state,
+          currentMap: payload.curerntMap
+        };
+      }
+
+      default: {
+        throw new Error(`Unhandled action type: ${type}`);
+      }
+    }
+  }
+
   const [user, setUser] = useState(() => getLocalStorage('user', initialState));
-  const [isAvatarUploading, setIsAvatarUploading] = useState(true);
-  const [
-    isLengthOfUserMarkersLessThanTwo,
-    setIsLengthOfUserMarkersLessThanTwo
-  ] = useState(true);
 
-  // console.log('user ', user);
-  useEffect(() => {
-    setLocalStorage('user', user);
-  }, [user]);
+  var [state, dispatch] = useReducer(userReducer, user);
 
   useEffect(() => {
-    console.log('user.isRoutingVisibile ', user.isRoutingVisibile);
-  }, [user.isRoutingVisibile]);
-
-  useEffect(() => {
-    console.log('user.markers.length ', user.markers.length);
-    if (user.markers.length === 2) {
-      setIsLengthOfUserMarkersLessThanTwo(false);
-    }
-
-    return () => {};
-  }, [JSON.stringify(user.markers)]);
-
-  useEffect(() => {
-    if (user.id) {
-      getUserAvatar()
-        .then(userAvatar => {
-          setIsAvatarUploading(false);
-          setUser(user => ({ ...user, avatar: userAvatar }));
-        })
-        .catch(err => console.log('error thrown from getUserAvatar', err));
-    } else {
-      console.log('No user yet!');
-    }
-  }, [user.id]);
+    setLocalStorage('user', state);
+  }, [state]);
 
   return (
-    <UserContext.Provider
-      value={{
-        userId: user.id,
-        setUserId: id => setUser({ ...user, id }),
-        userAvatar: user.avatar,
-        setUserAvatar: avatar => setUser({ ...user, avatar }),
-        isAvatarUploading: isAvatarUploading,
-        userImages: user.images,
-        setUserImages: images => setUser({ ...user, images }),
-        userMarkers: user.markers,
-        setUserMarkers: marker => {
-          console.log('marker ', marker);
-
-          console.log(
-            'isLengthOfUserMarkersLessThanTwo ',
-            isLengthOfUserMarkersLessThanTwo
-          );
-          isLengthOfUserMarkersLessThanTwo === true
-            ? setUser(user => ({
-                ...user,
-                markers: [...user.markers, marker]
-              }))
-            : () => null;
-        },
-        deleteUserMarkers: () => {
-          setUser({
-            ...user,
-            markers: [
-              ...user.markers.filter(function(e, i, a) {
-                return e !== a[a.length - 1];
-              })
-            ],
-            currentCoords: [
-              ...user.currentCoords.filter(function(e, i, a) {
-                return e !== a[a.length - 1];
-              })
-            ]
-          });
-        },
-        resetUserMarkers: () => {
-          var updatedCoords = user.currentCoords.map(element =>
-            element.lat != null && element.lng != null
-              ? { ...element, ...{ lat: null, lng: null } }
-              : element
-          );
-          setUser({
-            ...user,
-            markers: [],
-            currentCoords: [...updatedCoords]
-          });
-        },
-        setUserMarkersToNull: () =>
-          setUser({
-            ...user,
-            markers: null
-          }),
-        userMap: user.currentMap,
-        setUserCurrentMap: map =>
-          setUser({ ...user, currentMap: { ...user.currentMap, map } }),
-        removeRoutingMachine: user.removeRoutingMachine,
-        setRemoveRoutingMachine: () => {
-          console.log('fired setIsRoutingVisibileToTrue');
-          setUser({
-            ...user,
-            removeRoutingMachine: true
-          });
-        },
-        isRoutingVisibile: user.isRoutingVisible,
-
-        setIsRoutingVisibileToTrue: () => {
-          console.log('fired setIsRoutingVisibileToTrue');
-          setUser({
-            ...user,
-            isRoutingVisible: true
-          });
-        },
-
-        setIsRoutingVisibileToFalse: () => {
-          console.log('fired setIsRoutingVisibileToFalse');
-          setUser({
-            ...user,
-            isRoutingVisible: false
-          });
-        }
-      }}
-    >
-      {children}
-    </UserContext.Provider>
+    <UserStateContext.Provider value={state}>
+      <UserContextDispatch.Provider value={dispatch}>
+        {children}
+      </UserContextDispatch.Provider>
+    </UserStateContext.Provider>
   );
 }
 
-export default UserContext;
+function userState() {
+  const context = React.useContext(UserStateContext);
+  if (context === undefined) {
+    throw new Error('userState must be used within a UserProvider');
+  }
+  return context;
+}
 
-export { UserProvider };
+function userDispatch() {
+  const context = React.useContext(UserContextDispatch);
+  if (context === undefined) {
+    throw new Error('userDispatch must be used within a UserProvider');
+  }
+  return context;
+}
+
+export { UserProvider, userState, userDispatch };
