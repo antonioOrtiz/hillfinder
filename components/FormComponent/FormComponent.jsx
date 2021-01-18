@@ -21,7 +21,7 @@ const source = CancelToken.source();
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { userState, userDispatch } from '../Context/UserContext.jsx';
+import { userState, userDispatch } from '../Context/UserContext';
 
 function FormComponent({
   formType,
@@ -65,8 +65,12 @@ function FormComponent({
   var [current_location, setCurrentLocation] = useState('');
   var [current_destination, setCurrentDestination] = useState('');
 
-  var { id } = userState();
-  var dispatch = userDispatch();
+  //
+  var { state } = userState();
+  var { id } = state;
+  //
+  // // var { id } = userState();
+  var { dispatch } = userDispatch();
 
   function isConfirmation() {
     var [showApi, setShowApi] = useState(true);
@@ -112,7 +116,6 @@ function FormComponent({
 
   function isLoginForm() {
     useEffect(() => {
-      console.log('userId in LoginForm ', id);
       resetUserAcoountVerified();
     }, [id]);
 
@@ -167,7 +170,6 @@ function FormComponent({
   }
 
   function isUpdatePasswordForm() {
-    console.log('formType ', formType);
     return (
       <GenericInputForm
         formHeader="Update your password"
@@ -239,7 +241,6 @@ function FormComponent({
         }
       })
       .catch(function(error) {
-        console.log(error.response);
         if (error.response) {
           if (error.response.status === 404) {
             setResponseMessage(error.response.data.msg);
@@ -279,7 +280,6 @@ function FormComponent({
         }
       })
       .catch(function(error) {
-        console.log('error ', error);
         if (error.response.statusText === 'Unauthorized') {
           setUsername('');
           setPassword('');
@@ -427,12 +427,10 @@ function FormComponent({
     }
 
     if (e.target.name === 'current_location') {
-      console.log(e.target.value);
       setCurrentLocation(e.target.value);
     }
 
     if (e.target.name === 'current_destination') {
-      console.log(e.target.value);
       setCurrentDestination(e.target.value);
     }
   }
