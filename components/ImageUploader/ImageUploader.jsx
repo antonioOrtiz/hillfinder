@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   fetchPhotos,
   openUploadWidget
@@ -9,8 +9,10 @@ import { userState, userDispatch } from '../Context/UserContext.jsx';
 import { getUserAvatar } from '../../utils/index';
 
 function ImageUploader() {
-  var { id, avatar } = userState();
-  var dispatch = userDispatch();
+  console.log('userState() ', userState());
+  var { state } = userState();
+  var { id, avatar, isAvatarUploading } = state;
+  var { dispatch } = userDispatch();
 
   useEffect(() => {
     if (id) {
@@ -69,7 +71,7 @@ function ImageUploader() {
     <>
       <Segment>
         <Card fluid>
-          {avatar == false ? (
+          {isAvatarUploading ? (
             <Dimmer active inverted>
               <Loader />
             </Dimmer>
