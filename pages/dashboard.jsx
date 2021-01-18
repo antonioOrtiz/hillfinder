@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import dynamic from 'next/dynamic';
 import { Card, Header, Icon, Grid, Divider } from 'semantic-ui-react';
 import MyHeader from '../components/Header/Header.jsx';
+import { userState, userDispatch } from '../components/Context/UserContext.jsx';
 
 const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
   ssr: false
@@ -23,7 +24,7 @@ var Dashboard = ({ props }) => (
                 Your map!
               </Header>
             </Divider>
-            <MyMap {...props} />
+            <MyMap userState={userState} userDispatch={userDispatch} {...props} />
           </Card.Content>
         </Card>
       </Grid.Column>
