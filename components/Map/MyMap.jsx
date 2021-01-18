@@ -1,20 +1,19 @@
 import React, { useState, useContext, useEffect, useRef, useCallback } from 'react';
-import { Button } from 'semantic-ui-react';
+import { Button, Dimmer, Loader } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
 import { Map } from 'react-leaflet';
-import { Dimmer, Loader } from 'semantic-ui-react';
 
 import Control from 'react-leaflet-control';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
-import { userState, userDispatch } from '../Context/UserContext.jsx';
-
-import UIContext from '../Context/UIContext.jsx';
 
 import { stringify } from 'flatted';
+
+import { userState, userDispatch } from '../Context/UserContext.jsx';
+import UIContext from '../Context/UIContext.jsx';
 
 export default function MyMap({}) {
   var [zoom, setZoom] = useState(18);
@@ -22,21 +21,38 @@ export default function MyMap({}) {
   var [userLocation, setUserLocation] = useState(null);
 
   var mapRef = useRef();
-
-  console.log('userState() ', userState());
+  var { state } = userState();
+  var { dispatch } = userDispatch();
   var {
-    avatar,
     currentMap,
-    id,
-    isLengthOfMarkersLessThanTwo,
+    isMapLoading,
     isRoutingVisible,
-    markers,
-    removeRoutingMachine
-  } = userState();
-
-  var dispatch = userDispatch();
+    removeRoutingMachine,
+    isLengthOfMarkersLessThanTwo,
+    markers
+  } = state;
 
   var { isMobile, isDesktop } = useContext(UIContext);
+
+  // useEffect(() => {
+  //   console.log('markers ', markers);
+  //   return () => {
+  //   };
+  // }, [stringify(markers)]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'isMapLoading',
+      payload: { isMapLoading: false }
+    });
+
+    return () => {
+      dispatch({
+        type: 'isMapLoading',
+        payload: { isMapLoading: true }
+      });
+    };
+  }, []);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -44,8 +60,6 @@ export default function MyMap({}) {
     });
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
-
-    console.log('map ', map);
 
     searchControl.addTo(map);
 
@@ -57,7 +71,7 @@ export default function MyMap({}) {
       dispatch({
         type: 'setMap',
         payload: {
-          curerntMap: stringify(map)
+          currentMap: stringify(map)
         }
       });
     }
@@ -68,17 +82,14 @@ export default function MyMap({}) {
   }, []);
 
   useEffect(() => {
-    if (isRoutingVisible === false) {
-      dispatch({
-        type: 'setIsRoutingVisible',
-        payload: {
-          isRoutingVisible: true
-        }
-      });
-    }
-  });
+    console.log('markers ', markers);
 
-  useEffect(() => {
+    dispatch({
+      type: 'setIsRoutingVisible',
+      payload: {
+        isRoutingVisible: true
+      }
+    });
     if (markers.length === 2) {
       dispatch({
         type: 'isLengthOfMarkersLessThanTwoFalse',
@@ -88,14 +99,13 @@ export default function MyMap({}) {
   }, [JSON.stringify(markers)]);
 
   function handleOnClickClearOneMarkerAtTime() {
-    console.log(`handleOnClickClearMarkers click`);
     dispatch({
-      type: 'deleteUserMarkers'
+      type: 'deleteUserMarkers',
+      payload: 1
     });
   }
 
   function handleOnClickClearAllMarkers() {
-    console.log(`handleOnClickClearMarkers click`);
     dispatch({
       type: 'resetUserMarkers'
     });
@@ -106,12 +116,13 @@ export default function MyMap({}) {
   }
 
   function handleOnClickMarkerClick(e) {
-    console.log('e ', e);
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
   }
 
   return (
     <Map
+      preferCanvas={true}
+      id="myMap"
       animate={animate}
       onLocationFound={handleOnLocationFound}
       zoom={zoom}
@@ -121,7 +132,8 @@ export default function MyMap({}) {
         accessToken={process.env.MAPBOX_ACCESS_TOKEN}
         style="mapbox://styles/mapbox/streets-v9"
       />
-      <LocateControl startDirectly />
+
+      <LocateControl isMapLoading={isMapLoading} startDirectly />
       <Control position="bottomleft">
         <Button onClick={handleOnClickClearOneMarkerAtTime} color="orange" size="small">
           delete one marker!
@@ -132,13 +144,11 @@ export default function MyMap({}) {
           clear all!
         </Button>
       </Control>
-
       {isRoutingVisible && (
         <Routing
           markers={markers}
-          dispatch={dispatch}
+          isLengthOfMarkersLessThanTwo={isLengthOfMarkersLessThanTwo}
           removeRoutingMachine={removeRoutingMachine}
-          map={currentMap}
           userLocation={userLocation}
           isMobile={isMobile}
           isDesktop={isDesktop}
