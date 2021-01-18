@@ -13,7 +13,7 @@ import {
 import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';
 
-const ProfilePage = ({ userData }) => {
+const ProfilePage = () => {
   return (
     <>
       <Grid container columns={1} relaxed stackable>
@@ -26,7 +26,7 @@ const ProfilePage = ({ userData }) => {
         <Grid.Column>
           <Segment>
             <Card fluid>
-              <ImageUploader userData={userData} />
+              <ImageUploader />
               <Card.Content>
                 <Card.Header>Charly</Card.Header>
                 <Card.Meta>
