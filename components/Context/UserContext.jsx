@@ -7,7 +7,7 @@ var initialState = {
   removeRoutingMachine: false,
   isLengthOfMarkersLessThanTwo: true,
   isAvatarUploading: true,
-
+  isMapLoading: true,
   markers: [],
   currentMap: {}
 };
@@ -51,7 +51,9 @@ function getLocalStorage(key, initialValue) {
 
 function UserProvider({ children }) {
   function userReducer(state, { type, payload }) {
-    console.log('state, type, payload ', state, type, payload);
+    // console.log('state ', state);
+    // console.log(' type ', type);
+    // console.log('payload ', payload);
 
     switch (type) {
       case 'setUserId': {
@@ -98,33 +100,34 @@ function UserProvider({ children }) {
       }
 
       case 'addMarker': {
-        user.isLengthOfMarkersLessThanTwo
-          ? {
-              ...state,
-              markers: user.markers.concat(payload.marker)
-            }
-          : null;
-        break;
+        return {
+          ...state,
+          markers: state.isLengthOfMarkersLessThanTwo
+            ? state.markers.concat(payload.marker)
+            : state.makers
+        };
       }
 
       case 'deleteUserMarkers': {
         return {
           ...state,
           ...{
-            markers: user.markers.filter(function(e, i, a) {
-              return e !== a[a.length - 1];
+            markers: state.markers.filter((item, index, arr) => {
+              if (arr[index] === arr[arr.length - 1]) {
+                return false;
+              }
+              return true;
             })
           }
         };
       }
 
       case 'updateMarkers': {
-        console.log('type, payload ', type, payload);
         return {
           ...state,
 
           ...{
-            markers: user.markers.map(element => {
+            markers: state.markers.map(element => {
               console.log('element, payload ', element, payload.marker);
               console.log(
                 'element.alt ===  payload.marker.alt ',
@@ -136,6 +139,15 @@ function UserProvider({ children }) {
                 return element;
               }
             })
+          }
+        };
+      }
+
+      case 'isMapLoading': {
+        return {
+          ...state,
+          ...{
+            isMapLoading: payload.isMapLoading
           }
         };
       }
@@ -152,7 +164,7 @@ function UserProvider({ children }) {
       case 'setMap': {
         return {
           ...state,
-          currentMap: payload.curerntMap
+          currentMap: payload.currentMap
         };
       }
 
@@ -171,8 +183,8 @@ function UserProvider({ children }) {
   }, [state]);
 
   return (
-    <UserStateContext.Provider value={state}>
-      <UserContextDispatch.Provider value={dispatch}>
+    <UserStateContext.Provider value={{ state: state }}>
+      <UserContextDispatch.Provider value={{ dispatch: dispatch }}>
         {children}
       </UserContextDispatch.Provider>
     </UserStateContext.Provider>
@@ -180,7 +192,7 @@ function UserProvider({ children }) {
 }
 
 function userState() {
-  const context = React.useContext(UserStateContext);
+  const context = useContext(UserStateContext);
   if (context === undefined) {
     throw new Error('userState must be used within a UserProvider');
   }
@@ -188,11 +200,12 @@ function userState() {
 }
 
 function userDispatch() {
-  const context = React.useContext(UserContextDispatch);
+  const context = useContext(UserContextDispatch);
   if (context === undefined) {
     throw new Error('userDispatch must be used within a UserProvider');
   }
   return context;
 }
+export default UserContextDispatch;
 
 export { UserProvider, userState, userDispatch };
