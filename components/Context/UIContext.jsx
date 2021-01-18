@@ -12,8 +12,8 @@ function UIProvider({ children }) {
   const [ui, setUI] = useState(initialState);
 
   useEffect(() => {
-    console.log('ui.isMobile ', ui.isMobile);
-    console.log('ui.isDesktop ', ui.isDesktop);
+    //
+    //
   }, [ui.isMobile, ui.isDesktop]);
 
   return (
