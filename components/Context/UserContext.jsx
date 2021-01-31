@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
+import { parse } from 'flatted';
 
 var initialState = {
   avatar: '/static/uploads/profile-avatars/placeholder.jpg',
@@ -9,7 +10,8 @@ var initialState = {
   isAvatarUploading: true,
   isMapLoading: true,
   markers: [],
-  currentMap: {}
+  currentMap: {},
+  currentMapView: 15
 };
 
 var UserStateContext = React.createContext();
@@ -51,9 +53,9 @@ function getLocalStorage(key, initialValue) {
 
 function UserProvider({ children }) {
   function userReducer(state, { type, payload }) {
-    // console.log('state ', state);
-    // console.log(' type ', type);
-    // console.log('payload ', payload);
+    console.log('state ', state);
+    console.log(' type ', type);
+    console.log('payload ', payload);
 
     switch (type) {
       case 'setUserId': {
@@ -67,17 +69,40 @@ function UserProvider({ children }) {
         };
       }
 
-      case 'setIsRoutingVisible': {
-        return {
-          ...state,
-          ...{ isRoutingVisible: payload.isRoutingVisible }
-        };
-      }
-
       case 'setIsAvatarUploading': {
         return {
           ...state,
           ...{ isAvatarUploading: payload.isAvatarUploading }
+        };
+      }
+
+      case 'setMapZoom': {
+        return {
+          ...state,
+          ...{ currentMapView: payload.currentMapView }
+        };
+      }
+
+      case 'isMapLoading': {
+        return {
+          ...state,
+          ...{
+            isMapLoading: payload.isMapLoading
+          }
+        };
+      }
+
+      case 'setMap': {
+        return {
+          ...state,
+          currentMap: payload.currentMap
+        };
+      }
+
+      case 'setIsRoutingVisible': {
+        return {
+          ...state,
+          ...{ isRoutingVisible: payload.isRoutingVisible }
         };
       }
 
@@ -102,9 +127,7 @@ function UserProvider({ children }) {
       case 'addMarker': {
         return {
           ...state,
-          markers: state.isLengthOfMarkersLessThanTwo
-            ? state.markers.concat(payload.marker)
-            : state.makers
+          markers: state.markers.concat(payload.marker)
         };
       }
 
@@ -112,12 +135,7 @@ function UserProvider({ children }) {
         return {
           ...state,
           ...{
-            markers: state.markers.filter((item, index, arr) => {
-              if (arr[index] === arr[arr.length - 1]) {
-                return false;
-              }
-              return true;
-            })
+            markers: state.markers.filter((el, i, a) => el != a[a.length - 1])
           }
         };
       }
@@ -143,28 +161,12 @@ function UserProvider({ children }) {
         };
       }
 
-      case 'isMapLoading': {
-        return {
-          ...state,
-          ...{
-            isMapLoading: payload.isMapLoading
-          }
-        };
-      }
-
       case 'resetUserMarkers': {
         return {
           ...state,
           removeRoutingMachine: true,
           isRoutingVisible: false,
           markers: []
-        };
-      }
-
-      case 'setMap': {
-        return {
-          ...state,
-          currentMap: payload.currentMap
         };
       }
 
