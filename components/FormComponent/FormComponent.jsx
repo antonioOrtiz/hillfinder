@@ -65,11 +65,9 @@ function FormComponent({
   var [current_location, setCurrentLocation] = useState('');
   var [current_destination, setCurrentDestination] = useState('');
 
-  //
   var { state } = userState();
   var { id } = state;
-  //
-  // // var { id } = userState();
+
   var { dispatch } = userDispatch();
 
   function isConfirmation() {
