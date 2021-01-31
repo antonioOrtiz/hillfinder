@@ -9,8 +9,6 @@ export default App => {
       const { req } = ctx;
       const { locals } = req;
 
-      console.log('req ', Object.keys(req));
-
       return {
         originalUrl: req.originalUrl,
         context: locals.context || {}
