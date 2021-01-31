@@ -332,7 +332,6 @@ function LayoutContainer({
                 secondary={!fixed}
                 size="large"
               >
-                {/* {console.log("isLoggedIn in desktop homecomponent ", isLoggedIn)} */}
                 {isLoggedIn
                   ? data
                       .filter(function(nav) {
