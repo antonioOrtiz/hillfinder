@@ -4,11 +4,17 @@ import { logInUser, logOutUser } from '../store/reducers/users/index';
 import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { Redirect } from 'react-router';
+import dynamic from 'next/dynamic';
 
 import LinkNavWithLayout from './LinkNavWithLayout';
 import Index from './home';
 import Profile from './profile';
-import Dashboard from './dashboard';
+// import Dashboard from './dashboard';
+
+const Dashboard = dynamic(() => import('./dashboard'), {
+  ssr: false
+});
+
 import ForgotPassword from './forgotPassword';
 import UpdatePassword from './updatePassword';
 import Login from './login';
@@ -42,7 +48,7 @@ class App extends Component {
     ];
 
     function PrivateRoute({ children, ...rest }) {
-      var { name } = children.props.data[0];
+      console.log('children ', children);
 
       return (
         <Route
