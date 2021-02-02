@@ -90,9 +90,6 @@ class Routing extends MapLayer {
     var { markers } = this.props;
 
     this.control.setWaypoints([L.latLng(markers[0]), L.latLng(markers[1])]);
-
-    // console.log("'mounting' ", 'mounting');
-    // console.log('this.props ', this.props);
     this.setState(prevState => {
       localDispatch: prevState.localDispatch = this.context.dispatch;
     });
