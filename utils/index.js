@@ -48,21 +48,17 @@ export function validateInputs(
       validateAll(data, schema, messages)
         .then(success => {
           if (success.username) {
-            console.log('success.username ', success.username);
             setUsernameError(false);
           }
 
           if (success.password) {
-            console.log('success.password ', success.password);
             setPasswordError(false);
           }
           if (success.username && success.password) {
-            console.log('success.username ', success.username);
             setDisableButton(false);
           }
         })
         .catch(errors => {
-          console.log('errors ', errors);
           if (errors[0].field === 'username') {
             setUsernameError(true);
             setUsernameFeedback(errors[0].message);
@@ -82,7 +78,6 @@ export function validateInputs(
     function isConfirmation() {
       validate(data, schema, messages)
         .then(success => {
-          console.log('success ', success);
           if (success.password === success.password_confirmation) {
             setDisableButton(false),
               setFormSuccess(true),
@@ -137,13 +132,11 @@ export function validateInputs(
       validate(data, schema, messages)
         .then(success => {
           if (success.username) {
-            console.log('success.username ', success.username);
             setUsernameError(false);
             setDisableButton(false);
           }
         })
         .catch(errors => {
-          console.log('errors ', errors);
           if (errors[0].validation === 'email') {
             const { message } = errors[0];
             setUsernameError(true);
@@ -170,15 +163,12 @@ export function validateInputs(
 
       validateAll(data, schema, messages)
         .then(success => {
-          console.log('success ', success);
-
           if (success.password) {
             setPasswordError(false);
             setDisableButton(false);
           }
 
           if (success.password === success.password_confirmation) {
-            console.log('success.username ', success.username);
             setPasswordError(false);
             setPasswordConfirmationError(false);
           }
@@ -218,12 +208,9 @@ export function logOutUserSession() {
     .get('/users/logout')
     .then(response => {
       if (response.status === 200) {
-        console.log('you have been logged out');
       }
     })
-    .catch(error => {
-      console.log('error ', error);
-    });
+    .catch(error => {});
 }
 
 export function getUserAvatar() {
@@ -237,10 +224,7 @@ export function getUserAvatar() {
         return response.data.avatar_info.secure_url;
       }
       if (response.status === 500) {
-        console.log(`couldn't find user`);
       }
     })
-    .catch(function(error) {
-      console.log(`error in /users/user_avatar`);
-    });
+    .catch(function(error) {});
 }
