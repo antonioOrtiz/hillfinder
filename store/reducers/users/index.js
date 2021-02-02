@@ -66,6 +66,5 @@ export const logOutUser = () => {
 };
 
 export const errorLoading = () => {
-  console.log('in error ');
   return { type: actionTypes.ERROR_LOADING };
 };
