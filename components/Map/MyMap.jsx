@@ -3,7 +3,6 @@ import { Button, Dimmer, Loader } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
-import { Map, TileLayer } from 'react-leaflet';
 
 import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
@@ -14,14 +13,28 @@ import { parse, stringify } from 'flatted';
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 import UIContext from '../Context/UIContext.jsx';
 
-function currentMapViewPropsAreEqual(prevZoom, nextZoom) {
-  return prevZoom.currentMapView === nextZoom.currentMapView;
+function currentMapViewPropsAreEqual(prevProps, nextProps) {
+  console.log('prevProps, nextProps ', prevProps, nextProps);
+  console.log(
+    'prevProps.currentMapView === nextProps.currentMapView && prevProps.Map === nextProps.Map && prevProps.TileLayer === nextProps.TileLayer ',
+    prevProps.currentMapView === nextProps.currentMapView &&
+      prevProps.Map === nextProps.Map &&
+      prevProps.TileLayer === nextProps.TileLayer
+  );
+  return (
+    prevProps.currentMapView === nextProps.currentMapView &&
+    prevProps.Map === nextProps.Map &&
+    prevProps.TileLayer === nextProps.TileLayer
+  );
 }
 
-function MyMap({ currentMapView }) {
+function MyMap({ currentMapView, Map, TileLayer }) {
+  console.log('currentMapView; ', currentMapView);
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
-  // const [viewport, setViewport] = useState(DEFAULT_VIEWPORT);
+
+  const [myState, setMyState] = useState(null);
+
   var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
 
   var mapRef = useRef();
@@ -39,21 +52,6 @@ function MyMap({ currentMapView }) {
   useEffect(() => {
     handleWaypointsOnMapRef.current = handleWaypointsOnMap;
   }); // update after each render
-
-  useEffect(() => {
-    console.log('mapRefForRoutingMachine ', mapRefForRoutingMachine);
-    dispatch({
-      type: 'isMapLoading',
-      payload: { isMapLoading: false }
-    });
-
-    return () => {
-      dispatch({
-        type: 'isMapLoading',
-        payload: { isMapLoading: true }
-      });
-    };
-  }, []);
 
   useEffect(() => {
     var { current = {} } = mapRef;
@@ -248,17 +246,6 @@ function MyMap({ currentMapView }) {
     circle.addTo(map);
   }
 
-  useEffect(() => {
-    console.log(
-      'process.env.MAPBOX_USERNAME, process.env.MAPBOX_STYLE_ID, process.env.MAPBOX_ACCESS_TOKEN, process.env.MAILGUN_PUBLIC_KEY, process.env.EMAIL_ADDRESS; ',
-      process.env.MAPBOX_USERNAME,
-      process.env.MAPBOX_STYLE_ID,
-      process.env.MAPBOX_ACCESS_TOKEN,
-      process.env.MAILGUN_PUBLIC_KEY,
-      process.env.EMAIL_ADDRESS
-    );
-    return () => {};
-  }, []);
   return (
     <Map
       preferCanvas={true}
