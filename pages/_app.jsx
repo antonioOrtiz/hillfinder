@@ -2,7 +2,7 @@ import React from 'react';
 import { CloudinaryContext } from 'cloudinary-react';
 
 import { Provider } from 'react-redux';
-import { UserProvider } from '../components/Context/UserContext';
+import { UserProvider, userState } from '../components/Context/UserContext';
 import { UIProvider } from '../components/Context/UIContext';
 import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
@@ -26,8 +26,6 @@ class MyApp extends App {
     /* initial kickOff of Service Worker !*/
   }
 
-  componentWillUnmount() {}
-
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)
@@ -36,8 +34,6 @@ class MyApp extends App {
   }
   render() {
     const { Component, pageProps, store } = this.props;
-
-    console.log('Component ', Component);
     return (
       <UserProvider>
         <UIProvider>
