@@ -76,6 +76,29 @@ input.animate-panning {
     color: #fff;
 }
 
+.leaflet-bar.leaflet-control.remove-marker-container {
+    margin-left: 0;
+}
+
+.leaflet-bar.leaflet-control.remove-all-markers-container {
+    margin-right: 0;
+    cursor: pointer;
+    background-color: #fff;
+    background-size: 73%;
+    height: 34px;
+    width: 34px;
+    text-align: center;
+    .icon {
+        line-height: inherit;
+        margin: 0 auto;
+    }
+}
+
+.remove-marker {
+    background-image: url(/static/media/remove-marker-2x.png);
+    background-size: 73%;
+}
+
 
 /* h2 headers */
 
