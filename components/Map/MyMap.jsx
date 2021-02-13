@@ -11,7 +11,6 @@ import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import { parse, stringify } from 'flatted';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
-import UIContext from '../Context/UIContext.jsx';
 
 function currentMapViewPropsAreEqual(prevProps, nextProps) {
   console.log('prevProps, nextProps ', prevProps, nextProps);
@@ -29,14 +28,10 @@ function currentMapViewPropsAreEqual(prevProps, nextProps) {
 }
 
 function MyMap({ currentMapView, Map, TileLayer }) {
-  console.log('currentMapView; ', currentMapView);
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
-  const [myState, setMyState] = useState(null);
-
   var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
-
   var mapRef = useRef();
   var mapRefForRoutingMachine = useRef();
   var { state } = userState();
@@ -57,11 +52,11 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
 
-    console.log('foo');
-
-    console.log('currentMap ', currentMapView);
-    map.locate({ setView: true });
-    map.on('locationfound', handleOnLocationFound);
+    // console.log('currentMap ', currentMapView);
+    if (map != null) {
+      map.locate({ setView: true, watch: true, enableHighAccuracy: true });
+      map.on('locationfound', handleOnLocationFound);
+    }
   }, []);
 
   useEffect(() => {
@@ -93,7 +88,9 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     };
   }, []);
 
-  function handleOnClickClearOneMarkerAtTime() {
+  function handleOnClickClearOneMarkerAtTime(e) {
+    L.DomEvent.stopPropagation(e);
+
     dispatch({
       type: 'setIsRoutingVisible',
       payload: {
@@ -106,7 +103,9 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     });
   }
 
-  function handleOnClickClearAllMarkers() {
+  function handleOnClickClearAllMarkers(e) {
+    L.DomEvent.stopPropagation(e);
+
     mapRefForRoutingMachine.current.handleClearWayPoints();
     dispatch({
       type: 'resetUserMarkers'
@@ -235,7 +234,6 @@ function MyMap({ currentMapView, Map, TileLayer }) {
   }
 
   function handleOnLocationFound(e) {
-    console.log('e ', e);
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
     map.setZoom(currentMapView);
@@ -244,9 +242,16 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     var radius = e.accuracy;
     var circle = L.circle(latlng, radius);
     circle.addTo(map);
+
+    return null;
   }
 
-  return (
+  console.log('mapRef; ', mapRef);
+  return !mapRef ? (
+    <Dimmer active inverted>
+      <Loader />
+    </Dimmer>
+  ) : (
     <Map
       preferCanvas={true}
       id="myMap"
@@ -256,24 +261,40 @@ function MyMap({ currentMapView, Map, TileLayer }) {
       onViewportChanged={handleOnViewportChanged}
       onClick={e => handleWaypointsOnMap(e)}
     >
+      <Dimmer active inverted>
+        <Loader />
+      </Dimmer>{' '}
+      ||
       <TileLayer
         url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
           process.env.MAPBOX_STYLE_ID
         }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       />
-
       <Control position="bottomleft">
-        <Button onClick={handleOnClickClearOneMarkerAtTime} color="orange" size="small">
-          delete one marker!
-        </Button>
+        <div className="leaflet-bar leaflet-control remove-marker-container">
+          <a
+            onClick={e => handleOnClickClearOneMarkerAtTime(e)}
+            className="remove-marker leaflet-bar-part leaflet-bar-part-single"
+            title="Remove one marker!"
+            alt="Remove one marker!"
+            role="button"
+            href="#"
+          />
+        </div>
       </Control>
       <Control position="bottomright">
-        <Button onClick={handleOnClickClearAllMarkers} color="red" size="small">
-          clear all!
-        </Button>
+        <div className="leaflet-bar leaflet-control remove-all-markers-container">
+          <i
+            onClick={e => handleOnClickClearAllMarkers(e)}
+            className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
+            title="Remove all markers!"
+            alt="Remove all markers!"
+            role="button"
+            href="#"
+          />
+        </div>
       </Control>
-
       {mapRef && (
         <Routing
           isRoutingVisible={isRoutingVisible}
