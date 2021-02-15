@@ -12,22 +12,23 @@ import { parse, stringify } from 'flatted';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 
+import { isEqual } from 'lodash';
+
 function currentMapViewPropsAreEqual(prevProps, nextProps) {
   console.log('prevProps, nextProps ', prevProps, nextProps);
+
   console.log(
-    'prevProps.currentMapView === nextProps.currentMapView && prevProps.Map === nextProps.Map && prevProps.TileLayer === nextProps.TileLayer ',
-    prevProps.currentMapView === nextProps.currentMapView &&
-      prevProps.Map === nextProps.Map &&
-      prevProps.TileLayer === nextProps.TileLayer
+    'prevProps.currentMapCenter === nextProps.currentMapCenter && prevProps.initMapZoom === nextProps.initMapZoom && prevProps.Map === nextProps.Map &&prevProps.TileLayer === nextProps.TileLayer ',
+    prevProps.currentMapCenter === nextProps.currentMapCenter &&
+      prevProps.initMapZoom === nextProps.initMapZoom
   );
   return (
-    prevProps.currentMapView === nextProps.currentMapView &&
-    prevProps.Map === nextProps.Map &&
-    prevProps.TileLayer === nextProps.TileLayer
+    prevProps.currentMapCenter === nextProps.currentMapCenter &&
+    prevProps.initMapZoom === nextProps.initMapZoom
   );
 }
 
-function MyMap({ currentMapView, Map, TileLayer }) {
+function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
@@ -41,6 +42,7 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     isRoutingVisible,
     removeRoutingMachine,
     isLengthOfMarkersLessThanTwo,
+    currentMapAccuracy,
     markers
   } = state;
 
@@ -52,11 +54,23 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
 
-    // console.log('currentMap ', currentMapView);
-    if (map != null) {
-      map.locate({ setView: true, watch: true, enableHighAccuracy: true });
+    // console.log('currentMap ', initMapZoom);
+    if (map !== null) {
+      map.locate({
+        locateOptions: {
+          watch: true,
+          enableHighAccuracy: true,
+          setView: true
+        }
+      });
       map.on('locationfound', handleOnLocationFound);
+      map.on('locationerror', handleOnLocationError);
     }
+
+    return () => {
+      map.off('locationfound', handleOnLocationFound);
+      map.off('locationerror', handleOnLocationError);
+    };
   }, []);
 
   useEffect(() => {
@@ -74,7 +88,7 @@ function MyMap({ currentMapView, Map, TileLayer }) {
 
     searchControl.on('results', cb);
 
-    if (Object.keys(currentMap).length === 0) {
+    if (Object.keys(map).length === 0) {
       dispatch({
         type: 'setMap',
         payload: {
@@ -212,38 +226,63 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     );
   }
 
-  function handleOnViewportChanged(e) {
-    console.log('viewport change', e);
+  function handleOnLocationFound(e) {
+    console.log('fire handleOnLocationFound', e);
 
-    console.log('currentMapView ', currentMapView);
+    console.log('currentMapCenter ', currentMapCenter);
+
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
 
-    map.on('zoomend', function() {
-      var zoom = map.getZoom();
-      console.log('zoom ', zoom);
+    if (map != null) {
+      if (currentMapCenter[0] == null) {
+        console.log('fo');
+        dispatch({
+          type: 'setCurrentMapCenter',
+          payload: {
+            currentMapCenter: e.latlng
+          }
+        });
+        dispatch({
+          type: 'setCurrentMapAccuracy',
+          payload: {
+            currentMapAccuracy: e.accuracy
+          }
+        });
 
-      console.log("'dispatch setMapZoom'; ");
-      dispatch({
-        type: 'setMapZoom',
-        payload: {
-          currentMapView: zoom
+        L.circleMarker(e.latlng, {
+          radius: e.accuracy,
+          className: 'circle-transition',
+          fillOpacity: 0.5
+        }).addTo(map);
+      } else {
+        if (isEqual(currentMapCenter[0], e.latlng) === false) {
+          dispatch({
+            type: 'setCurrentMapCenter',
+            payload: {
+              currentMapCenter: e.latlng
+            }
+          });
+
+          L.circleMarker(e.latlng, {
+            radius: e.accuracy,
+            className: 'circle-transition',
+            fillOpacity: 0.5
+          }).addTo(map);
         }
-      });
-    });
+      }
+    }
   }
 
-  function handleOnLocationFound(e) {
+  function handleOnLocationError(e) {
+    console.log('error happend! ', e);
+
+    console.log('currentMapCenter[0]; ', currentMapCenter[0]);
+    console.log('currentMapCenter[0] === true ', currentMapCenter[0] === true);
     var { current = {} } = mapRef;
     var { leafletElement: map } = current;
-    map.setZoom(currentMapView);
-
-    var latlng = e.latlng;
-    var radius = e.accuracy;
-    var circle = L.circle(latlng, radius);
-    circle.addTo(map);
-
-    return null;
+    map.setZoom(initMapZoom);
+    L.circle(currentMapCenter, currentMapAccuracy).addTo(map);
   }
 
   console.log('mapRef; ', mapRef);
@@ -255,10 +294,10 @@ function MyMap({ currentMapView, Map, TileLayer }) {
     <Map
       preferCanvas={true}
       id="myMap"
+      center={currentMapCenter}
       animate={animate}
-      zoom={currentMapView}
+      zoom={initMapZoom}
       ref={mapRef}
-      onViewportChanged={handleOnViewportChanged}
       onClick={e => handleWaypointsOnMap(e)}
     >
       <Dimmer active inverted>
