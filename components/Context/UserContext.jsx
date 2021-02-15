@@ -11,7 +11,10 @@ var initialState = {
   isMapLoading: true,
   markers: [],
   currentMap: {},
-  currentMapView: 15
+  initMapZoom: 15,
+  currentMapAccuracy: null,
+  currentMapZoom: null,
+  currentMapCenter: []
 };
 
 var UserStateContext = React.createContext();
@@ -80,6 +83,30 @@ function UserProvider({ children }) {
         return {
           ...state,
           ...{ currentMapView: payload.currentMapView }
+        };
+      }
+
+      case 'setCurrentMapCenter': {
+        return {
+          ...state,
+          currentMapCenter: { ...state.currentMapCenter, ...payload.currentMapCenter }
+        };
+      }
+
+      case 'setCurrentMapAccuracy': {
+        return {
+          ...state,
+          ...{ currentMapAccuracy: payload.currentMapAccuracy }
+        };
+      }
+
+      case 'setCurrentMapLocation': {
+        return {
+          ...state,
+          currentMapLocation: {
+            ...state.currentMapLocation,
+            ...payload.currentMapLocation
+          }
         };
       }
 
