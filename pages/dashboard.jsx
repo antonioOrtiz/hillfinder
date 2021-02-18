@@ -15,8 +15,7 @@ const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
 
 var Dashboard = ({ props }) => {
   var { state } = userState();
-  var { dispatch } = userDispatch();
-  var { currentMapView } = state;
+  var { initMapZoom, currentMapCenter, currentMapLocation } = state;
   return (
     <>
       <Grid container columns={1} stackable style={{ height: '100vh' }}>
@@ -30,7 +29,13 @@ var Dashboard = ({ props }) => {
                   Your map!
                 </Header>
               </Divider>
-              <MyMap Map={Map} TileLayer={TileLayer} currentMapView={currentMapView} />
+              <MyMap
+                Map={Map}
+                TileLayer={TileLayer}
+                currentMapLocation={currentMapLocation}
+                currentMapCenter={currentMapCenter}
+                initMapZoom={initMapZoom}
+              />
             </Card.Content>
           </Card>
         </Grid.Column>
