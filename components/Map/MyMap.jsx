@@ -7,12 +7,10 @@ import * as ELG from 'esri-leaflet-geocoder';
 import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
-
+import LocateControl from '../LocateControl/LocateControl.jsx';
 import { parse, stringify } from 'flatted';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
-
-import { isEqual } from 'lodash';
 
 function currentMapViewPropsAreEqual(prevProps, nextProps) {
   console.log('prevProps, nextProps ', prevProps, nextProps);
@@ -32,75 +30,59 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
-  var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
+  const [map, setMap] = useState({});
+
   var mapRef = useRef();
+
+  var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
   var mapRefForRoutingMachine = useRef();
   var { state } = userState();
   var { dispatch } = userDispatch();
   var {
-    currentMap,
     isRoutingVisible,
     removeRoutingMachine,
     isLengthOfMarkersLessThanTwo,
-    currentMapAccuracy,
     markers
   } = state;
-
-  useEffect(() => {
-    handleWaypointsOnMapRef.current = handleWaypointsOnMap;
-  }); // update after each render
-
-  useEffect(() => {
-    var { current = {} } = mapRef;
-    var { leafletElement: map } = current;
-
-    // console.log('currentMap ', initMapZoom);
-    if (map !== null) {
-      map.locate({
-        locateOptions: {
-          watch: true,
-          enableHighAccuracy: true,
-          setView: true
-        }
-      });
-      map.on('locationfound', handleOnLocationFound);
-      map.on('locationerror', handleOnLocationError);
-    }
-
-    return () => {
-      map.off('locationfound', handleOnLocationFound);
-      map.off('locationerror', handleOnLocationError);
-    };
-  }, []);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
       useMapBounds: false
     });
-    var { current = {} } = mapRef;
-    var { leafletElement: map } = current;
 
-    console.log('mapRef ', mapRef);
+    console.log('mounted');
+    if (mapRef && mapRef.current) {
+      if (mapRef != null) {
+        const map = mapRef.current.leafletElement;
+        searchControl.addTo(map);
 
-    searchControl.addTo(map);
+        var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
 
-    var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
+        searchControl.on('results', cb);
 
-    searchControl.on('results', cb);
-
-    if (Object.keys(map).length === 0) {
-      dispatch({
-        type: 'setMap',
-        payload: {
-          currentMap: stringify(map)
+        if (Object.keys(map).length === 0) {
+          dispatch({
+            type: 'setMap',
+            payload: {
+              currentMap: stringify(map)
+            }
+          });
         }
-      });
+        setMap(map); //hook to set map
+        //this.setState({map: map});
+
+        console.log('map:', { map });
+      }
     }
 
     return () => {
       searchControl.off('results', cb);
     };
   }, []);
+
+  useEffect(() => {
+    handleWaypointsOnMapRef.current = handleWaypointsOnMap;
+  }); //
 
   function handleOnClickClearOneMarkerAtTime(e) {
     L.DomEvent.stopPropagation(e);
@@ -131,8 +113,6 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
   }
 
   function handleWaypointsOnMap(e) {
-    var { current = {} } = mapRef;
-    var { leafletElement: map } = current;
     dispatch({
       type: 'setIsRoutingVisible',
       payload: {
@@ -226,67 +206,7 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
     );
   }
 
-  function handleOnLocationFound(e) {
-    console.log('fire handleOnLocationFound', e);
-
-    console.log('currentMapCenter ', currentMapCenter);
-
-    var { current = {} } = mapRef;
-    var { leafletElement: map } = current;
-
-    if (map != null) {
-      if (currentMapCenter[0] == null) {
-        console.log('fo');
-        dispatch({
-          type: 'setCurrentMapCenter',
-          payload: {
-            currentMapCenter: e.latlng
-          }
-        });
-        dispatch({
-          type: 'setCurrentMapAccuracy',
-          payload: {
-            currentMapAccuracy: e.accuracy
-          }
-        });
-
-        L.circleMarker(e.latlng, {
-          radius: e.accuracy,
-          className: 'circle-transition',
-          fillOpacity: 0.5
-        }).addTo(map);
-      } else {
-        if (isEqual(currentMapCenter[0], e.latlng) === false) {
-          dispatch({
-            type: 'setCurrentMapCenter',
-            payload: {
-              currentMapCenter: e.latlng
-            }
-          });
-
-          L.circleMarker(e.latlng, {
-            radius: e.accuracy,
-            className: 'circle-transition',
-            fillOpacity: 0.5
-          }).addTo(map);
-        }
-      }
-    }
-  }
-
-  function handleOnLocationError(e) {
-    console.log('error happend! ', e);
-
-    console.log('currentMapCenter[0]; ', currentMapCenter[0]);
-    console.log('currentMapCenter[0] === true ', currentMapCenter[0] === true);
-    var { current = {} } = mapRef;
-    var { leafletElement: map } = current;
-    map.setZoom(initMapZoom);
-    L.circle(currentMapCenter, currentMapAccuracy).addTo(map);
-  }
-
-  console.log('mapRef; ', mapRef);
-  return !mapRef ? (
+  return map === null ? (
     <Dimmer active inverted>
       <Loader />
     </Dimmer>
@@ -300,10 +220,7 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
       ref={mapRef}
       onClick={e => handleWaypointsOnMap(e)}
     >
-      <Dimmer active inverted>
-        <Loader />
-      </Dimmer>{' '}
-      ||
+      <LocateControl startDirectly />
       <TileLayer
         url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
           process.env.MAPBOX_STYLE_ID
@@ -334,7 +251,7 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
           />
         </div>
       </Control>
-      {mapRef && (
+      {map && (
         <Routing
           isRoutingVisible={isRoutingVisible}
           ref={mapRefForRoutingMachine}

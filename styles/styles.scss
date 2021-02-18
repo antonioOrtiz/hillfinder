@@ -80,6 +80,28 @@ input.animate-panning {
     margin-left: 0;
 }
 
+
+/*markers*/
+
+@keyframes fadeIn {
+    from {
+        fill-opacity: 0;
+    }
+    to {
+        fill-opacity: 0.5;
+    }
+}
+
+.circle-transition {
+    animation: 1s ease-out 0s 1 fadeIn;
+}
+
+.circle-transition:hover {
+    fill: green;
+    fill-opacity: 1;
+    transition: all 1s;
+}
+
 .leaflet-bar.leaflet-control.remove-all-markers-container {
     margin-right: 0;
     cursor: pointer;

@@ -14,7 +14,8 @@ var initialState = {
   initMapZoom: 15,
   currentMapAccuracy: null,
   currentMapZoom: null,
-  currentMapCenter: []
+  // currentMapCenter: [37.09024, -95.712891]
+  currentMapCenter: [37.09024, -95.712891]
 };
 
 var UserStateContext = React.createContext();
