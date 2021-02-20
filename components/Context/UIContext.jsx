@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { getUserAvatar } from '../../utils/index';
+import React, { useState } from 'react';
 
 var initialState = {
   isMobile: false,
@@ -10,11 +9,6 @@ var UIContext = React.createContext();
 
 function UIProvider({ children }) {
   const [ui, setUI] = useState(initialState);
-
-  useEffect(() => {
-    //
-    //
-  }, [ui.isMobile, ui.isDesktop]);
 
   return (
     <UIContext.Provider
