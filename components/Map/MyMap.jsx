@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button, Dimmer, Loader } from 'semantic-ui-react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
@@ -8,25 +8,28 @@ import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../LocateControl/LocateControl.jsx';
-import { parse, stringify } from 'flatted';
+import { stringify } from 'flatted';
+import { isEqual } from 'lodash';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
+import UIContext from '../Context/UIContext.jsx';
 
 function currentMapViewPropsAreEqual(prevProps, nextProps) {
   console.log('prevProps, nextProps ', prevProps, nextProps);
 
   console.log(
-    'prevProps.currentMapCenter === nextProps.currentMapCenter && prevProps.initMapZoom === nextProps.initMapZoom && prevProps.Map === nextProps.Map &&prevProps.TileLayer === nextProps.TileLayer ',
-    prevProps.currentMapCenter === nextProps.currentMapCenter &&
-      prevProps.initMapZoom === nextProps.initMapZoom
+    'isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) && prevProps.currentMapZoom === nextProps.currentMapZoom ',
+    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
+      prevProps.currentMapZoom === nextProps.currentMapZoom
   );
+
   return (
-    prevProps.currentMapCenter === nextProps.currentMapCenter &&
-    prevProps.initMapZoom === nextProps.initMapZoom
+    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
+    prevProps.currentMapZoom === nextProps.currentMapZoom
   );
 }
 
-function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
+function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
@@ -36,6 +39,7 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
 
   var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
   var mapRefForRoutingMachine = useRef();
+  var { isMobile, isDesktop } = useContext(UIContext);
   var { state } = userState();
   var { dispatch } = userDispatch();
   var {
@@ -44,6 +48,40 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
     isLengthOfMarkersLessThanTwo,
     markers
   } = state;
+
+  useEffect(() => {
+    console.log('isMobile isDesktop ', isMobile, isDesktop);
+    if (map.getCenter) {
+      if (isMobile) {
+        dispatch({
+          type: 'setCurrentMapCenter',
+          payload: {
+            currentMapCenter: map.getCenter()
+          }
+        });
+        dispatch({
+          type: 'setMapZoom',
+          payload: {
+            currentMapZoom: map.getZoom()
+          }
+        });
+      }
+      if (isDesktop) {
+        dispatch({
+          type: 'setCurrentMapCenter',
+          payload: {
+            currentMapCenter: map.getCenter()
+          }
+        });
+        dispatch({
+          type: 'setMapZoom',
+          payload: {
+            currentMapZoom: map.getZoom()
+          }
+        });
+      }
+    }
+  }, [isMobile, isDesktop]);
 
   useEffect(() => {
     var searchControl = new ELG.Geosearch({
@@ -216,11 +254,11 @@ function MyMap({ initMapZoom, currentMapCenter, Map, TileLayer }) {
       id="myMap"
       center={currentMapCenter}
       animate={animate}
-      zoom={initMapZoom}
+      zoom={currentMapZoom}
       ref={mapRef}
       onClick={e => handleWaypointsOnMap(e)}
     >
-      <LocateControl startDirectly />
+      <LocateControl map={map} startDirectly />
       <TileLayer
         url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
           process.env.MAPBOX_STYLE_ID
