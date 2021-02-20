@@ -11,11 +11,10 @@ var initialState = {
   isMapLoading: true,
   markers: [],
   currentMap: {},
-  initMapZoom: 15,
   currentMapAccuracy: null,
-  currentMapZoom: null,
-  // currentMapCenter: [37.09024, -95.712891]
+  currentMapZoom: 10,
   currentMapCenter: [37.09024, -95.712891]
+  // currentMapCenter: []
 };
 
 var UserStateContext = React.createContext();
@@ -83,14 +82,14 @@ function UserProvider({ children }) {
       case 'setMapZoom': {
         return {
           ...state,
-          ...{ currentMapView: payload.currentMapView }
+          ...{ currentMapZoom: payload.currentMapZoom }
         };
       }
 
       case 'setCurrentMapCenter': {
         return {
           ...state,
-          currentMapCenter: { ...state.currentMapCenter, ...payload.currentMapCenter }
+          ...{ currentMapCenter: payload.currentMapCenter }
         };
       }
 
