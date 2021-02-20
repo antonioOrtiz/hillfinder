@@ -173,17 +173,21 @@ function LayoutContainer({
   useEffect(() => {
     let mounted = true;
 
-    if (window.innerWidth < 768) {
-      if (mounted) {
-        setIsMobile(true);
-        setIsDesktop(false);
+    window.addEventListener('load', event => {
+      if (window.innerWidth < 768) {
+        if (mounted) {
+          setIsMobile(true);
+
+          setIsDesktop(false);
+        }
+      } else {
+        if (mounted) {
+          setIsDesktop(true);
+          setIsMobile(false);
+        }
       }
-    } else {
-      if (mounted) {
-        setIsDesktop(true);
-        setIsMobile(false);
-      }
-    }
+    });
+
     return () => (mounted = false);
   }, []);
 
