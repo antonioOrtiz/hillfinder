@@ -1,5 +1,4 @@
 import React from 'react';
-import { useEffect } from 'react';
 
 import NextHead from 'next/head';
 import { string } from 'prop-types';
@@ -10,8 +9,14 @@ const Head = props => {
       <meta charSet="UTF-8" />
       <title>{props.title || ''}</title>
       <link rel="manifest" href="/manifest.json" />
+      <meta name="theme-color" content="#80e750" />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/static/icons/apple-touch-icon.png"
+      />
+      <meta name="apple-mobile-web-app-status-bar-style" content="#80e750" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="apple-mobile-web-app-title" content="Hillfinders app" />
       <meta
         name="viewport"
@@ -26,12 +31,6 @@ const Head = props => {
       <meta name="msapplication-config" content="/static/icons/browserconfig.xml" />
       <meta name="msapplication-TileColor" content="#2B5797" />
       <meta name="msapplication-tap-highlight" content="no" />
-      <meta name="theme-color" content="#80e750" />
-      <link
-        rel="apple-touch-icon"
-        sizes="180x180"
-        href="/static/icons/apple-touch-icon.png"
-      />
       <link
         rel="icon"
         type="image/png"
