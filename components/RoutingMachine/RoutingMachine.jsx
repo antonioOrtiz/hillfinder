@@ -6,8 +6,6 @@ import UserContextDispatch from '../Context/UserContext.jsx';
 import { Dimmer, Loader } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
-
 class Routing extends MapLayer {
   static contextType = UserContextDispatch;
 
