@@ -9,7 +9,8 @@ import dynamic from 'next/dynamic';
 import LinkNavWithLayout from './LinkNavWithLayout';
 import Index from './home';
 import Profile from './profile';
-// import Dashboard from './dashboard';
+import LogRocket from 'logrocket';
+LogRocket.init('dvjsee/hillfinders');
 
 const Dashboard = dynamic(() => import('./dashboard'), {
   ssr: false

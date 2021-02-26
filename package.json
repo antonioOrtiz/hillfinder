@@ -3,8 +3,7 @@
     "scripts": {
         "dev": "NODE_ENV=development nodemon server/index.js",
         "build": "next build",
-        "start": "next start -p 5051",
-        "heroku-postbuild": "npm run build"
+        "start": "next start -H 0.0.0.0 -p ${PORT:-8080}"
     },
     "dependencies": {
         "@zeit/next-css": "^1.0.1",
@@ -38,6 +37,7 @@
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.locatecontrol": "^0.72.0",
         "lodash": "^4.17.20",
+        "logrocket": "^1.0.14",
         "mailgun-js": "^0.22.0",
         "mongoose": "^5.7.5",
         "morgan": "^1.10.0",
