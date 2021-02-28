@@ -37,7 +37,7 @@ export default function GenericInputForm({
   tokenExpired,
   responseCodeSuccess
 }) {
-  let form;
+  var form;
   switch (buttonName) {
     case 'Log-in':
       form = (

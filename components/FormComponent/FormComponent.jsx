@@ -74,7 +74,7 @@ function FormComponent({
     var [showApi, setShowApi] = useState(true);
 
     useEffect(() => {
-      let isSubscribed = true;
+      var isSubscribed = true;
       axios
         .get(`/users/confirmation/${match.params.token}`, {
           cancelToken: source.token
@@ -266,7 +266,7 @@ function FormComponent({
           setTimeout(() => {
             logInUser();
             history.push('/profile');
-          }, 5000);
+          }, 3000);
 
           setUsername('');
           setPassword('');

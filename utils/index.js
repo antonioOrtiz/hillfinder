@@ -55,7 +55,7 @@ export function validateInputs(
             setPasswordError(false);
           }
           if (success.username && success.password) {
-            setDisableButton(false);
+            setDisableButton(true);
           }
         })
         .catch(errors => {
