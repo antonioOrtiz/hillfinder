@@ -84,8 +84,13 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
   }, [isMobile, isDesktop]);
 
   useEffect(() => {
-    var searchControl = new ELG.Geosearch({
-      useMapBounds: false
+    var searchControl = ELG.geosearch({
+      useMapBounds: false,
+      providers: [
+        ELG.arcgisOnlineProvider({
+          apikey: process.env.ESRI_API_KEY
+        })
+      ]
     });
 
     console.log('mounted');
