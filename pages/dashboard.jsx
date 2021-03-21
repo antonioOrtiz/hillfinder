@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import dynamic from 'next/dynamic';
 import { Card, Header, Icon, Grid, Divider } from 'semantic-ui-react';
 import MyHeader from '../components/Header/Header.jsx';
-import { Map, TileLayer } from 'react-leaflet';
+import { Map, TileLayer } from 'react-leaflet-universal';
 
 import { userState } from '../components/Context/UserContext.jsx';
 
