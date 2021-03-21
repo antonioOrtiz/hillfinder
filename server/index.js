@@ -43,7 +43,7 @@ function NODE_ENVSetter(ENV) {
   return environment;
 }
 
-var db = NODE_ENVSetter('development');
+var db = NODE_ENVSetter('production');
 var mongoose = require('mongoose');
 
 function errorHandler(err, req, res, next) {
@@ -65,8 +65,8 @@ function errorHandler(err, req, res, next) {
 }
 
 async function start() {
-  const dev = process.env.NODE_ENV !== 'production';
-  const app = nextJS({ dev });
+  const env = process.env.NODE_ENV == 'production';
+  const app = nextJS({ env });
   const server = express();
   // const proxy = createProxyMiddleware(options);
 
@@ -166,16 +166,8 @@ async function start() {
   });
 
   if (process.env.NODE_ENV === 'production') {
-    server.use(express.static('.next/static'));
-
-    // handle GET request to /service-worker.js
-    // if (pathname === '/service-worker.js') {
-    //   const filePath = join(__dirname, '.next', pathname);
-
-    //   app.serveStatic(req, res, filePath);
-    // } else {
-    //   handle(req, res, parsedUrl);
-    // }
+    // server.use(express.static('.next/static'));
+    server.use(express.static(path.join(__dirname, '.next/static')));
 
     server.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));
