@@ -12,8 +12,14 @@ import { Map, TileLayer } from 'react-leaflet';
 import { userState } from '../components/Context/UserContext.jsx';
 
 var Dashboard = () => {
+  var [isBrowser, setIsBrowser] = userState(false);
+
   var { state } = userState();
   var { currentMapZoom, currentMapCenter } = state;
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
 
   const MyMap = React.useMemo(
     () =>
@@ -23,6 +29,10 @@ var Dashboard = () => {
       }),
     [Map, currentMapZoom, currentMapCenter]
   );
+
+  if (!isBrowser) {
+    return null;
+  }
 
   return (
     <>
