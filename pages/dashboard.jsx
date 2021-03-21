@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { logOutUser } from '../store/reducers/users/index';
@@ -9,13 +11,19 @@ import { Map, TileLayer } from 'react-leaflet';
 
 import { userState, userDispatch } from '../components/Context/UserContext.jsx';
 
-const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
-  ssr: false
-});
-
-var Dashboard = ({ props }) => {
+var Dashboard = () => {
   var { state } = userState();
-  var { currentMapZoom, currentMapCenter, currentMapLocation } = state;
+  var { currentMapZoom, currentMapCenter } = state;
+
+  const MyMap = React.useMemo(
+    () =>
+      dynamic(() => import('../components/Map/MyMap.jsx'), {
+        loading: () => <p>A map is loading</p>,
+        ssr: false // This line is important. It's what prevents server-side render
+      }),
+    [Map, currentMapZoom, currentMapCenter]
+  );
+
   return (
     <>
       <Grid container columns={1} stackable style={{ height: '100vh' }}>
