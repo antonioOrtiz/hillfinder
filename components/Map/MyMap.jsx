@@ -5,7 +5,6 @@ import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
 
 import Control from 'react-leaflet-control';
-// import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import { stringify } from 'flatted';
