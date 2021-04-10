@@ -85,5 +85,8 @@
         "style-loader": "^0.23.1",
         "url-loader": "^1.1.2",
         "webpack": "^4.29.6"
+    },
+    "engines": {
+        "node": "14.3.0"
     }
 }
