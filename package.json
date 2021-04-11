@@ -3,7 +3,7 @@
     "scripts": {
         "dev": "NODE_ENV=development nodemon server/index.js",
         "build": "next build",
-        "start": "next start -p 5150"
+        "start": "next start -p $PORT"
     },
     "dependencies": {
         "@zeit/next-css": "^1.0.1",
