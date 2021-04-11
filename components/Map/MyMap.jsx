@@ -49,6 +49,11 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
     markers
   } = state;
 
+  var [isBrowser, setIsBrowser] = useState(false);
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+
   useEffect(() => {
     console.log('isMobile isDesktop ', isMobile, isDesktop);
     if (map.getCenter) {
@@ -244,11 +249,11 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
     );
   }
 
-  return map === null ? (
-    <Dimmer active inverted>
-      <Loader />
-    </Dimmer>
-  ) : (
+  if (!isBrowser) {
+    return null;
+  }
+
+  return (
     <Map
       preferCanvas={true}
       id="myMap"

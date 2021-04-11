@@ -14,8 +14,17 @@ const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
 });
 
 var Dashboard = ({ props }) => {
+  const [isBrowser, setIsBrowser] = useState(false);
   var { state } = userState();
-  var { currentMapZoom, currentMapCenter, currentMapLocation } = state;
+  var { currentMapZoom, currentMapCenter } = state;
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+
+  if (!isBrowser) {
+    return null;
+  }
+
   return (
     <>
       <Grid container columns={1} stackable style={{ height: '100vh' }}>
