@@ -9,27 +9,12 @@ import Control from 'react-leaflet-control';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import { stringify } from 'flatted';
-import { isEqual } from 'lodash';
+import * as ReactLeaflet from 'react-leaflet';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 import UIContext from '../Context/UIContext.jsx';
 
-function currentMapViewPropsAreEqual(prevProps, nextProps) {
-  console.log('prevProps, nextProps ', prevProps, nextProps);
-
-  console.log(
-    'isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) && prevProps.currentMapZoom === nextProps.currentMapZoom ',
-    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
-      prevProps.currentMapZoom === nextProps.currentMapZoom
-  );
-
-  return (
-    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
-    prevProps.currentMapZoom === nextProps.currentMapZoom
-  );
-}
-
-function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
+function MyMap({ currentMapZoom, currentMapCenter }) {
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
@@ -56,48 +41,49 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
 
   useEffect(() => {
     console.log('isMobile isDesktop ', isMobile, isDesktop);
-    if (map.getCenter) {
-      if (isMobile) {
-        dispatch({
-          type: 'setCurrentMapCenter',
-          payload: {
-            currentMapCenter: map.getCenter()
-          }
-        });
-        dispatch({
-          type: 'setMapZoom',
-          payload: {
-            currentMapZoom: map.getZoom()
-          }
-        });
-      }
-      if (isDesktop) {
-        dispatch({
-          type: 'setCurrentMapCenter',
-          payload: {
-            currentMapCenter: map.getCenter()
-          }
-        });
-        dispatch({
-          type: 'setMapZoom',
-          payload: {
-            currentMapZoom: map.getZoom()
-          }
-        });
+    if (mapRef != null) {
+      if (map.getCenter) {
+        if (isMobile) {
+          dispatch({
+            type: 'setCurrentMapCenter',
+            payload: {
+              currentMapCenter: map.getCenter()
+            }
+          });
+          dispatch({
+            type: 'setMapZoom',
+            payload: {
+              currentMapZoom: map.getZoom()
+            }
+          });
+        }
+        if (isDesktop) {
+          dispatch({
+            type: 'setCurrentMapCenter',
+            payload: {
+              currentMapCenter: map.getCenter()
+            }
+          });
+          dispatch({
+            type: 'setMapZoom',
+            payload: {
+              currentMapZoom: map.getZoom()
+            }
+          });
+        }
       }
     }
   }, [isMobile, isDesktop]);
 
   useEffect(() => {
-    var searchControl = new ELG.Geosearch({
-      useMapBounds: false
-    });
-
     console.log('mounted');
     if (mapRef && mapRef.current) {
       if (mapRef != null) {
         const map = mapRef.current.leafletElement;
-        searchControl.addTo(map);
+
+        var searchControl = new ELG.Geosearch({
+          useMapBounds: false
+        }).addTo(map);
 
         var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
 
@@ -263,52 +249,54 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
       ref={mapRef}
       onClick={e => handleWaypointsOnMap(e)}
     >
-      <LocateControl map={map} startDirectly />
-      <TileLayer
-        url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
-          process.env.MAPBOX_STYLE_ID
-        }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
-        attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-      />
-      <Control position="bottomleft">
-        <div className="leaflet-bar leaflet-control remove-marker-container">
-          <a
-            onClick={e => handleOnClickClearOneMarkerAtTime(e)}
-            className="remove-marker leaflet-bar-part leaflet-bar-part-single"
-            title="Remove one marker!"
-            alt="Remove one marker!"
-            role="button"
-            href="#"
+      {(LocateControl, TileLayer, Control, Routing) => {
+        <>
+          <LocateControl map={map} startDirectly />
+          <TileLayer
+            url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
+              process.env.MAPBOX_STYLE_ID
+            }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
+            attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
           />
-        </div>
-      </Control>
-      <Control position="bottomright">
-        <div className="leaflet-bar leaflet-control remove-all-markers-container">
-          <i
-            onClick={e => handleOnClickClearAllMarkers(e)}
-            className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
-            title="Remove all markers!"
-            alt="Remove all markers!"
-            role="button"
-            href="#"
-          />
-        </div>
-      </Control>
-      {map && (
-        <Routing
-          isRoutingVisible={isRoutingVisible}
-          ref={mapRefForRoutingMachine}
-          markers={markers}
-          stringify={stringify}
-          isLengthOfMarkersLessThanTwo={isLengthOfMarkersLessThanTwo}
-          removeRoutingMachine={removeRoutingMachine}
-          userLocation={userLocation}
-        />
-      )}
+          <Control position="bottomleft">
+            <div className="leaflet-bar leaflet-control remove-marker-container">
+              <a
+                onClick={e => handleOnClickClearOneMarkerAtTime(e)}
+                className="remove-marker leaflet-bar-part leaflet-bar-part-single"
+                title="Remove one marker!"
+                alt="Remove one marker!"
+                role="button"
+                href="#"
+              />
+            </div>
+          </Control>
+          <Control position="bottomright">
+            <div className="leaflet-bar leaflet-control remove-all-markers-container">
+              <i
+                onClick={e => handleOnClickClearAllMarkers(e)}
+                className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
+                title="Remove all markers!"
+                alt="Remove all markers!"
+                role="button"
+                href="#"
+              />
+            </div>
+          </Control>
+          {map && (
+            <Routing
+              isRoutingVisible={isRoutingVisible}
+              ref={mapRefForRoutingMachine}
+              markers={markers}
+              stringify={stringify}
+              isLengthOfMarkersLessThanTwo={isLengthOfMarkersLessThanTwo}
+              removeRoutingMachine={removeRoutingMachine}
+              userLocation={userLocation}
+            />
+          )}
+        </>;
+      }}
     </Map>
   );
 }
 
-var MemoizedMyMap = React.memo(MyMap, currentMapViewPropsAreEqual);
-
-export default MemoizedMyMap;
+export default MyMap;
