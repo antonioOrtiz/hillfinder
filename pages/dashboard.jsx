@@ -12,7 +12,7 @@ import MyMap from '../components/Map/MyMap.jsx';
 import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../components/RoutingMachine/RoutingMachine.jsx';
-import LocateControl from '../LocateControl/LocateControl.jsx';
+import LocateControl from '../components/LocateControl/LocateControl.jsx';
 import { userState, userDispatch } from '../components/Context/UserContext.jsx';
 
 var {
