@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Children } from 'react';
+pimport React, { useState, useEffect, Children } from 'react';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,9 +13,14 @@ import Control from 'react-leaflet-control';
 import Routing from '../components/RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../components/LocateControl/LocateControl.jsx';
 import { userState, userDispatch } from '../components/Context/UserContext.jsx';
-const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
+
+
+const MyMap = dynamic(() => import('../components/Map/MyMap'), {
+  loading: () => <p>Loading ...</p>,
   ssr: false
 });
+
+
 var {
   isRoutingVisible,
   removeRoutingMachine,
