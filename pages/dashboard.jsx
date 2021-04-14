@@ -7,14 +7,15 @@ import { withRouter } from 'react-router-dom';
 import dynamic from 'next/dynamic';
 import { Card, Header, Icon, Grid, Divider } from 'semantic-ui-react';
 import MyHeader from '../components/Header/Header.jsx';
-import MyMap from '../components/Map/MyMap.jsx';
 
 import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../components/RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../components/LocateControl/LocateControl.jsx';
 import { userState, userDispatch } from '../components/Context/UserContext.jsx';
-
+const MyMap = dynamic(() => import('../components/Map/MyMap.jsx'), {
+  ssr: false
+});
 var {
   isRoutingVisible,
   removeRoutingMachine,
