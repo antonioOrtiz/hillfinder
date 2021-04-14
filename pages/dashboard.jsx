@@ -27,6 +27,12 @@ var mapRefForRoutingMachine = useRef();
 var Dashboard = ({ props }) => {
   var { state } = userState();
 
+  var [isBrowser, setIsBrowser] = useState(false);
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+
   function handleOnClickClearOneMarkerAtTime(e) {
     L.DomEvent.stopPropagation(e);
 
@@ -53,6 +59,9 @@ var Dashboard = ({ props }) => {
 
   function handleOnClickMarkerClick(e) {
     e.originalEvent.view.L.DomEvent.stopPropagation(e);
+  }
+  if (!isBrowser) {
+    return null;
   }
 
   return (
