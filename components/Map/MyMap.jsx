@@ -36,6 +36,7 @@ function MyMap({ currentMapZoom, currentMapCenter }) {
 
   var [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
+    console.log('ReactLeaflet ', ReactLeaflet);
     setIsBrowser(true);
   }, []);
 
