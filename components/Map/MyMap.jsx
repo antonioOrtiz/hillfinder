@@ -1,47 +1,35 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Dimmer, Loader } from 'semantic-ui-react';
 
 import L from 'leaflet';
 import * as ELG from 'esri-leaflet-geocoder';
 
-import Control from 'react-leaflet-control';
-// import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
-import Routing from '../RoutingMachine/RoutingMachine.jsx';
-import LocateControl from '../LocateControl/LocateControl.jsx';
 import { stringify } from 'flatted';
 import * as ReactLeaflet from 'react-leaflet';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 import UIContext from '../Context/UIContext.jsx';
+const { Map } = ReactLeaflet;
 
-function MyMap({ currentMapZoom, currentMapCenter }) {
+function MyMap({ children, currentMapZoom, currentMapCenter, ...rest }) {
   var [animate, setAnimate] = useState(false);
-  var [userLocation, setUserLocation] = useState(null);
 
-  const [map, setMap] = useState({});
+  var [map, setMap] = useState({});
 
   var mapRef = useRef();
 
   var handleWaypointsOnMapRef = useRef(handleWaypointsOnMap);
-  var mapRefForRoutingMachine = useRef();
   var { isMobile, isDesktop } = useContext(UIContext);
   var { state } = userState();
   var { dispatch } = userDispatch();
-  var {
-    isRoutingVisible,
-    removeRoutingMachine,
-    isLengthOfMarkersLessThanTwo,
-    markers
-  } = state;
+  var { markers } = state;
 
   var [isBrowser, setIsBrowser] = useState(false);
+
   useEffect(() => {
-    console.log('ReactLeaflet ', ReactLeaflet);
     setIsBrowser(true);
   }, []);
 
   useEffect(() => {
-    console.log('isMobile isDesktop ', isMobile, isDesktop);
     if (mapRef != null) {
       if (map.getCenter) {
         if (isMobile) {
@@ -113,34 +101,6 @@ function MyMap({ currentMapZoom, currentMapCenter }) {
   useEffect(() => {
     handleWaypointsOnMapRef.current = handleWaypointsOnMap;
   }); //
-
-  function handleOnClickClearOneMarkerAtTime(e) {
-    L.DomEvent.stopPropagation(e);
-
-    dispatch({
-      type: 'setIsRoutingVisible',
-      payload: {
-        isRoutingVisible: false
-      }
-    });
-    mapRefForRoutingMachine.current.handleRemoveWayPoint();
-    dispatch({
-      type: 'deleteUserMarkers'
-    });
-  }
-
-  function handleOnClickClearAllMarkers(e) {
-    L.DomEvent.stopPropagation(e);
-
-    mapRefForRoutingMachine.current.handleClearWayPoints();
-    dispatch({
-      type: 'resetUserMarkers'
-    });
-  }
-
-  function handleOnClickMarkerClick(e) {
-    e.originalEvent.view.L.DomEvent.stopPropagation(e);
-  }
 
   function handleWaypointsOnMap(e) {
     dispatch({
@@ -249,53 +209,9 @@ function MyMap({ currentMapZoom, currentMapCenter }) {
       zoom={currentMapZoom}
       ref={mapRef}
       onClick={e => handleWaypointsOnMap(e)}
+      {...rest}
     >
-      {(LocateControl, TileLayer, Control, Routing) => {
-        <>
-          <LocateControl map={map} startDirectly />
-          <TileLayer
-            url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
-              process.env.MAPBOX_STYLE_ID
-            }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
-            attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-          />
-          <Control position="bottomleft">
-            <div className="leaflet-bar leaflet-control remove-marker-container">
-              <a
-                onClick={e => handleOnClickClearOneMarkerAtTime(e)}
-                className="remove-marker leaflet-bar-part leaflet-bar-part-single"
-                title="Remove one marker!"
-                alt="Remove one marker!"
-                role="button"
-                href="#"
-              />
-            </div>
-          </Control>
-          <Control position="bottomright">
-            <div className="leaflet-bar leaflet-control remove-all-markers-container">
-              <i
-                onClick={e => handleOnClickClearAllMarkers(e)}
-                className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
-                title="Remove all markers!"
-                alt="Remove all markers!"
-                role="button"
-                href="#"
-              />
-            </div>
-          </Control>
-          {map && (
-            <Routing
-              isRoutingVisible={isRoutingVisible}
-              ref={mapRefForRoutingMachine}
-              markers={markers}
-              stringify={stringify}
-              isLengthOfMarkersLessThanTwo={isLengthOfMarkersLessThanTwo}
-              removeRoutingMachine={removeRoutingMachine}
-              userLocation={userLocation}
-            />
-          )}
-        </>;
-      }}
+      {children(ReactLeaflet)}
     </Map>
   );
 }

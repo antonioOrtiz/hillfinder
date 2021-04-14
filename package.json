@@ -88,5 +88,8 @@
     },
     "engines": {
         "node": "14.3.0"
-    }
+    },
+    "cacheDirectories": [
+        ".next/cache"
+    ]
 }
