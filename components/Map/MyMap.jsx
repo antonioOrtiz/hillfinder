@@ -2,34 +2,19 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Dimmer, Loader } from 'semantic-ui-react';
 
 import L from 'leaflet';
-import * as ELG from 'esri-leaflet-geocoder';
+import { geosearch } from 'esri-leaflet-geocoder';
 
 import Control from 'react-leaflet-control';
 // import MapboxLayer from '../MapboxLayer/MapboxLayer.jsx';
 import Routing from '../RoutingMachine/RoutingMachine.jsx';
 import LocateControl from '../LocateControl/LocateControl.jsx';
 import { stringify } from 'flatted';
-import { isEqual } from 'lodash';
+import { Map, TileLayer } from 'react-leaflet';
 
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 import UIContext from '../Context/UIContext.jsx';
 
-function currentMapViewPropsAreEqual(prevProps, nextProps) {
-  console.log('prevProps, nextProps ', prevProps, nextProps);
-
-  console.log(
-    'isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) && prevProps.currentMapZoom === nextProps.currentMapZoom ',
-    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
-      prevProps.currentMapZoom === nextProps.currentMapZoom
-  );
-
-  return (
-    isEqual(prevProps.currentMapCenter, nextProps.currentMapCenter) === true &&
-    prevProps.currentMapZoom === nextProps.currentMapZoom
-  );
-}
-
-function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
+function MyMap() {
   var [animate, setAnimate] = useState(false);
   var [userLocation, setUserLocation] = useState(null);
 
@@ -43,11 +28,36 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
   var { state } = userState();
   var { dispatch } = userDispatch();
   var {
+    currentMapZoom,
+    currentMapCenter,
     isRoutingVisible,
     removeRoutingMachine,
     isLengthOfMarkersLessThanTwo,
     markers
   } = state;
+
+  useEffect(() => {
+    const { current = {} } = mapRef;
+    const { leafletElement: map } = current;
+
+    console.log('map ', map);
+
+    if (!map) return;
+
+    const control = geosearch();
+
+    control.addTo(map);
+
+    var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
+
+    control.on('results', cb);
+
+    setMap(map);
+
+    return () => {
+      control.off('results', cb);
+    };
+  }, []);
 
   useEffect(() => {
     console.log('isMobile isDesktop ', isMobile, isDesktop);
@@ -82,41 +92,6 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
       }
     }
   }, [isMobile, isDesktop]);
-
-  useEffect(() => {
-    var searchControl = new ELG.Geosearch({
-      useMapBounds: false
-    });
-
-    console.log('mounted');
-    if (mapRef && mapRef.current) {
-      if (mapRef != null) {
-        const map = mapRef.current.leafletElement;
-        searchControl.addTo(map);
-
-        var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
-
-        searchControl.on('results', cb);
-
-        if (Object.keys(map).length === 0) {
-          dispatch({
-            type: 'setMap',
-            payload: {
-              currentMap: stringify(map)
-            }
-          });
-        }
-        setMap(map); //hook to set map
-        //this.setState({map: map});
-
-        console.log('map:', { map });
-      }
-    }
-
-    return () => {
-      searchControl.off('results', cb);
-    };
-  }, []);
 
   useEffect(() => {
     handleWaypointsOnMapRef.current = handleWaypointsOnMap;
@@ -244,11 +219,7 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
     );
   }
 
-  return map === null ? (
-    <Dimmer active inverted>
-      <Loader />
-    </Dimmer>
-  ) : (
+  return (
     <Map
       preferCanvas={true}
       id="myMap"
@@ -266,7 +237,7 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       />
       <Control position="bottomleft">
-        <div className="leaflet-bar leaflet-control remove-marker-container">
+        <div className="leaflet-bar leaflet-control map-icon-container">
           <a
             onClick={e => handleOnClickClearOneMarkerAtTime(e)}
             className="remove-marker leaflet-bar-part leaflet-bar-part-single"
@@ -278,7 +249,7 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
         </div>
       </Control>
       <Control position="bottomright">
-        <div className="leaflet-bar leaflet-control remove-all-markers-container">
+        <div className="  leaflet-bar leaflet-control remove-all-markers-container">
           <i
             onClick={e => handleOnClickClearAllMarkers(e)}
             className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
@@ -304,6 +275,4 @@ function MyMap({ currentMapZoom, currentMapCenter, Map, TileLayer }) {
   );
 }
 
-var MemoizedMyMap = React.memo(MyMap, currentMapViewPropsAreEqual);
-
-export default MemoizedMyMap;
+export default MyMap;
