@@ -20,29 +20,25 @@ import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
 import '../styles/styles.scss';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
-class MyApp extends App {
-  static async getInitialProps({ Component, ctx }) {
-    const pageProps = Component.getInitialProps
-      ? await Component.getInitialProps(ctx)
-      : {};
-    return { pageProps };
-  }
-  render() {
-    const { Component, pageProps, store } = this.props;
-    return (
-      <UserProvider>
-        <UIProvider>
-          <Provider store={store}>
-            <PersistGate persistor={store.__PERSISTOR} loading={null}>
-              <CloudinaryContext cloudName="hillfinders">
-                <Component {...pageProps} />
-              </CloudinaryContext>
-            </PersistGate>
-          </Provider>
-        </UIProvider>
-      </UserProvider>
-    );
-  }
+function MyApp({ Component, pageProps, store }) {
+  <UserProvider>
+    <UIProvider>
+      <Provider store={store}>
+        <PersistGate persistor={store.__PERSISTOR} loading={null}>
+          <CloudinaryContext cloudName="hillfinders">
+            <Component {...pageProps} />
+          </CloudinaryContext>
+        </PersistGate>
+      </Provider>
+    </UIProvider>
+  </UserProvider>;
+}
+
+export async function getServerSideProps({ Component, ctx }) {
+  const pageProps = Component.getServerSideProps
+    ? await Component.getServerSideProps(ctx)
+    : {};
+  return { props: { Component, pageProps, store } };
 }
 
 export default withRedux(reduxStore)(nextWithReactRouter(MyApp));

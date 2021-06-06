@@ -14,7 +14,7 @@ const MyMap = dynamic(() => import('../components/Map'), {
 
 var Dashboard = ({ props }) => {
   var { state } = userState();
-  var { currentMapZoom, currentMapCenter, currentMapLocation } = state;
+  var { currentMapZoom, currentMapCenter } = state;
   return (
     <>
       <Grid container columns={1} stackable style={{ height: '100vh' }}>

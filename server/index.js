@@ -22,6 +22,11 @@ var { isBlockedPage, isInternalUrl } = require('next-server/dist/server/utils');
 function NODE_ENVSetter(ENV) {
   var environment,
     environments = {
+      development: () => {
+        environment = process.env.DEVELOPMENT_DB_DSN;
+        console.log(`We are currently in the development environment: ${environment}`);
+        return environment;
+      },
       production: () => {
         environment = process.env.MONGODB_URI;
         console.log(`We are currently in the production environment: ${environment}`);
@@ -33,9 +38,7 @@ function NODE_ENVSetter(ENV) {
         return environment;
       },
       default: () => {
-        environment = process.env.DEVELOPMENT_DB_DSN;
-        console.log(`We are currently in the development environment: ${environment}`);
-        return environment;
+        console.log(`We are currently in no environment, an error is possible `);
       }
     };
   (environments[ENV] || environments['default'])();
