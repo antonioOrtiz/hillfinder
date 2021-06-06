@@ -21,17 +21,19 @@ import '../styles/styles.scss';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
 function MyApp({ Component, pageProps, store }) {
-  <UserProvider>
-    <UIProvider>
-      <Provider store={store}>
-        <PersistGate persistor={store.__PERSISTOR} loading={null}>
-          <CloudinaryContext cloudName="hillfinders">
-            <Component {...pageProps} />
-          </CloudinaryContext>
-        </PersistGate>
-      </Provider>
-    </UIProvider>
-  </UserProvider>;
+  return (
+    <UserProvider>
+      <UIProvider>
+        <Provider store={store}>
+          <PersistGate persistor={store.__PERSISTOR} loading={null}>
+            <CloudinaryContext cloudName="hillfinders">
+              <Component {...pageProps} />
+            </CloudinaryContext>
+          </PersistGate>
+        </Provider>
+      </UIProvider>
+    </UserProvider>
+  );
 }
 
 export async function getServerSideProps({ Component, ctx }) {

@@ -110,6 +110,8 @@ function App({ accountNotVerified, isLoggedIn }) {
 }
 
 export async function getServerSideProps({ accountNotVerified, isLoggedIn }) {
+  (accountNotVerified = accountNotVerified ? accountNotVerified : null),
+    (isLoggedIn = isLoggedIn ? isLoggedIn : null);
   return { props: { accountNotVerified, isLoggedIn } };
 }
 

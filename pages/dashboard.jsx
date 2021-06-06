@@ -8,7 +8,7 @@ import MyHeader from '../components/Header/Header.jsx';
 
 import { userState, userDispatch } from '../components/Context/UserContext.jsx';
 
-const MyMap = dynamic(() => import('../components/Map'), {
+const Map = dynamic(() => import('../components/Map/'), {
   ssr: false
 });
 
@@ -28,10 +28,7 @@ var Dashboard = ({ props }) => {
                   Your map!
                 </Header>
               </Divider>
-              <MyMap
-                currentMapCenter={currentMapCenter}
-                currentMapZoom={currentMapZoom}
-              />
+              <Map currentMapCenter={currentMapCenter} currentMapZoom={currentMapZoom} />
             </Card.Content>
           </Card>
         </Grid.Column>

@@ -219,7 +219,7 @@ export function getUserAvatar() {
     .then(response => {
       if (response.status === 200) {
         if (!response.data.hasOwnProperty('avatar_info')) {
-          return '/uploads/profile-avatars/placeholder.jpg';
+          return '/static/uploads/profile-avatars/placeholder.jpg';
         }
         return response.data.avatar_info.secure_url;
       }

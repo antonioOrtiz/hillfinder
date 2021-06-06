@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { parse } from 'flatted';
 
 var initialState = {
-  avatar: '/uploads/profile-avatars/placeholder.jpg',
+  avatar: '/static/uploads/profile-avatars/placeholder.jpg',
   id: null,
   isRoutingVisible: false,
   removeRoutingMachine: false,
