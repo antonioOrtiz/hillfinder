@@ -12,6 +12,34 @@
 
 /* main-container */
 
+
+/* h2 headers */
+
+h2.ui.center.aligned.header,
+button.ui.inverted.button a:hover {
+    color: #56ab2f;
+}
+
+.ui.inverted.menu {
+    background: #80e750;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to top, #21ba45, #469023);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to top, #21ba45, #469023);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.ui.large.inverted.pointing.secondary.menu,
+.ui.inverted.vertical.center.aligned.segment,
+.ui.inverted.vertical.segment,
+.ui.large.top.fixed.menu {
+    background: #469023;
+}
+
+button.ui.inverted.button a {
+    color: #fff;
+}
+
 .ui.grid.hillfinder-container {
     padding: 0 2rem;
 }
@@ -102,8 +130,12 @@ input.animate-panning {
     transition: all 1s;
 }
 
+.leaflet-bar.leaflet-control.remove-one-marker-container {
+    margin: 0;
+}
+
 .leaflet-bar.leaflet-control.remove-all-markers-container {
-    margin-right: 0;
+    margin: .5% 0 0 0;
     cursor: pointer;
     background-color: #fff;
     background-size: 73%;
@@ -121,32 +153,8 @@ input.animate-panning {
     background-size: 73%;
 }
 
-
-/* h2 headers */
-
-h2.ui.center.aligned.header,
-button.ui.inverted.button a:hover {
-    color: #56ab2f;
-}
-
-.ui.inverted.menu {
-    background: #80e750;
-    /* fallback for old browsers */
-    background: -webkit-linear-gradient(to top, #21ba45, #469023);
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to top, #21ba45, #469023);
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-.ui.large.inverted.pointing.secondary.menu,
-.ui.inverted.vertical.center.aligned.segment,
-.ui.inverted.vertical.segment,
-.ui.large.top.fixed.menu {
-    background: #469023;
-}
-
-button.ui.inverted.button a {
-    color: #fff;
+.leaflet-bar.leaflet-control.map-icon-container {
+    margin-left: 0
 }
 
 

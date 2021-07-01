@@ -237,19 +237,7 @@ function MyMap() {
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       />
       <Control position="bottomleft">
-        <div className="leaflet-bar leaflet-control map-icon-container">
-          <a
-            onClick={e => handleOnClickClearOneMarkerAtTime(e)}
-            className="remove-marker leaflet-bar-part leaflet-bar-part-single"
-            title="Remove one marker!"
-            alt="Remove one marker!"
-            role="button"
-            href="#"
-          />
-        </div>
-      </Control>
-      <Control position="bottomright">
-        <div className="  leaflet-bar leaflet-control remove-all-markers-container">
+        <div className="leaflet-bar leaflet-control remove-all-markers-container">
           <i
             onClick={e => handleOnClickClearAllMarkers(e)}
             className="trash alternate large icon leaflet-bar-part leaflet-bar-part-single"
@@ -260,6 +248,19 @@ function MyMap() {
           />
         </div>
       </Control>
+      <Control position="bottomleft">
+        <div className="leaflet-bar leaflet-control remove-one-marker-container">
+          <a
+            onClick={e => handleOnClickClearOneMarkerAtTime(e)}
+            className="remove-marker leaflet-bar-part leaflet-bar-part-single"
+            title="Remove one marker!"
+            alt="Remove one marker!"
+            role="button"
+            href="#"
+          />
+        </div>
+      </Control>
+
       {map && (
         <Routing
           isRoutingVisible={isRoutingVisible}
