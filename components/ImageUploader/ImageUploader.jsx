@@ -9,7 +9,6 @@ import { userState, userDispatch } from '../Context/UserContext.jsx';
 import { getUserAvatar } from '../../utils/index';
 
 function ImageUploader() {
-  console.log('userState() ', userState());
   var { state } = userState();
   var { id, avatar, isAvatarUploading } = state;
   var { dispatch } = userDispatch();
@@ -61,11 +60,6 @@ function ImageUploader() {
       }
     });
   };
-
-  useEffect(() => {
-    console.log('avatar ', avatar);
-    return () => {};
-  }, [avatar]);
 
   return (
     <>

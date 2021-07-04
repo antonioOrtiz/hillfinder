@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import GenericInputForm from './FormElements.jsx';
 
@@ -67,188 +67,6 @@ function FormComponent({
 
   var { state } = userState();
   var { id } = state;
-
-  var { dispatch } = userDispatch();
-
-  function isConfirmation() {
-    var [showApi, setShowApi] = useState(true);
-
-    useEffect(() => {
-      var isSubscribed = true;
-      axios
-        .get(`/users/confirmation/${match.params.token}`, {
-          cancelToken: source.token
-        })
-        .then(response => {
-          if (response.status === 200) {
-            isSubscribed ? setResponseMessage(response.data.msg) : null;
-          }
-        })
-        .catch(function(error) {
-          if (error.response.status === 404) {
-            resetUserAcoountVerified();
-            setError(true);
-            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
-          }
-
-          if (error.response.status === 400) {
-            userHasBeenVerified();
-            setError(true);
-            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
-          }
-        });
-
-      return () => {
-        //when the component unmounts
-
-        isSubscribed = false;
-        setShowApi(prev => !prev);
-      };
-    }, []);
-
-    if (error) {
-      return showApi && <Message negative header={responseMessage[0]} />;
-    }
-    return showApi && <Message positive header={responseMessage[0]} />;
-  }
-
-  function isLoginForm() {
-    useEffect(() => {
-      resetUserAcoountVerified();
-    }, [id]);
-
-    return (
-      <GenericInputForm
-        formHeader="Log-in to your account"
-        handleSubmit={handleSubmit}
-        formType={formType}
-        formSuccess={formSuccess}
-        formError={formError}
-        accountNotVerified={accountNotVerified}
-        username={username}
-        usernameError={usernameError}
-        usernameFeedback={usernameFeedback}
-        handleChange={handleChange}
-        duration={duration}
-        password={password}
-        passwordError={passwordError}
-        passwordFeedback={passwordFeedback}
-        disableButton={disableButton}
-        buttonName="Log-in"
-        isLoading={isLoading}
-        responseMessage={responseMessage}
-      />
-    );
-  }
-
-  function isRegisterForm() {
-    return (
-      <GenericInputForm
-        formHeader="Register for an account"
-        handleSubmit={handleSubmit}
-        formType={formType}
-        formSuccess={formSuccess}
-        formError={formError}
-        accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
-        usernameError={usernameError}
-        usernameFeedback={usernameFeedback}
-        handleChange={handleChange}
-        duration={duration}
-        password={password}
-        passwordError={passwordError}
-        passwordFeedback={passwordFeedback}
-        disableButton={disableButton}
-        buttonName="Register"
-        isLoading={isLoading}
-        responseMessage={responseMessage}
-      />
-    );
-  }
-
-  function isUpdatePasswordForm() {
-    return (
-      <GenericInputForm
-        formHeader="Update your password"
-        handleSubmit={handleSubmit}
-        formType={formType}
-        formSuccess={formSuccess}
-        formError={formError}
-        accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
-        handleChange={handleChange}
-        usernameError={usernameError}
-        duration={duration}
-        usernameFeedback={usernameFeedback}
-        password={password}
-        password_confirmation={password_confirmation}
-        passwordError={passwordError}
-        passwordFeedback={passwordFeedback}
-        passwordConfirmationError={passwordConfirmationError}
-        passwordConfirmationFeedback={passwordConfirmationFeedback}
-        disableButton={disableButton}
-        buttonName="Update your password"
-        isLoading={isLoading}
-        responseMessage={responseMessage}
-        tokenExpired={tokenExpired}
-        responseCodeSuccess={responseCodeSuccess}
-      />
-    );
-  }
-
-  function isForgotPasswordForm() {
-    return (
-      <GenericInputForm
-        formHeader="Forgot yee password?"
-        handleSubmit={handleSubmit}
-        formType={formType}
-        formSuccess={formSuccess}
-        formError={formError}
-        accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
-        handleChange={handleChange}
-        usernameError={usernameError}
-        duration={duration}
-        usernameFeedback={usernameFeedback}
-        password={password}
-        passwordError={passwordError}
-        passwordFeedback={passwordFeedback}
-        disableButton={disableButton}
-        buttonName="Yes, send a link"
-        isLoading={isLoading}
-        responseMessage={responseMessage}
-      />
-    );
-  }
-
-  function forgotPasswordSubmit() {
-    axios
-      .post('/users/forgot_password', {
-        username: username
-      })
-      .then(response => {
-        if (response.status === 200) {
-          setUsername('');
-          setResponseMessage(response.data.msg);
-          setFormError(false);
-          setFormSuccess(true);
-          setIsLoading(false);
-        }
-      })
-      .catch(function(error) {
-        if (error.response) {
-          if (error.response.status === 404) {
-            setResponseMessage(error.response.data.msg);
-            setFormError(true);
-            setFormSuccess(false);
-            setIsLoading(false);
-          }
-        }
-      });
-  }
 
   function loginSubmit() {
     axios
@@ -454,6 +272,187 @@ function FormComponent({
 
     return Forms[formType][1]();
   }
+
+  function isConfirmation() {
+    var [showApi, setShowApi] = useState(true);
+
+    useEffect(() => {
+      var isSubscribed = true;
+      axios
+        .get(`/users/confirmation/${match.params.token}`, {
+          cancelToken: source.token
+        })
+        .then(response => {
+          if (response.status === 200) {
+            isSubscribed ? setResponseMessage(response.data.msg) : null;
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 404) {
+            resetUserAcoountVerified();
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          }
+
+          if (error.response.status === 400) {
+            userHasBeenVerified();
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          }
+        });
+
+      return () => {
+        //when the component unmounts
+
+        isSubscribed = false;
+        setShowApi(prev => !prev);
+      };
+    }, []);
+
+    if (error) {
+      return showApi && <Message negative header={responseMessage[0]} />;
+    }
+    return showApi && <Message positive header={responseMessage[0]} />;
+  }
+
+  function isLoginForm() {
+    useEffect(() => {
+      resetUserAcoountVerified();
+    }, [id]);
+
+    return (
+      <GenericInputForm
+        formHeader="Log-in to your account"
+        handleSubmit={handleSubmit}
+        formType={formType}
+        formSuccess={formSuccess}
+        formError={formError}
+        accountNotVerified={accountNotVerified}
+        username={username}
+        usernameError={usernameError}
+        usernameFeedback={usernameFeedback}
+        handleChange={handleChange}
+        duration={duration}
+        password={password}
+        passwordError={passwordError}
+        passwordFeedback={passwordFeedback}
+        disableButton={disableButton}
+        buttonName="Log-in"
+        isLoading={isLoading}
+        responseMessage={responseMessage}
+      />
+    );
+  }
+
+  function isRegisterForm() {
+    return (
+      <GenericInputForm
+        formHeader="Register for an account"
+        handleSubmit={handleSubmit}
+        formType={formType}
+        formSuccess={formSuccess}
+        formError={formError}
+        accountNotVerified={accountNotVerified}
+        username={username}
+        userNameDup={userNameDup}
+        usernameError={usernameError}
+        usernameFeedback={usernameFeedback}
+        handleChange={handleChange}
+        duration={duration}
+        password={password}
+        passwordError={passwordError}
+        passwordFeedback={passwordFeedback}
+        disableButton={disableButton}
+        buttonName="Register"
+        isLoading={isLoading}
+        responseMessage={responseMessage}
+      />
+    );
+  }
+
+  function isUpdatePasswordForm() {
+    return (
+      <GenericInputForm
+        formHeader="Update your password"
+        handleSubmit={handleSubmit}
+        formType={formType}
+        formSuccess={formSuccess}
+        formError={formError}
+        accountNotVerified={accountNotVerified}
+        username={username}
+        userNameDup={userNameDup}
+        handleChange={handleChange}
+        usernameError={usernameError}
+        duration={duration}
+        usernameFeedback={usernameFeedback}
+        password={password}
+        password_confirmation={password_confirmation}
+        passwordError={passwordError}
+        passwordFeedback={passwordFeedback}
+        passwordConfirmationError={passwordConfirmationError}
+        passwordConfirmationFeedback={passwordConfirmationFeedback}
+        disableButton={disableButton}
+        buttonName="Update your password"
+        isLoading={isLoading}
+        responseMessage={responseMessage}
+        tokenExpired={tokenExpired}
+        responseCodeSuccess={responseCodeSuccess}
+      />
+    );
+  }
+
+  function isForgotPasswordForm() {
+    return (
+      <GenericInputForm
+        formHeader="Forgot yee password?"
+        handleSubmit={handleSubmit}
+        formType={formType}
+        formSuccess={formSuccess}
+        formError={formError}
+        accountNotVerified={accountNotVerified}
+        username={username}
+        userNameDup={userNameDup}
+        handleChange={handleChange}
+        usernameError={usernameError}
+        duration={duration}
+        usernameFeedback={usernameFeedback}
+        password={password}
+        passwordError={passwordError}
+        passwordFeedback={passwordFeedback}
+        disableButton={disableButton}
+        buttonName="Yes, send a link"
+        isLoading={isLoading}
+        responseMessage={responseMessage}
+      />
+    );
+  }
+
+  function forgotPasswordSubmit() {
+    axios
+      .post('/users/forgot_password', {
+        username: username
+      })
+      .then(response => {
+        if (response.status === 200) {
+          setUsername('');
+          setResponseMessage(response.data.msg);
+          setFormError(false);
+          setFormSuccess(true);
+          setIsLoading(false);
+        }
+      })
+      .catch(function(error) {
+        if (error.response) {
+          if (error.response.status === 404) {
+            setResponseMessage(error.response.data.msg);
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+          }
+        }
+      });
+  }
+
   return Forms[formType][0]();
 }
 function mapStateToProps(state) {

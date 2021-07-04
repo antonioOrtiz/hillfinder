@@ -5,14 +5,11 @@ import { withRouter } from 'react-router-dom';
 import dynamic from 'next/dynamic';
 import { Card, Header, Icon, Grid, Divider } from 'semantic-ui-react';
 import MyHeader from '../components/Header/Header.jsx';
+import Map from '../components/Map';
 
-import { userState, userDispatch } from '../components/Context/UserContext.jsx';
+import { userState } from '../components/Context/UserContext.jsx';
 
-const Map = dynamic(() => import('../components/Map/'), {
-  ssr: false
-});
-
-var Dashboard = ({ props }) => {
+var Dashboard = () => {
   var { state } = userState();
   var { currentMapZoom, currentMapCenter } = state;
   return (
