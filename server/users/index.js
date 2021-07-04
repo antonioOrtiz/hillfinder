@@ -89,9 +89,6 @@ router.post(
 
   function(req, res) {
     var user = req.user;
-
-    console.log('In /login ', user);
-
     if (user.isVerified === false) {
       return res.status(403).send({
         msg: [
@@ -110,7 +107,6 @@ router.post(
 router.get('/user_avatar', (req, res, next) => {
   try {
     cloudinary.api.resources_by_tag(`userId=${req.user._id}`, function(error, result) {
-      console.log('result ', result);
       if (error) {
         return res.send({ error: error });
       }
