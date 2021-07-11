@@ -71,7 +71,7 @@ async function start() {
   const dev = process.env.NODE_ENV !== 'production';
   const app = nextJS({ dev });
   const server = express();
-  // const proxy = createProxyMiddleware(options);
+  const handle = app.getRequestHandler();
 
   await app
     .prepare()
@@ -129,47 +129,12 @@ async function start() {
   server.use(cors());
   server.use('/users', require('./users'));
 
-  server.get('/*', async (req, res, next) => {
-    try {
-      const pathName = req.originalUrl;
-      if (isInternalUrl(req.url)) {
-        return app.handleRequest(req, res, req.originalUrl);
-      }
-
-      if (isBlockedPage(pathName)) {
-        return app.render404(req, res, req.originalUrl);
-      }
-
-      // Provide react-router static router with a context object
-      // https://reacttraining.com/react-router/web/guides/server-rendering
-      req.locals = {};
-      req.locals.context = {};
-      const html = await app.renderToHTML(req, res, '/', {});
-
-      // Handle client redirects
-      const context = req.locals.context;
-      if (context.url) {
-        return res.redirect(context.url);
-      }
-
-      // Handle client response statuses
-      if (context.status) {
-        return res.status(context.status).send();
-      }
-
-      // Request was ended by the user
-      if (html === null) {
-        return;
-      }
-
-      app.sendHTML(req, res, html);
-    } catch (e) {
-      next(e);
-    }
+  server.all('*', (req, res) => {
+    return handle(req, res);
   });
 
   if (process.env.NODE_ENV === 'production') {
-    server.use(express.static('.next/static'));
+    server.use(express.static('.next/'));
 
     // handle GET request to /service-worker.js
     // if (pathname === '/service-worker.js') {
@@ -181,7 +146,7 @@ async function start() {
     // }
 
     server.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, '.next/static', 'index.html'));
+      res.sendFile(path.resolve(__dirname, '.next/', 'index.html'));
     });
 
     server.listen(PORT, err => {

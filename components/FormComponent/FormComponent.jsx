@@ -66,6 +66,7 @@ function FormComponent({
   var [current_destination, setCurrentDestination] = useState('');
 
   var { state } = userState();
+  var { dispatch } = userDispatch();
   var { id } = state;
 
   function loginSubmit() {
