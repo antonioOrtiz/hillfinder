@@ -4,7 +4,6 @@ import { CloudinaryContext } from 'cloudinary-react';
 import { Provider } from 'react-redux';
 import { UserProvider, userState } from '../components/Context/UserContext';
 import { UIProvider } from '../components/Context/UIContext';
-import App from 'next/app';
 import withRedux from 'next-redux-wrapper';
 import { PersistGate } from 'redux-persist/integration/react';
 import nextWithReactRouter from '../next-with-react-router/next-with-react-router';

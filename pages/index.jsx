@@ -19,6 +19,7 @@ import Confirmation from './confirmation';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
 
 import Register from './register';
+import FourOhFour from './404';
 
 function App({ accountNotVerified, isLoggedIn }) {
   let navBars = [
@@ -97,11 +98,11 @@ function App({ accountNotVerified, isLoggedIn }) {
 
         <Route
           component={({ location }) => (
-            <h1>
-              Sorry but the page{' '}
-              <p style={{ fontWeight: 'strong' }}>{location.pathname.substring(1)} </p>{' '}
-              Page, Could Not be found
-            </h1>
+
+
+            <FourOhFour location={location} />
+
+
           )}
         />
       </Switch>
