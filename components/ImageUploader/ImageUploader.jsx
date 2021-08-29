@@ -14,7 +14,7 @@ function ImageUploader() {
   var { dispatch } = userDispatch();
 
   useEffect(() => {
-    if (id) {
+    if (!avatar) {
       getUserAvatar()
         .then(userAvatar => {
           console.log('userAvatar ', userAvatar);
@@ -28,10 +28,8 @@ function ImageUploader() {
           });
         })
         .catch(err => console.log('error thrown from getUserAvatar', err));
-    } else {
-      console.log('No user yet!');
     }
-  }, [id]);
+  }, []);
 
   function avatarUpdater(avatarPath) {
     dispatch({
