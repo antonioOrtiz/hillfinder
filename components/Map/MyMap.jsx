@@ -61,35 +61,26 @@ function MyMap() {
 
   useEffect(() => {
     console.log('isMobile isDesktop ', isMobile, isDesktop);
-    if (map.getCenter) {
-      if (isMobile) {
-        dispatch({
-          type: 'setCurrentMapCenter',
-          payload: {
-            currentMapCenter: map.getCenter()
-          }
-        });
-        dispatch({
-          type: 'setMapZoom',
-          payload: {
-            currentMapZoom: map.getZoom()
-          }
-        });
-      }
-      if (isDesktop) {
-        dispatch({
-          type: 'setCurrentMapCenter',
-          payload: {
-            currentMapCenter: map.getCenter()
-          }
-        });
-        dispatch({
-          type: 'setMapZoom',
-          payload: {
-            currentMapZoom: map.getZoom()
-          }
-        });
-      }
+    const { current = {} } = mapRef;
+    const { leafletElement: map } = current;
+
+    console.log('map ', map);
+
+    if (currentMapCenter) {
+      dispatch({
+        type: 'setCurrentMapCenter',
+        payload: {
+          currentMapCenter: map.getCenter()
+        }
+      });
+      dispatch({
+        type: 'setMapZoom',
+        payload: {
+          currentMapZoom: map.getZoom()
+        }
+      });
+
+
     }
   }, [isMobile, isDesktop]);
 
@@ -154,7 +145,7 @@ function MyMap() {
       .setLatLng(e.latlng)
       .openOn(map);
 
-    L.DomEvent.on(startBtn, 'click', function() {
+    L.DomEvent.on(startBtn, 'click', function () {
       if (markers.length === 0) {
         e.latlng.alt = 'current location';
 
@@ -188,7 +179,7 @@ function MyMap() {
     L.DomEvent.on(
       destBtn,
       'click',
-      function() {
+      function () {
         console.log('e', e);
         if (markers.length === 1) {
           e.latlng.alt = 'current destination';
@@ -231,9 +222,8 @@ function MyMap() {
     >
       <LocateControl map={map} startDirectly />
       <TileLayer
-        url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${
-          process.env.MAPBOX_STYLE_ID
-        }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
+        url={`https://api.mapbox.com/styles/v1/${process.env.MAPBOX_USERNAME}/${process.env.MAPBOX_STYLE_ID
+          }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       />
       <Control position="bottomleft">
