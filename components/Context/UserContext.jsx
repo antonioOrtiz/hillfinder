@@ -56,9 +56,7 @@ function getLocalStorage(key, initialValue) {
 
 function UserProvider({ children }) {
   function userReducer(state, { type, payload }) {
-    console.log('state ', state);
-    console.log(' type ', type);
-    console.log('payload ', payload);
+
 
     switch (type) {
       case 'setUserId': {
