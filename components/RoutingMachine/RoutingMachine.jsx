@@ -50,7 +50,7 @@ class Routing extends MapLayer {
     var { showSpinner } = this.state;
 
     if (this.state.showSpinner === false) {
-      this.setState(function(prevState) {
+      this.setState(function (prevState) {
         return { showSpinner: !prevState.showSpinner };
       });
       return (
@@ -59,7 +59,7 @@ class Routing extends MapLayer {
         </Dimmer>
       );
     }
-    this.setState(function(prevState) {
+    this.setState(function (prevState) {
       return { showSpinner: (prevState.showSpinner = true) };
     });
   }
@@ -125,20 +125,21 @@ class Routing extends MapLayer {
 
       this.control = L.Routing.control({
         collapsible: true,
-        show: false,
-        position: 'bottomleft',
+        show: true,
+        position: 'bottomright',
         lineOptions: {
           styles: [{ color: 'chartreuse', opacity: 1, weight: 5 }]
         },
         waypoints: [null],
-        createMarker: function(i, wp, nWps) {
+        router: L.Routing.mapbox(process.env.MAPBOX_ACCESS_TOKEN),
+        createMarker: function (i, wp, nWps) {
           if (i === 0) {
             return L.marker(wp.latLng, {
               icon: startIcon,
               draggable: true,
               keyboard: true,
               alt: 'current location'
-            }).on('move', function(e) {
+            }).on('move', function (e) {
               e.target._latlng.alt = 'current location';
               console.log('e.target._latlng', e.target._latlng);
 
@@ -154,7 +155,7 @@ class Routing extends MapLayer {
               icon: endIcon,
               draggable: true,
               alt: 'current destination'
-            }).on('move', function(e) {
+            }).on('move', function (e) {
               e.target._latlng.alt = 'current destination';
 
               console.log(' e.target._latlng', e.target._latlng);
