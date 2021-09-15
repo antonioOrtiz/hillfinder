@@ -44,13 +44,15 @@ function MyMap() {
 
     if (!map) return;
 
-    const control = geosearch();
+    const control = geosearch({ position: 'topright', useMapBounds: false });
 
+    console.log("control ", control);
     control.addTo(map);
 
     var cb = e => handleWaypointsOnMapRef.current(e); // then use most recent cb value
 
     control.on('results', cb);
+
 
     setMap(map);
 
@@ -60,12 +62,11 @@ function MyMap() {
   }, []);
 
   useEffect(() => {
-    console.log('isMobile isDesktop ', isMobile, isDesktop);
+
     const { current = {} } = mapRef;
     const { leafletElement: map } = current;
 
-    console.log('map ', map);
-
+    currentMapCenter
     if (currentMapCenter) {
       dispatch({
         type: 'setCurrentMapCenter',
