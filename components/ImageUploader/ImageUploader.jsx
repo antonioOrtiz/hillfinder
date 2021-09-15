@@ -14,22 +14,25 @@ function ImageUploader() {
   var { dispatch } = userDispatch();
 
   useEffect(() => {
-    if (!avatar) {
-      getUserAvatar()
-        .then(userAvatar => {
-          console.log('userAvatar ', userAvatar);
-          dispatch({
-            type: 'setIsAvatarUploading',
-            payload: { isAvatarUploading: false }
-          });
-          dispatch({
-            type: 'setAvatar',
-            payload: { avatar: userAvatar }
-          });
-        })
-        .catch(err => console.log('error thrown from getUserAvatar', err));
-    }
-  }, []);
+
+    getUserAvatar()
+      .then(userAvatar => {
+        console.log('userAvatar ', userAvatar);
+        dispatch({
+          type: 'setIsAvatarUploading',
+          payload: { isAvatarUploading: false }
+        });
+        dispatch({
+          type: 'setAvatar',
+          payload: { avatar: userAvatar }
+        });
+      })
+      .catch(err => console.log('error thrown from getUserAvatar', err));
+
+
+  }, [avatar]);
+  //614107907efbd04aee3070e1
+
 
   function avatarUpdater(avatarPath) {
     dispatch({
