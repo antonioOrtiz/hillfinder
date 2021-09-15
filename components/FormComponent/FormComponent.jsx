@@ -96,7 +96,7 @@ function FormComponent({
           userHasBeenVerified();
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response.statusText === 'Unauthorized') {
           setUsername('');
           setPassword('');
@@ -169,7 +169,7 @@ function FormComponent({
           setIsLoading(false);
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response.status === 500) {
           setResponseMessage(error.response.data.msg);
           setFormError(true);
@@ -205,9 +205,13 @@ function FormComponent({
           setIsLoading(false);
           setResponseCodeSuccess(true);
           setResponseMessage(response.data.msg);
+          setDisableButton(true);
+          setTimeout(() => {
+            history.push('/login');
+          }, 5000);
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           if (error.response.status === 401) {
             setFormError(true);
@@ -288,7 +292,7 @@ function FormComponent({
             isSubscribed ? setResponseMessage(response.data.msg) : null;
           }
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (error.response.status === 404) {
             resetUserAcoountVerified();
             setError(true);
@@ -442,7 +446,7 @@ function FormComponent({
           setIsLoading(false);
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           if (error.response.status === 404) {
             setResponseMessage(error.response.data.msg);
