@@ -47,7 +47,7 @@
         "mime": "^2.5.2",
         "mongoose": "^5.7.5",
         "morgan": "^1.10.0",
-        "next": "^11.0.1",
+        "next": "^11.1.1",
         "next-images": "^1.4.0",
         "next-optimized-images": "^2.6.1",
         "next-redux-wrapper": "^3.0.0",
