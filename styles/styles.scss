@@ -198,8 +198,9 @@ input.animate-panning {
 }
 
 @media only screen and (min-width: 768px) {
-    .ui.grid.container {
-        width: 95% !important;
+    .ui.container.stackable.one.column.grid {
+        width: 95%;
+        margin-top: 0%;
     }
     .leaflet-container.leaflet-touch.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom {
         height: 600px;
@@ -211,7 +212,26 @@ input.animate-panning {
 }
 
 
-/* semantic-ui overriders */
+/* leaflet overides */
+
+.start-goto-container {
+    display: flex;
+    flex-direction: row;
+    .ui.olive.basic.button {
+        flex-grow: 1;
+        flex-basis: 0;
+        min-width: 0;
+    }
+}
+
+.leaflet-routing-collapse-btn {
+    /* semantic-ui overides */
+    position: relative;
+    &:before {
+        position: absolute;
+        content: "\f4d7";
+    }
+}
 
 .ui.stacked.segment {
     padding-bottom: 1.5em;
