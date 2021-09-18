@@ -1,16 +1,15 @@
 import React, { useCallback, useState, useEffect, useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Modal from '../components/Modal/MyModal.jsx';
-import {
-  Container,
-  Menu,
-  Responsive,
-  Segment,
-  Visibility,
-  Sidebar,
-  Icon,
-  Button
-} from 'semantic-ui-react';
+
+import Container from 'semantic-ui-react/dist/commonjs/elements/Container'
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button'
+import Icon from 'semantic-ui-react/dist/commonjs/elements/Icon'
+import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu'
+import Responsive from 'semantic-ui-react/dist/commonjs/addons/Responsive'
+import Sidebar from 'semantic-ui-react/dist/commonjs/modules/Sidebar'
+import Segment from 'semantic-ui-react/dist/commonjs/elements/Segment/'
+import Visibility from 'semantic-ui-react/dist/commonjs/behaviors/Visibility'
 
 import { connect } from 'react-redux';
 import { modalStateOn, modalStateOff } from '../store/reducers/ui/index';
@@ -195,7 +194,7 @@ function LayoutContainer({
     let mounted = true;
     window.addEventListener(
       'resize',
-      function(e) {
+      function (e) {
         if (e.target.innerWidth < 768) {
           if (mounted) {
             setIsDesktop(false);
@@ -233,46 +232,45 @@ function LayoutContainer({
             >
               {isLoggedIn
                 ? data
-                    .filter(function(nav) {
-                      return nav.name !== 'Register';
-                    })
-                    .map(nav => {
-                      return logOutMenuItemHelper(
-                        true,
-                        isLoggedIn,
-                        history,
-                        modalActive,
-                        nav,
-                        NavLink,
-                        modalStateOn,
-                        modalStateOff,
-                        handleSidebarHide
-                      );
-                    })
+                  .filter(function (nav) {
+                    return nav.name !== 'Register';
+                  })
+                  .map(nav => {
+                    return logOutMenuItemHelper(
+                      true,
+                      isLoggedIn,
+                      history,
+                      modalActive,
+                      nav,
+                      NavLink,
+                      modalStateOn,
+                      modalStateOff,
+                      handleSidebarHide
+                    );
+                  })
                 : data
-                    .filter(function(nav) {
-                      return nav.name != 'Profile' && nav.name != 'Dashboard';
-                    })
-                    .map(nav => {
-                      return (
-                        <Menu.Item
-                          exact
-                          key={nav.name}
-                          as={NavLink}
-                          to={nav.path}
-                          name={nav.name}
-                          onClick={handleSidebarHide}
-                        />
-                      );
-                    })}
+                  .filter(function (nav) {
+                    return nav.name != 'Profile' && nav.name != 'Dashboard';
+                  })
+                  .map(nav => {
+                    return (
+                      <Menu.Item
+                        exact
+                        key={nav.name}
+                        as={NavLink}
+                        to={nav.path}
+                        name={nav.name}
+                        onClick={handleSidebarHide}
+                      />
+                    );
+                  })}
             </Sidebar>
 
             <Sidebar.Pusher dimmed={isToggled}>
               <Segment
                 inverted
-                textAlign="center"
+                textalign="center"
                 style={{ minHeight: 'auto', padding: '1em 0em' }}
-                vertical
               >
                 <Container>
                   <Menu inverted pointing secondary size="large">
@@ -325,9 +323,9 @@ function LayoutContainer({
           >
             <Segment
               inverted
-              textAlign="center"
+              textalign="center"
               style={{ minHeight: 'auto', padding: '0' }}
-              vertical
+
             >
               <Menu
                 fixed={fixed ? 'top' : null}
@@ -338,35 +336,35 @@ function LayoutContainer({
               >
                 {isLoggedIn
                   ? data
-                      .filter(function(nav) {
-                        return nav.name !== 'Register';
-                      })
-                      .map(nav => {
-                        return logOutMenuItemHelper(
-                          false,
-                          isLoggedIn,
-                          history,
-                          modalActive,
-                          nav,
-                          NavLink,
-                          modalStateOn,
-                          modalStateOff
-                        );
-                      })
+                    .filter(function (nav) {
+                      return nav.name !== 'Register';
+                    })
+                    .map(nav => {
+                      return logOutMenuItemHelper(
+                        false,
+                        isLoggedIn,
+                        history,
+                        modalActive,
+                        nav,
+                        NavLink,
+                        modalStateOn,
+                        modalStateOff
+                      );
+                    })
                   : data
-                      .filter(function(nav) {
-                        return nav.name != 'Profile' && nav.name != 'Dashboard';
-                      })
-                      .map(nav => {
-                        return (
-                          <Menu.Item
-                            key={nav.path}
-                            as={NavLink}
-                            to={nav.path}
-                            name={nav.name}
-                          />
-                        );
-                      })}
+                    .filter(function (nav) {
+                      return nav.name != 'Profile' && nav.name != 'Dashboard';
+                    })
+                    .map(nav => {
+                      return (
+                        <Menu.Item
+                          key={nav.path}
+                          as={NavLink}
+                          to={nav.path}
+                          name={nav.name}
+                        />
+                      );
+                    })}
               </Menu>
             </Segment>
           </Visibility>

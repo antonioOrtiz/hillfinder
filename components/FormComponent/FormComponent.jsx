@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import GenericInputForm from './FormElements.jsx';
 
-import { Message } from 'semantic-ui-react';
+// import Message from 'node_modules/semantic-ui-react/src/collections/Message/index.js'
 
 import {
   logInUser,

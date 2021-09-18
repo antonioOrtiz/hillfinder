@@ -2,8 +2,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { logOutUser } from '../store/reducers/users/index';
 import { withRouter } from 'react-router-dom';
-import dynamic from 'next/dynamic';
-import { Card, Header, Icon, Grid, Divider } from 'semantic-ui-react';
+
+import Card from 'semantic-ui-react/dist/commonjs/views/Card/'
+import Divider from 'semantic-ui-react/dist/commonjs/elements/Divider/'
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header'
+import Icon from 'semantic-ui-react/dist/commonjs/elements/Icon'
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid'
+
 import MyHeader from '../components/Header/Header.jsx';
 import Map from '../components/Map';
 

@@ -4,7 +4,15 @@ import {
   openUploadWidget
 } from '../CloudinaryService/CloudinaryService.jsx';
 
-import { Button, Card, Dimmer, Icon, Image, Loader, Segment } from 'semantic-ui-react';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/index.js'
+import Card from 'semantic-ui-react/dist/commonjs/views/Card/Card.js'
+import Icon from 'semantic-ui-react/dist/commonjs/elements/Icon'
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image'
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Segment'
+import Segment from 'semantic-ui-react/dist/commonjs/elements/Loader'
+
+
+
 import { userState, userDispatch } from '../Context/UserContext.jsx';
 import { getUserAvatar } from '../../utils/index';
 

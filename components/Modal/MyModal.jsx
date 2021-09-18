@@ -1,5 +1,8 @@
 import React from 'react';
-import { Button, Modal } from 'semantic-ui-react';
+
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button'
+import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal'
+
 import PropTypes from 'prop-types';
 
 import { connect } from 'react-redux';

@@ -1,14 +1,13 @@
-import {
-  Loader,
-  Dimmer,
-  Transition,
-  Button,
-  Form,
-  Grid,
-  Header,
-  Message,
-  Segment
-} from 'semantic-ui-react';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/index.js'
+import Dimmer from 'semantic-ui-react/dist/commonjs/modules/Dimmer'
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form'
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid'
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header'
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader'
+import Message from 'semantic-ui-react/dist/commonjs/collections/Message/index'
+import Transition from 'semantic-ui-react/dist/commonjs/modules/Transition'
+import Segment from 'semantic-ui-react/dist/commonjs/elements/Segment/'
+
 import { Link } from 'react-router-dom';
 
 export default function GenericInputForm({
@@ -294,7 +293,7 @@ export default function GenericInputForm({
       form = (
         <div className="login-form">
           {' '}
-          {}
+          { }
           <style>
             {`body > div, body > div > div, body > div > div > div.login-form { height: 100%;}`}{' '}
           </style>

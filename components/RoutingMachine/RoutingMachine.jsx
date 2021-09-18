@@ -3,7 +3,10 @@ import L from 'leaflet';
 import 'leaflet-routing-machine';
 import { withLeaflet } from 'react-leaflet';
 import UserContextDispatch from '../Context/UserContext.jsx';
-import { Dimmer, Loader } from 'semantic-ui-react';
+
+import Dimmer from 'semantic-ui-react/dist/commonjs/modules/Dimmer/'
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader/'
+
 import { isEqual } from 'lodash';
 
 class Routing extends MapLayer {
@@ -124,6 +127,7 @@ class Routing extends MapLayer {
       var RoutingMachineRef = this;
 
       this.control = L.Routing.control({
+
         collapsible: true,
         show: true,
         position: 'bottomright',

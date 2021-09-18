@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
-import { Header } from 'semantic-ui-react';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header'
+
+
+
 
 const MyHeader = ({ mobile, margin, content, textAlign, color }) => (
   <Header

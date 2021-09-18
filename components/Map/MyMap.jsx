@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Dimmer, Loader } from 'semantic-ui-react';
+
+
 
 import L from 'leaflet';
 import { geosearch } from 'esri-leaflet-geocoder';
@@ -40,7 +41,6 @@ function MyMap() {
     const { current = {} } = mapRef;
     const { leafletElement: map } = current;
 
-    console.log('map ', map);
 
     if (!map) return;
 
@@ -134,13 +134,15 @@ function MyMap() {
     function createButton(label, container) {
       var btn = L.DomUtil.create('button', '', container);
       btn.setAttribute('type', 'button');
+      btn.setAttribute('class', 'ui olive basic button');
       btn.innerHTML = label;
       return btn;
     }
     var container = L.DomUtil.create('div'),
+
       startBtn = createButton('Start from this location', container),
       destBtn = createButton('Go to this location', container);
-
+    container.setAttribute('class', 'start-goto-container');
     L.popup()
       .setContent(container)
       .setLatLng(e.latlng)

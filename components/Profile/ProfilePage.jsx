@@ -1,14 +1,12 @@
-import {
-  Button,
-  Card,
-  Feed,
-  Icon,
-  Segment,
-  Grid,
-  Divider,
-  Container,
-  Header
-} from 'semantic-ui-react';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button'
+import Card from 'semantic-ui-react/dist/commonjs/views/Card/Card'
+import Container from 'semantic-ui-react/dist/commonjs/elements/Container'
+import Divider from 'semantic-ui-react/dist/commonjs/elements/Divider/Divider'
+import Feed from 'semantic-ui-react/dist/commonjs/views/Feed/Feed'
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid'
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header'
+import Icon from 'semantic-ui-react/dist/commonjs/elements/Icon'
+import Segment from 'semantic-ui-react/dist/commonjs/elements/Loader'
 
 import MyHeader from '../Header/Header.jsx';
 import ImageUploader from '../ImageUploader/ImageUploader.jsx';

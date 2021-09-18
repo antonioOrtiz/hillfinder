@@ -1,4 +1,11 @@
-import { Button, Container, Grid, Header, List, Segment } from 'semantic-ui-react';
+
+
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/index.js'
+import Container from 'semantic-ui-react/dist/commonjs/elements/Container/index.js'
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid'
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header'
+import List from 'semantic-ui-react/dist/commonjs/elements/List'
+import Segment from 'semantic-ui-react/dist/commonjs/elements/Segment'
 
 import MyHeader from '../Header/Header.jsx';
 
