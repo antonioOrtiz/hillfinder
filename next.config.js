@@ -20,5 +20,19 @@ module.exports = {
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
 
     CLOUDINARY_URL: process.env.CLOUDINARY_URL
+  },
+  webpack(config, options) {
+    config.module.rules.push({
+      test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+      use: {
+        loader: 'url-loader',
+        options: {
+          limit: 100000,
+          target: 'serverless'
+        }
+      }
+    });
+
+    return config;
   }
 };
