@@ -1,0 +1,29 @@
+.content,
+.bg-logo {
+    height: 1000px;
+    display: flex;
+    padding: 0;
+    justify-content: center;
+    z-index: -1;
+    background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
+    /* Set rules to fill background */
+    /* Set up proportionate scaling */
+    /* Set up positioning */
+}
+
+.bg-logo:after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-image: linear-gradient(#357120, transparent), linear-gradient(to top right, #2e5a1c, transparent), linear-gradient(to right bottom, transparent, #5dad2f), url('/logo/hillfinder-logo.png');
+    background-repeat: no-repeat;
+    opacity: .8;
+    background-position: center center;
+    /* Specify the background image */
+    background-size: contain;
+    height: 100%;
+    z-index: inherit;
+}
