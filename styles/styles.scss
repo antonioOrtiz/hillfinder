@@ -1,3 +1,26 @@
 * {
     box-sizing: border-box;
 }
+
+
+/*overides */
+
+.navbar {
+    border-bottom: 1px solid #386F22;
+}
+
+.footer,
+.navbar,
+ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
+    background-color: #4e9525;
+    color: #fff
+}
+
+ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
+    border-right: 1px solid #2e5a1c;
+    background-color: #5dad2f;
+}
+
+.hero {
+    color: #36454f
+}
