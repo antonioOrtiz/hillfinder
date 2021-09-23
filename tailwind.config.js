@@ -10,4 +10,16 @@ module.exports = {
   },
   plugins: [require('daisyui'),
   ],
+  daisyui: {
+    themes: [
+      {
+        'mytheme': {
+          'primary': '#386F22',
+          'primary-focus': '#478722',
+          'primary-content': '#ffffff',
+
+        },
+      },
+    ],
+  },
 }
