@@ -1,17 +1,21 @@
+import { useEffect } from 'react';
 import Head from 'next/head';
-import Layout from '../components/Layout.js'
+import Layout from '../components/Layout/'
 import Home from './home'
 
-export default function Index() {
+export default function Index({ }) {
+
   return (
     <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Hillfinder</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Layout>
+      <Layout showFooter>
         <Home />
       </Layout>
     </div>
   )
 }
+
+
