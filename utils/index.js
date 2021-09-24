@@ -1,5 +1,55 @@
 import { validate, validateAll } from 'indicative/validator';
 import axios from 'axios';
+import crypto from 'crypto';
+import mailgun from 'mailgun-js';
+
+import Token from '../models/Token'
+
+mailgun({
+  apiKey: process.env.MAILGUN_API_KEY,
+  domain: process.env.MAILGUN_DOMAIN
+})
+
+export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
+  const token = new Token({
+    _userId: user._id,
+    token: crypto.randomBytes(16).toString('hex')
+  });
+
+  // Save the token
+  token.save((err) => {
+    if (err) {
+      return res.status(500).send({ msg: err.message });
+    }
+
+    function outputTokenInEmail(emailType) {
+      if (emailType !== 'change of password') return `/${token.token}`;
+      return '';
+    }
+
+    const sendMail = function (senderEmail, receiverEmail, emailSubject, emailBody) {
+      const data = {
+        from: senderEmail,
+        to: receiverEmail,
+        subject: emailSubject,
+        text: emailBody
+      };
+
+      mailgun.messages().send(data, (error, body) => {
+        if (error) console.log(error);
+        else console.log(body);
+      });
+    };
+
+    const senderEmail = process.env.EMAIL_ADDRESS;
+    const receiverEmail = `${user.username}`;
+    const emailSubject = subjectField;
+    const emailBody = `${textField}${outputTokenInEmail(emailType)}`;
+
+    // User-defined function to send email
+    sendMail(senderEmail, receiverEmail, emailSubject, emailBody);
+  });
+}
 
 export function validateInputs(
   formType,
@@ -152,7 +202,7 @@ export function validateInputs(
 
 export function logOutUserSession() {
   axios
-    .get('/users/logout')
+    .get('/api/logout')
     .then(response => {
       if (response.status === 200) {
       }
@@ -162,7 +212,7 @@ export function logOutUserSession() {
 
 export function getUserAvatar() {
   return axios
-    .get('/users/user_avatar')
+    .get('/api/user_avatar')
     .then(response => {
       if (response.status === 200) {
         if (!response.data.hasOwnProperty('avatar_info')) {
@@ -200,3 +250,9 @@ export function Message({ state, header, content = '' }) {
     </>
   )
 }
+
+
+
+
+
+

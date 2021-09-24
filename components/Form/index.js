@@ -45,7 +45,7 @@ export default function FormComponent({
 
   function loginSubmit() {
     axios
-      .post('/users/login', {
+      .post('/api/login', {
         username,
         password,
         withCredentials: true
@@ -126,7 +126,7 @@ export default function FormComponent({
 
   function registerSubmit() {
     axios
-      .post('/users/registration', {
+      .post('/api/registration', {
         username,
         password,
         withCredentials: true
@@ -169,7 +169,7 @@ export default function FormComponent({
   function updatePasswordSubmit() {
     const { token } = match.params;
     axios
-      .post(`/users/reset_password/${token}`, {
+      .post(`/api/reset_password/${token}`, {
         password
       })
       .then(response => {
@@ -261,7 +261,7 @@ export default function FormComponent({
     useEffect(() => {
       const isSubscribed = true;
       axios
-        .get(`/users/confirmation/${match.params.token}`, {
+        .get(`/api/confirmation/${match.params.token}`, {
           cancelToken: source.token
         })
         .then(response => {
@@ -407,7 +407,7 @@ export default function FormComponent({
 
   function forgotPasswordSubmit() {
     axios
-      .post('/users/forgot_password', {
+      .post('/api/forgot_password', {
         username
       })
       .then(response => {

@@ -1,4 +1,4 @@
-export default function () {
+export default function Home() {
   return (
     <>
       <div className="hero min-h-screen bg-base-200">

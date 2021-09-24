@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styles from './Layout.module.scss';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
-import { userState } from '../Context/UserContext';
 
 import { useUser } from '../../lib/hooks'
 
-
 import Footer from './Footer';
 
-export default function ({ children, showFooter }) {
+export default function Layout({ children, showFooter }) {
+  const [user, { mutate }] = useUser()
   const { route } = useRouter();
-  const { state } = userState();
-  const { isLoggedIn } = state;
+
+  async function handleLogout() {
+    await fetch('/api/logout')
+    mutate({ user: null })
+  }
 
   return <>
     <div className="rounded-lg shadow bg-base-200 drawer h-screen">
@@ -39,21 +41,8 @@ export default function ({ children, showFooter }) {
                   <a>Home</a>
                 </Link>
               </li>
-              {!isLoggedIn
+              {user
                 ?
-                <>
-                  <li>
-                    <Link href="/login">
-                      <a>Login</a>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/register">
-                      <a>Register</a>
-                    </Link>
-                  </li> </> :
-                null}
-              {isLoggedIn ?
                 <>
                   <li>
                     <Link href="/profile">
@@ -65,15 +54,34 @@ export default function ({ children, showFooter }) {
                       <a>Dashboard</a>
                     </Link>
                   </li>
+                  <li>
+                    <a role="button" onClick={handleLogout}>
+                      Logout
+                    </a>
+                  </li>
                   <li className="avatar">
                     <div className="rounded-full w-10 h-10 m-1">
                       <img src="https://i.pravatar.cc/500?img=32" />
                     </div>
-                  </li></> : null}
+                  </li></>
+                :
+                <>
+                  <li>
+                    <Link href="/login">
+                      <a>Login</a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/register">
+                      <a>Register</a>
+                    </Link>
+                  </li>
+                </>
+              }
             </ul>
           </div>
         </div>
-        <div className={`${route === "/login" ? styles['bg-logo'] : styles.content}`} >
+        <div className={`${route === "/login" || route === "/register" || route === "/confirmation" || route === "/reset_password" ? styles['bg-logo'] : styles.content}`} >
           {children}
         </div>
         {showFooter ? <Footer /> : null}
@@ -87,8 +95,26 @@ export default function ({ children, showFooter }) {
               <a>Home</a>
             </Link>
           </li>
-          {!isLoggedIn
+          {user
             ?
+            <>
+              <li>
+                <Link href="/profile">
+                  <a>Profile</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard">
+                  <a>Dashboard</a>
+                </Link>
+              </li>
+              <li>
+                <a role="button" onClick={handleLogout}>
+                  Logout
+                </a>
+              </li>
+            </>
+            :
             <>
               <li>
                 <Link href="/login">
@@ -99,18 +125,9 @@ export default function ({ children, showFooter }) {
                 <Link href="/register">
                   <a>Register</a>
                 </Link>
-              </li> </> :
-            null}
-          {isLoggedIn ? <>   <li>
-            <Link href="/profile">
-              <a>Profile</a>
-            </Link>
-          </li>
-            <li>
-              <Link href="/dashboard">
-                <a>Dashboard</a>
-              </Link>
-            </li></> : null}
+              </li>
+            </>
+          }
         </ul>
       </div>
     </div>

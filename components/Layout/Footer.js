@@ -1,4 +1,4 @@
-export default function () {
+export default function Footer() {
   return (
     <>
       <footer className="p-10 footer bg-base-200 text-base-content">

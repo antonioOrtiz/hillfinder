@@ -1,12 +1,12 @@
 import Layout from '../components/Layout';
 import LoginForm from '../components/Form/';
 
-export default function Login() {
+export default function Confirmation() {
 
   return (
     <>
       <Layout showFooter={false}>
-        <LoginForm formType="Login" />
+        <LoginForm formType="Confirmation" />
       </Layout>
     </>
   )

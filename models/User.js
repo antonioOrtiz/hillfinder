@@ -1,11 +1,12 @@
-/* eslint-disable no-var */
-var mongoose = require('mongoose');
-var emailValidator = require('email-validator');
-var bcrypt = require('bcrypt'); // hashing function dedicated for passwords
+import mongoose from 'mongoose';
+import emailValidator from 'email-validator'
+import bcrypt from 'bcrypt'
+
+import crypto from 'crypto'
 
 const SALT_ROUNDS = 12;
 
-var UserSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -48,15 +49,17 @@ UserSchema.pre('save', async function preSave(next) {
   }
 });
 
-UserSchema.methods.generatePasswordReset = function() {
-  this.resetPasswordToken = require('crypto')
+UserSchema.methods.generatePasswordReset = function () {
+  this.resetPasswordToken = crypto
     .randomBytes(20)
     .toString('hex');
-  this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+  this.resetPasswordExpires = Date.now() + 3600000; // expires in an hour
 };
 
 UserSchema.methods.comparePassword = async function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-module.exports = mongoose.model('User', UserSchema);
+
+
+export default mongoose.models.User || mongoose.model('User', UserSchema)

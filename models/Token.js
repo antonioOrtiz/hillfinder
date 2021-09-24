@@ -1,5 +1,5 @@
 /* eslint-disable no-var */
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const TokenSchema = new mongoose.Schema({
   _userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
@@ -7,4 +7,7 @@ const TokenSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true, default: Date.now, expires: 43200 }
 });
 
-module.exports = mongoose.model('Token', TokenSchema);
+
+
+
+export default mongoose.models.Token || mongoose.model('Token', TokenSchema)

@@ -1,7 +1,7 @@
 import Layout from '../components/Layout';
 import Register from '../components/Form/';
 
-export default function () {
+export default function RegisterComponent() {
   return (
     <>
       <Layout showFooter={false}>

@@ -4,8 +4,11 @@ import auth from '../../middleware/auth'
 const handler = nextConnect()
 
 handler.use(auth).get((req, res) => {
-  req.logOut()
-  res.status(204).end()
+  req.logout();
+  console.log('You have logged out!');
+  return res.status(201).send({
+    msg: ['Your have successfully logged out!']
+  });
 })
 
 export default handler

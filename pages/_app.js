@@ -13,9 +13,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <UserProvider value={userState}>
       <CloudinaryContext cloudName="hillfinders">
-
         <Component {...pageProps} />
-
       </CloudinaryContext>
     </UserProvider>
   )
