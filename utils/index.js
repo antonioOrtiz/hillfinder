@@ -1,16 +1,21 @@
 import { validate, validateAll } from 'indicative/validator';
 import axios from 'axios';
+
 import crypto from 'crypto';
-import mailgun from 'mailgun-js';
 
 import Token from '../models/Token'
 
-mailgun({
+const mailgun = require("mailgun-js");
+
+const mg = mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
   domain: process.env.MAILGUN_DOMAIN
-})
+});
 
 export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
+
+  console.log("user, subjectField, textField, emailType, res ", user, subjectField, textField, emailType, res);
+
   const token = new Token({
     _userId: user._id,
     token: crypto.randomBytes(16).toString('hex')
@@ -21,35 +26,32 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     if (err) {
       return res.status(500).send({ msg: err.message });
     }
+  });
 
-    function outputTokenInEmail(emailType) {
-      if (emailType !== 'change of password') return `/${token.token}`;
-      return '';
-    }
 
-    const sendMail = function (senderEmail, receiverEmail, emailSubject, emailBody) {
-      const data = {
-        from: senderEmail,
-        to: receiverEmail,
-        subject: emailSubject,
-        text: emailBody
-      };
+  function outputTokenInEmail(typeOfEmail) {
+    if (typeOfEmail !== 'change of password') return `/${token.token}`;
+    return '';
+  }
 
-      mailgun.messages().send(data, (error, body) => {
-        if (error) console.log(error);
-        else console.log(body);
-      });
+  function sendMail(senderEmail, receiverEmail, emailSubject, emailBody) {
+
+    const data = {
+      from: senderEmail,
+      to: receiverEmail,
+      subject: emailSubject,
+      text: emailBody
     };
 
-    const senderEmail = process.env.EMAIL_ADDRESS;
-    const receiverEmail = `${user.username}`;
-    const emailSubject = subjectField;
-    const emailBody = `${textField}${outputTokenInEmail(emailType)}`;
+    mg.messages().send(data, (error, body) => {
+      error ? console.log('error', error) : console.log(body);
+    });
+  }
 
-    // User-defined function to send email
-    sendMail(senderEmail, receiverEmail, emailSubject, emailBody);
-  });
+  sendMail(process.env.EMAIL_ADDRESS, user.username, subjectField, `${textField}${outputTokenInEmail(emailType)}`);
+
 }
+
 
 export function validateInputs(
   formType,
@@ -66,6 +68,7 @@ export function validateInputs(
   setFormSuccess,
   setFormError
 ) {
+  console.log("In validate", formType);
   function getFormValidation(formType) {
     function isLoginOrRegistration() {
       const data = {
@@ -86,6 +89,8 @@ export function validateInputs(
 
       validateAll(data, schema, messages)
         .then(success => {
+
+          console.log("success ", success);
           if (success.username) {
             setUsernameError(false);
           }
@@ -226,27 +231,30 @@ export function getUserAvatar() {
     .catch((error) => { });
 }
 
-export function Message({ state, header, content = '' }) {
+export function Message({ state, header = '', content = '' }) {
+
+
+  console.log('in 235', state, header, content)
   return (
     <>
       {{
-        Waring: <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
-          <p className="font-bold">{header}</p>
-          <p>{content}</p>
+        Waring: <div className="my-4 py-2 p-3  text-orangeDark bg-orangeLight border border-orangeDark rounded relative" role="alert">
+          <strong className="font-bold">{header}</strong>
+          <span className="block sm">{content}</span>
+
         </div>,
-        Success: <div className="bg-teal-100 border border-teal-400 text-teal-700 px-4 py-3 rounded relative" role="alert">
+        Success: <div className="my-4 py-2 p-3  text-green-700 bg-green-100 border border-green-300 rounded relative" role="alert">
+          <p className="font-bold">{header}</p>
+
           <strong className="font-bold">{content}</strong>
-          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-            <svg className="fill-current h-6 w-6 text-teal-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
-          </span>
-          Error: <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert" />,
-          <strong className="font-bold">{content}</strong>
-          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-            <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
-          </span>
+        </div>,
+        Error: <div className="transition ease-in-out duration-2000 delay-2000 relative my-4 py-2 pl-3 pr-10 leading-normal text-red-700 bg-red-100 rounded-lg" role="alert">
+          <p className="font-bold">{header}</p>
+
+          <p>{content}</p>
         </div>
 
-      }[state] || null}
+      }[state]}
     </>
   )
 }
