@@ -1,10 +1,15 @@
-import { CloudinaryContext } from 'cloudinary-react';
 
 import 'tailwindcss/tailwind.css'
 import 'leaflet/dist/leaflet.css';
 import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+
+import { CloudinaryContext } from 'cloudinary-react';
+
+
 import '../styles/styles.scss'
+
+
 // import { userState, userDispatch } from '../components/Context/UserContext';
 
 import { UserProvider, userState } from '../components/Context/UserContext';
