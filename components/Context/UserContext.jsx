@@ -229,7 +229,6 @@ function UserProvider({ children }) {
   const [state, dispatch] = useReducer(userReducer, user);
 
   useEffect(() => {
-    console.log("state in UserContext ", state);
     setLocalStorage('user', state);
   }, [state]);
 
