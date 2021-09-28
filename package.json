@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "next dev -p 8016",
+        "dev": "NODE_ENV=development next dev -p 8016",
         "build": "next build",
         "start": "next start"
     },
