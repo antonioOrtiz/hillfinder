@@ -1,7 +1,14 @@
+import Layout from '../components/Layout';
+
 export default function Dashboard() {
+
   return (
     <>
-      <h1>Dashboard</h1>
+      <Layout showFooter={false}>
+        <h1>Dashboard</h1>
+      </Layout>
     </>
   )
 }
+
+
