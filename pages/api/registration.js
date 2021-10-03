@@ -1,16 +1,18 @@
 import nextConnect from 'next-connect'
 
 import auth from '../../middleware/auth'
-import User from '../../models/UserModel'
+import User from '../../models/User'
 
 import connectDB from '../../middleware/mongodb';
 
-import nodeMailerFunc from '../../utils/index'
+import { nodeMailerFunc } from '../../utils/index'
 
 
 require('dotenv').config();
 
 const handler = nextConnect()
+
+connectDB()
 
 handler
   .use(auth)
@@ -34,7 +36,7 @@ handler
       user,
       `Account Verification`,
       `Hello, Welcome to Hillfinders! An app on the decline—er about declines!\nPlease verify your account by clicking the following link:\nhttp://${req.headers.host
-      }/confirmed`,
+      }/confirmation`,
       'verification email',
       res
     );
@@ -47,4 +49,4 @@ handler
 
   })
 
-export default connectDB(handler);
+export default handler;
