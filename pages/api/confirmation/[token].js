@@ -4,24 +4,23 @@ import auth from '../../../middleware/auth'
 import User from '../../../models/User'
 import Token from '../../../models/Token'
 
-
 import connectDB from '../../../middleware/mongodb';
+
+
 
 require('dotenv').config();
 
 const handler = nextConnect()
 
+connectDB()
+
 handler
   .use(auth)
   .get((req, res, next) => {
-    const {
-      query: { token },
-    } = req
-
+    const { token } = req.query
     try {
       Token.findOne({ token }, (err, token) => {
         if (token === null) {
-          console.log('We were unable to find a valid token 404 ', 404);
           return res.status(404).send({
             msg: ['We were unable to find a valid token. Your token my have expired.']
           });
@@ -58,4 +57,4 @@ handler
     }
   })
 
-export default connectDB(handler);
+export default handler;
