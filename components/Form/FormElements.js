@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
-import React from 'react';
-import Message from '../../utils/index'
+import React, { useState } from 'react';
+import { Message } from '../../utils/index'
 
 export default function GenericInputForm({
   handleSubmit,
@@ -26,14 +26,29 @@ export default function GenericInputForm({
   tokenExpired,
   responseCodeSuccess
 }) {
+
+  const [inputType, setInputType] = useState('password');
+
+  const [passwordLabel, setpasswordLabel] = useState('show!');
+
+  const handleChangePasswordToggle = () => {
+    if (inputType === 'password') {
+      setpasswordLabel('hide');
+      setInputType('text');
+    } else {
+      setpasswordLabel('show');
+      setInputType('password');
+    }
+
+  }
+
   return (
     <>
       {{
-
         ForgotPassword: <div className="container mx-auto px-4 h-full ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
-              <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
+              <div className="relative flex flex-col min-w-0 break-words   shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
                 <div className="rounded-t mb-0 px-6 py-6">
                   <div className="text-center mb-3">
                     <h6 className="text-gray-600 text-sm font-bold">
@@ -66,14 +81,14 @@ export default function GenericInputForm({
                       {usernameError ? <Message
                         state="Error"
                         header="Error"
-                        message={usernameFeedback}
+                        content={usernameFeedback}
                       /> : null}
                     </div>
 
                     <div className="text-center mt-6">
                       <button
                         className="btn btn-primary w-full"
-                        type="button"
+                        type="submit"
                         style={{ transition: "all .15s ease" }}
                         disabled={disableButton}
                       >
@@ -104,7 +119,7 @@ export default function GenericInputForm({
               {{
                 ForgotPassword: formError
                   ?
-                  <div className="w-1/2 text-right">
+                  <div className="w-1/2 text-left">
                     <Link href="/register">
                       <a className="text-gray-300">
                         <small>Create new account</small>
@@ -120,7 +135,7 @@ export default function GenericInputForm({
         UpdatePassword: <div className="container mx-auto px-4 h-full ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
-              <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
+              <div className="relative flex flex-col min-w-0 break-words   shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
                 <div className="rounded-t mb-0 px-6 py-6">
                   <div className="text-center mb-3">
                     <h6 className="text-gray-600 text-sm font-bold">
@@ -141,7 +156,7 @@ export default function GenericInputForm({
                       </label>
                       <input
                         name="password"
-                        type="password"
+                        type={inputType}
                         value={password}
                         className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                         placeholder="New password, 6 - 16 characters"
@@ -152,7 +167,7 @@ export default function GenericInputForm({
                         <Message
                           state="Error"
                           header="Error"
-                          message={passwordFeedback}
+                          content={passwordFeedback}
                         /> : null}
                     </div>
 
@@ -178,7 +193,7 @@ export default function GenericInputForm({
                     <div className="text-center mt-6">
                       <button
                         className="btn btn-primary w-full"
-                        type="button"
+                        type="submit"
                         style={{ transition: "all .15s ease" }}
                         disabled={disableButton}
                       >
@@ -234,18 +249,27 @@ export default function GenericInputForm({
       }[formType] || <div className="container mx-auto px-4 h-full ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
-              <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
+              <div className="relative flex flex-col min-w-0 break-words   shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
                 <div className="rounded-t mb-0 px-6 py-6">
                   <div className="text-center mb-3">
                     <h6 className="text-gray-600 text-sm font-bold">
-                      {{ Login: 'Login', Register: 'Register' }[formType]}
+
+                      {
+
+
+                        { Login: 'Login', Register: 'Register' }[formType]
+                      }
                     </h6>
                   </div>
                   <hr className="mt-6 border-b-1 border-gray-500" />
                 </div>
                 <div className="flex-auto px-4 py-10 pt-0">
 
-                  <form onSubmit={e => handleSubmit(e, formType)}>
+                  <form onSubmit={e => {
+
+                    handleSubmit(e, formType)
+                  }}
+                  >
                     <div className="relative w-full mb-3">
                       <label
                         className="block uppercase text-gray-700 text-xs font-bold mb-2"
@@ -262,14 +286,19 @@ export default function GenericInputForm({
                         value={username}
                         onChange={handleChange}
                       />
+
                       {usernameError ? <Message
                         state="Error"
                         header="Error"
-                        message={usernameFeedback}
+                        content={usernameFeedback}
                       /> : null}
                     </div>
 
                     <div className="relative w-full mb-3">
+                      <div className="absolute top-8 right-0 flex items-center px-2">
+                        <input className="hidden js-password-toggle" id="toggle" type="checkbox" />
+                        <label className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle} forhtml="toggle">{passwordLabel}</label>
+                      </div>
                       <label
                         className="block uppercase text-gray-700 text-xs font-bold mb-2"
                         htmlFor="grid-password"
@@ -278,25 +307,27 @@ export default function GenericInputForm({
                       </label>
                       <input
                         name="password"
-                        type="password"
+                        type={inputType}
                         value={password}
                         className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                         placeholder="Password"
                         style={{ transition: "all .15s ease" }}
                         onChange={handleChange}
                       />
+
                       {passwordError ? <Message
                         state="Error"
                         header="Error"
-                        message={passwordFeedback}
+                        content={passwordFeedback}
                       /> : null}
+
 
                     </div>
 
                     <div className="text-center mt-6">
                       <button
                         className="btn btn-primary w-full"
-                        type="button"
+                        type="submit"
                         style={{ transition: "all .15s ease" }}
                         disabled={disableButton}
                       >
@@ -335,6 +366,7 @@ export default function GenericInputForm({
                         content={responseMessage[1]}
                       />
                       : null}
+
                   </form>
                 </div>
               </div>
@@ -350,14 +382,14 @@ export default function GenericInputForm({
                       </Link>
                     </div>
                     <div className="w-1/2 text-right">
-                      <Link href="/register">
+                      <Link href="/registration">
                         <a className="text-gray-300">
                           <small>Create new account</small>
                         </a>
                       </Link>
                     </div>
                   </div>
-                  : null, Register: null
+                  : null,
               }[formType]}
             </div>
           </div>
