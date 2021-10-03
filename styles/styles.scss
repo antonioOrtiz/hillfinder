@@ -13,7 +13,7 @@
 .navbar,
 ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
     background-color: #4e9525;
-    color: #fff
+    color: #fff;
 }
 
 ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
@@ -23,4 +23,12 @@ ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
 
 .hero {
     color: #36454f
+}
+
+.text-center.mt-6 button:disabled,
+.text-center.mt-6 button[disabled] {
+    border: 1px solid #999999;
+    background-color: #adadad;
+    opacity: 0.8;
+    color: #6f6565;
 }
