@@ -6,20 +6,20 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
 import { CloudinaryContext } from 'cloudinary-react';
 
-
 import '../styles/styles.scss'
 
-
-// import { userState, userDispatch } from '../components/Context/UserContext';
+import { userState as uiUserState, UIProvider } from '../components/Context/UIContext'
 
 import { UserProvider, userState } from '../components/Context/UserContext';
 
 function MyApp({ Component, pageProps }) {
   return (
     <UserProvider value={userState}>
-      <CloudinaryContext cloudName="hillfinders">
-        <Component {...pageProps} />
-      </CloudinaryContext>
+      <UIProvider value={uiUserState}>
+        <CloudinaryContext cloudName="hillfinders">
+          <Component {...pageProps} />
+        </CloudinaryContext>
+      </UIProvider>
     </UserProvider>
   )
 }
