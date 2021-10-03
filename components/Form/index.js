@@ -6,11 +6,13 @@ import { validateInputs, Message } from '../../utils/index';
 
 import GenericFormComponent from './FormElements'
 import { userState, userDispatch } from '../Context/UserContext'
+import { userDispatch as uiUserDispatch } from '../Context/UIContext'
+
+
+import Layout from '../Layout/index'
 
 export default function FormComponent({
   formType,
-  match,
-  logInUser
 }) {
   /* This is an object which is used to store the relevant form views for each page/component  */
   const router = useRouter();
@@ -40,24 +42,24 @@ export default function FormComponent({
 
   const { state } = userState();
   const { dispatch } = userDispatch();
+  const { dispatch: uidispatch } = uiUserDispatch();
+
   const { id, accountNotVerified } = state;
 
-
   function loginSubmit() {
+
     axios
       .post('/api/login', {
         username,
         password,
-        withCredentials: true
       })
       .then(response => {
         if (response.status === 200) {
           dispatch({
             type: 'setUserId',
-            payload: { id: response.data.userId }
+            payload: { id: response.data.userId._id }
           });
           setTimeout(() => {
-            logInUser();
             router.push('/profile');
           }, 3000);
 
@@ -68,7 +70,6 @@ export default function FormComponent({
           setIsLoading(false);
           setResponseMessage(response.data.msg);
           dispatch({ type: 'userAccountIsVerified' })
-
         }
       })
       .catch((error) => {
@@ -146,6 +147,8 @@ export default function FormComponent({
         }
       })
       .catch((error) => {
+
+        console.log("error 150", error);
         if (error.response.status === 500) {
           setResponseMessage(error.response.data.msg);
           setFormError(true);
@@ -167,7 +170,9 @@ export default function FormComponent({
   }
 
   function updatePasswordSubmit() {
-    const { token } = match.params;
+
+    const { token } = router.query;
+
     axios
       .post(`/api/reset_password/${token}`, {
         password
@@ -201,6 +206,7 @@ export default function FormComponent({
   }
 
   function handleChange(e) {
+
     e.persist();
     setFormError(false);
     setFormSuccess(false);
@@ -208,7 +214,7 @@ export default function FormComponent({
     setPasswordError(false);
     setDisableButton(false);
 
-    dispatch({ type: 'resetUserAccountIsVerified' })
+    dispatch({ type: 'resetUserAccountIsVerified', })
 
     setUserNameDup(false);
 
@@ -234,6 +240,7 @@ export default function FormComponent({
   }
 
   function handleSubmit(event, formType) {
+
     event.preventDefault();
 
     validateInputs(
@@ -257,17 +264,26 @@ export default function FormComponent({
 
   function isConfirmation() {
     const [showApi, setShowApi] = useState(true);
+    // const [isSubscribed, setIsSubscribed] = useState(true);
+
+
 
     useEffect(() => {
-      const isSubscribed = true;
+      let isSubscribed = true;
+
+      if (!router.isReady) return;
+      const { token } = router.query;
+      uidispatch({
+        type: 'token', payload: { token }
+      })
+
       axios
-        .get(`/api/confirmation/${match.params.token}`, {
-          cancelToken: source.token
-        })
+        .get(`/api/confirmation/${token}`)
         .then(response => {
           if (response.status === 200) {
             isSubscribed ? setResponseMessage(response.data.msg) : null;
           }
+
         })
         .catch((error) => {
           if (error.response.status === 404) {
@@ -275,6 +291,7 @@ export default function FormComponent({
 
             setError(true);
             isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+
           }
 
           if (error.response.status === 400) {
@@ -282,6 +299,7 @@ export default function FormComponent({
 
             setError(true);
             isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+
           }
         });
 
@@ -289,12 +307,14 @@ export default function FormComponent({
         isSubscribed = false;
         setShowApi(prev => !prev);
       };
-    }, []);
+    }, [router.isReady]);
 
     if (error) {
-      return showApi && <Message state="Error" header={responseMessage[0]} />;
+      return showApi && <Layout showFooter> <Message state="Error" header={responseMessage[0]} /></Layout>
     }
-    return showApi && <Message state="Success" header={responseMessage[0]} />;
+    if (error === false) {
+      return showApi && <Layout showFooter> <Message state="Error" header={responseMessage[0]} /></Layout>
+    }
   }
 
   function isLoginForm() {
@@ -438,6 +458,9 @@ export default function FormComponent({
     Register: [isRegisterForm, registerSubmit],
     UpdatePassword: [isUpdatePasswordForm, updatePasswordSubmit]
   };
+
+
+  console.log("formType 457 ", formType);
 
   return Forms[formType][0]();
 }
