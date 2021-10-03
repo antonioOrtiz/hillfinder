@@ -194,11 +194,7 @@ function UserProvider({ children }) {
 
           ...{
             markers: state.markers.map(element => {
-              console.log('element, payload ', element, payload.marker);
-              console.log(
-                'element.alt ===  payload.marker.alt ',
-                element.alt === payload.marker.alt
-              );
+
               if (element.alt === payload.marker.alt) {
                 return { ...element, ...payload.marker };
               }
