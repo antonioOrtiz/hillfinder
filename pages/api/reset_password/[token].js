@@ -7,12 +7,14 @@ import Token from '../../../models/Token'
 
 import connectDB from '../../../middleware/mongodb';
 
-import nodeMailerFunc from '../../../utils/index'
+import { nodeMailerFunc } from '../../../utils/index'
 
 
 require('dotenv').config();
 
 const handler = nextConnect()
+
+connectDB()
 
 handler
   .use(auth)
@@ -60,4 +62,4 @@ handler
     }
   })
 
-export default connectDB(handler);
+export default handler;
