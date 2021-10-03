@@ -4,19 +4,25 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
-      transitionDuration: {
-        '0': '0ms',
-        '2000': '2000ms',
-      },
-      transitionDelay: {
-        '0': '0ms',
-        '2000': '2000ms',
-      },
       colors: {
         orangeLight: '#ffe0b2',
         DEFAULT: '#f57c00',
         orangeDark: '#e65100',
-
+      },
+      keyframes: {
+        'fade-in-down': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-10px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        }
+      },
+      animation: {
+        'fade-in-down': 'fade-in-down 0.6s ease-out'
       }
     },
   },
