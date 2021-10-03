@@ -1,13 +1,22 @@
 /* eslint-disable no-var */
 import mongoose from 'mongoose';
 
-const TokenSchema = new mongoose.Schema({
-  _userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+var Schema = mongoose.Schema;
+var Token;
+
+var token = new Schema({
+  _userId: {
+    type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'
+  },
   token: { type: String, required: true },
-  createdAt: { type: Date, required: true, default: Date.now, expires: 43200 }
-});
+}, {
+  timestamps: true,
+}
+);
 
+mongoose.models = {};
 
+Token = mongoose.model('Token', token);
 
+export default Token;
 
-export default mongoose.models.Token || mongoose.model('Token', TokenSchema)
