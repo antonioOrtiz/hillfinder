@@ -1,7 +1,6 @@
 import nextConnect from 'next-connect'
 import { check, body, validationResult } from 'express-validator'
 
-
 import auth from '../../middleware/auth'
 import User from '../../models/User'
 
@@ -14,6 +13,8 @@ require('dotenv').config();
 
 
 const handler = nextConnect()
+
+connectDB()
 
 handler
   .use(auth)
@@ -57,10 +58,10 @@ handler
         });
       }
       return res.status(200).send({
-        userId: user._id,
+        userId: user,
         msg: [`Your have successfully logged in;`, `Welcome to Hillfinder!`]
       });
     })
 
 
-export default connectDB(handler);
+export default handler;
