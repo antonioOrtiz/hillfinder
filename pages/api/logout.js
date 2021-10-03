@@ -1,11 +1,17 @@
 import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 
+import connectDB from '../../middleware/mongodb';
+
+
 const handler = nextConnect()
 
+connectDB()
+
 handler.use(auth).get((req, res) => {
+
+  console.log("req ", req);
   req.logout();
-  console.log('You have logged out!');
   return res.status(201).send({
     msg: ['Your have successfully logged out!']
   });
