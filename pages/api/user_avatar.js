@@ -8,8 +8,9 @@ import connectDB from '../../middleware/mongodb';
 const handler = nextConnect()
 
 
-
 const { v2: cloudinaryV2 } = cloudinary
+
+connectDB()
 
 
 handler
@@ -30,4 +31,4 @@ handler
     }
   })
 
-export default connectDB(handler);
+export default handler;
