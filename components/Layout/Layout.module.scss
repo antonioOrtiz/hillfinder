@@ -18,10 +18,10 @@
     right: 0px;
     bottom: 0px;
     left: 0px;
-    background-image: linear-gradient(#357120, transparent), linear-gradient(to top right, #2e5a1c, transparent), linear-gradient(to right bottom, transparent, #5dad2f), url('/logo/hillfinder-logo.png');
+    background-image: url('/logo/hillfinder-logo.png');
     background-repeat: no-repeat;
-    opacity: .8;
-    background-position: center center;
+    opacity: .1;
+    background-position: center 70%;
     /* Specify the background image */
     background-size: contain;
     height: 100%;
