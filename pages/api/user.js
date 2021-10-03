@@ -2,23 +2,23 @@ import nextConnect from 'next-connect'
 
 import auth from '../../middleware/auth'
 
-import dbConnect from '../../middleware/mongodb';
+import connectDB from '../../middleware/mongodb';
 
 const handler = nextConnect()
 
+connectDB()
 
 handler
   .use(auth)
   .get(async (req, res) => {
-    await dbConnect()
+    console.log("req line 14", req.user);
+
 
     if (req.user === undefined) {
       return res.json({ username: 'User not logged in' });
     }
-    return res.json({
-      userId: req.user._id
-    });
 
+    res.json({ user: req.user })
   })
 
 export default handler;
