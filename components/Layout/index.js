@@ -1,23 +1,40 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import axios from 'axios';
+
 import styles from './Layout.module.scss';
 import Link from 'next/link';
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 
-import { useUser } from '../../lib/hooks'
+import { userState, userDispatch } from '../Context/UserContext'
 
 import Footer from './Footer';
 
 export default function Layout({ children, showFooter }) {
-  const [user, { mutate }] = useUser()
-  const { route } = useRouter();
+  const { route, router } = useRouter();
+
+  const { dispatch } = userDispatch();
+
+  const { state } = userState();
+  const { id: user } = state;
+
+  useEffect(() => {
+    if (router === undefined) return;
+  }, [router])
+
 
   async function handleLogout() {
-    await fetch('/api/logout')
-    mutate({ user: null })
+    axios
+      .get('/api/logout').then(r => {
+        dispatch({
+          type: 'setUserId',
+          payload: { id: null }
+        });
+        Router.push('/',)
+      }).catch(err => console.log('err', err))
   }
 
   return <>
-    <div className="rounded-lg shadow bg-base-200 drawer h-screen">
+    <div className="shadow bg-base-200 drawer h-screen">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
         <div className="w-full navbar bg-base-300">
@@ -72,7 +89,7 @@ export default function Layout({ children, showFooter }) {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/register">
+                    <Link href="/registration">
                       <a>Register</a>
                     </Link>
                   </li>
@@ -81,7 +98,7 @@ export default function Layout({ children, showFooter }) {
             </ul>
           </div>
         </div>
-        <div className={`${route === "/login" || route === "/register" || route === "/confirmation" || route === "/reset_password" ? styles['bg-logo'] : styles.content}`} >
+        <div className={`${route != '/' ? styles['bg-logo'] : styles.content}`} >
           {children}
         </div>
         {showFooter ? <Footer /> : null}
@@ -122,7 +139,7 @@ export default function Layout({ children, showFooter }) {
                 </Link>
               </li>
               <li>
-                <Link href="/register">
+                <Link href="/registration">
                   <a>Register</a>
                 </Link>
               </li>
