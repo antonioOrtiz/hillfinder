@@ -1,10 +1,12 @@
 /* eslint-disable object-shorthand */
-import React, { useContext } from 'react';
+import React, { useContext, useReducer } from 'react';
 
-const initialState = { modalActive: false, avatarModalActive: false };
+const initialState = { modalActive: false, avatarModalActive: false, token: '' };
 
-const UIStateContext = React.createContext();
-const UIContextDispatch = React.createContext();
+
+const UserStateContext = React.createContext();
+const UserContextDispatch = React.createContext();
+
 
 function UIProvider({ children }) {
   function userReducer(state, { type, payload }) {
@@ -19,26 +21,30 @@ function UIProvider({ children }) {
         return { ...state, ...{ modalActive: false } }
       }
 
+      case 'token': {
+        return { ...state, ...{ token: payload.token } }
+      }
+
       default: {
         throw new Error(`Unhandled action type: ${type}`);
       }
     }
   }
 
-  const [state, dispatch] = userReducer(userReducer, initialState);
+  const [state, dispatch] = useReducer(userReducer, initialState);
+
 
   return (
-    <UIStateContext.Provider value={{ state: state }}>
-      <UIContextDispatch.Provider value={{ dispatch: dispatch }}>
+    <UserStateContext.Provider value={{ state: state }}>
+      <UserContextDispatch.Provider value={{ dispatch: dispatch }}>
         {children}
-      </UIContextDispatch.Provider>
-    </UIStateContext.Provider>
+      </UserContextDispatch.Provider>
+    </UserStateContext.Provider>
   );
-
 }
 
 function userState() {
-  const context = useContext(UIStateContext);
+  const context = useContext(UserStateContext);
   if (context === undefined) {
     throw new Error('userState must be used within a UserProvider');
   }
@@ -46,12 +52,13 @@ function userState() {
 }
 
 function userDispatch() {
-  const context = useContext(UIContextDispatch);
+  const context = useContext(UserContextDispatch);
   if (context === undefined) {
     throw new Error('userDispatch must be used within a UserProvider');
   }
   return context;
 }
-export default UIContextDispatch;
+
+export default UserContextDispatch;
 
 export { UIProvider, userState, userDispatch };
