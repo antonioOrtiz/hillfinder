@@ -1,11 +1,10 @@
-import { useRouter } from 'next/router';
-import ConfirmationForm from '../../components/Form';
+import Form from '../../components/Form';
 
 export default function Confirmation() {
 
   return (
     <>
-      <ConfirmationForm formType="Confirmation" />
+      <Form formType="Confirmation" />
     </>
   )
 }
