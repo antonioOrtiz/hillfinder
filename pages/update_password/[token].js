@@ -1,11 +1,11 @@
-import Layout from '../../components/Layout';
-import UpdatePasswordForm from '../../components/Form';
+import Layout from '../components/Layout';
+import Form from '../components/Form';
 
 export default function UpdatePassword() {
   return (
     <>
       <Layout showFooter={false}>
-        <UpdatePasswordForm formType="UpdatePassword" />
+        <Form formType="UpdatePassword" />
       </Layout>
     </>
   )
