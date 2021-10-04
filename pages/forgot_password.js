@@ -1,11 +1,11 @@
 import Layout from '../components/Layout';
-import LoginForm from '../components/Form';
+import Form from '../components/Form';
 
 export default function ForgotPassword() {
   return (
     <>
       <Layout showFooter={false}>
-        <LoginForm formType="ForgotPassword" />
+        <Form formType="ForgotPassword" />
       </Layout>
     </>
   )
