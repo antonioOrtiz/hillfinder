@@ -1,11 +1,11 @@
 import Layout from '../components/Layout';
-import Register from '../components/Form';
+import Form from '../components/Form';
 
-export default function RegisterComponent() {
+export default function FormComponent() {
   return (
     <>
       <Layout showFooter={false}>
-        <Register formType="Register" />
+        <Form formType="Register" />
       </Layout>
     </>
   )
