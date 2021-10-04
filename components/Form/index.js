@@ -73,16 +73,15 @@ export default function FormComponent({
         }
       })
       .catch((error) => {
-        if (error.response.statusText === 'Unauthorized') {
+
+
+        if (error.status === 401) {
           setUsername('');
           setPassword('');
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
-          setResponseMessage([
-            `Incorrect password`,
-            `The password you've entered with this email/username is incorrect, please reset it using the link above`
-          ]);
+          setResponseMessage(error.data.msg);
         }
 
         if (error.response) {
@@ -321,7 +320,7 @@ export default function FormComponent({
     useEffect(() => {
       dispatch({ type: 'resetUserAccountIsVerified' })
     }, [id]);
-
+    console.log("passwordFeedback 327 ", passwordFeedback);
     return (
       <GenericFormComponent
         handleSubmit={handleSubmit}
