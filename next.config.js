@@ -1,9 +1,10 @@
 
 const path = require('path')
+const TerserPlugin = require("terser-webpack-plugin");
 
 
 module.exports = {
-
+  target: "serverless",
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
     DEVELOPMENT_DB_DSN: process.env.DEVELOPMENT_DB_DSN,
@@ -46,8 +47,10 @@ module.exports = {
           "vm": require.resolve("vm-browserify"),
         }
       }
-
+      config.optimization.minimize = true;
+      config.optimization.minimizer.push(new TerserPlugin());
     }
+
     return config;
   }
 }
