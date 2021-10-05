@@ -11,13 +11,9 @@ connectDB()
 handler
   .use(auth)
   .get(async (req, res) => {
-    console.log("req line 14", req.user);
-
-
     if (req.user === undefined) {
       return res.json({ username: 'User not logged in' });
     }
-
     res.json({ user: req.user })
   })
 

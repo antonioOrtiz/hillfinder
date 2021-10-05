@@ -43,7 +43,6 @@ handler
 
     User.findOne({ username: req.body.username }).then(user => {
 
-      console.log("user ", user);
       if (!user) {
         return res.status(404).json({
           msg: [

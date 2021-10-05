@@ -14,9 +14,6 @@ const mg = mailgun({
 });
 
 export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
-
-  console.log("user, subjectField, textField, emailType, res ", user, subjectField, textField, emailType, res);
-
   const token = new Token({
     _userId: user._id,
     token: crypto.randomBytes(16).toString('hex')
@@ -89,8 +86,6 @@ export function validateInputs(
 
       validateAll(data, schema, messages)
         .then(success => {
-
-          console.log("success ", success);
           if (success.username) {
             setUsernameError(false);
           }

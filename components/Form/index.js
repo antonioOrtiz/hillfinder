@@ -298,10 +298,11 @@ export default function FormComponent({
   }
 
   function isLoginForm() {
+
     useEffect(() => {
       dispatch({ type: 'resetUserAccountIsVerified' })
     }, [id]);
-    console.log("passwordFeedback 327 ", passwordFeedback);
+
     return (
       <GenericFormComponent
         handleSubmit={handleSubmit}
@@ -438,9 +439,6 @@ export default function FormComponent({
     Register: [isRegisterForm, registerSubmit],
     UpdatePassword: [isUpdatePasswordForm, updatePasswordSubmit]
   };
-
-
-  console.log("formType 457 ", formType);
 
   return Forms[formType][0]();
 }
