@@ -1,4 +1,6 @@
 
+import Head from 'next/head'
+
 import 'tailwindcss/tailwind.css'
 import 'leaflet/dist/leaflet.css';
 import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
@@ -17,6 +19,9 @@ function MyApp({ Component, pageProps }) {
     <UserProvider value={userState}>
       <UIProvider value={uiUserState}>
         <CloudinaryContext cloudName="hillfinders">
+          <Head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+          </Head>
           <Component {...pageProps} />
         </CloudinaryContext>
       </UIProvider>
