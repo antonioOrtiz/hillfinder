@@ -73,19 +73,8 @@ export default function FormComponent({
         }
       })
       .catch((error) => {
-
-
-        if (error.status === 401) {
-          setUsername('');
-          setPassword('');
-          setFormError(true);
-          setFormSuccess(false);
-          setIsLoading(false);
-          setResponseMessage(error.data.msg);
-        }
-
         if (error.response) {
-          if (error.response.status === 401 && error.response.data !== 'Unauthorized') {
+          if (error.response.status === 401) {
             setUsername('');
             setPassword('');
             setFormError(true);
@@ -95,7 +84,6 @@ export default function FormComponent({
           }
 
           if (error.response.status === 403) {
-
             dispatch({ type: 'userAccountNotVerified' })
             setUsername('');
             setPassword('');
@@ -105,14 +93,6 @@ export default function FormComponent({
             setResponseMessage(error.response.data.msg);
           }
           if (error.response.status === 404) {
-            setUsername('');
-            setPassword('');
-            setFormError(true);
-            setFormSuccess(false);
-            setIsLoading(false);
-            setResponseMessage(error.response.data.msg);
-          }
-          if (error.response.status === 422) {
             setUsername('');
             setPassword('');
             setFormError(true);
@@ -146,25 +126,26 @@ export default function FormComponent({
         }
       })
       .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 500) {
+            setResponseMessage(error.response.data.msg);
+            setFormError(true);
+            setIsLoading(false);
+          }
 
-        console.log("error 150", error);
-        if (error.response.status === 500) {
-          setResponseMessage(error.response.data.msg);
-          setFormError(true);
-          setIsLoading(false);
+          if (error.response.status === 401) {
+            setResponseMessage(error.response.data.msg);
+            setIsLoading(false);
+            setFormError(true);
+          }
+
+          if (error.response.status === 409) {
+            setUserNameDup(true);
+            setResponseMessage(error.response.data.msg);
+            setIsLoading(false);
+          }
         }
 
-        if (error.response.status === 401) {
-          setResponseMessage(error.response.data.msg);
-          setIsLoading(false);
-          setFormError(true);
-        }
-
-        if (error.response.status === 409) {
-          setUserNameDup(true);
-          setResponseMessage(error.response.data.msg);
-          setIsLoading(false);
-        }
       });
   }
 
