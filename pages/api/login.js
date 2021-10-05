@@ -2,14 +2,23 @@ import nextConnect from 'next-connect'
 import { check, body, validationResult } from 'express-validator'
 
 import auth from '../../middleware/auth'
+import initMiddleware from '../../middleware/init-middleware'
+import validateMiddleware from '../../middleware/validate-middleware'
+
 import User from '../../models/User'
 
 import passport from '../../lib/passport'
 
-
 import connectDB from '../../middleware/mongodb';
 
 require('dotenv').config();
+
+const validateBody = initMiddleware(
+  validateMiddleware([
+    body('username').isEmail(),
+    check('password').isLength({ min: 7, max: 11 }),
+  ], validationResult)
+)
 
 
 const handler = nextConnect()
@@ -18,32 +27,39 @@ connectDB()
 
 handler
   .use(auth)
-  .post([body('username').isEmail(), check('password').isLength({ min: 7, max: 11 })],
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(401).send({
+  .post(async (req, res, next) => {
+    await validateBody(req, res)
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        msg: [
+          'Please follow the validations above',
+          're-enter a proper email and/or password.'
+        ]
+      })
+    }
+
+    User.findOne({ username: req.body.username }).then(user => {
+
+      console.log("user ", user);
+      if (!user) {
+        return res.status(404).json({
           msg: [
-            'Please follow the validations above',
-            're-enter a proper email and/or password.'
+            'We were unable to find this user.',
+            'This email may be incorrect. Please confirm with the "Forgot password" link above or the "Register" link below!.'
           ]
         });
       }
-
-      User.findOne({ username: req.body.username }).then(user => {
-        if (!user) {
-          return res.status(404).send({
-            msg: [
-              `We were unable to find this user.`,
-              `This email and/or password combo may be incorrect.
-              Please confirm with the "Forgot password" link above or the "Register" link below!`
-            ]
-          });
-        }
-        next();
-
-      });
-    },
+      return res.status(401).json({
+        msg: [
+          'This email and/or password combo may be incorrect',
+          'Please confirm with the "Forgot password" link above or the "Register" link below!'
+        ]
+      })
+    });
+  },
 
     passport.authenticate('local', { session: true }),
 
