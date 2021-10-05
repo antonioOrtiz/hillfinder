@@ -6,8 +6,6 @@ import Token from '../../../models/Token'
 
 import connectDB from '../../../middleware/mongodb';
 
-
-
 require('dotenv').config();
 
 const handler = nextConnect()
