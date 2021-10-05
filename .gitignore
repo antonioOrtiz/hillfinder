@@ -74,3 +74,6 @@ config/
 
 
 build/
+
+# Local Netlify folder
+.netlify
