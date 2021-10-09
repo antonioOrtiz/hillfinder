@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useRouter } from 'next/router'
 
 
 export default function updatePasswordSubmit(
