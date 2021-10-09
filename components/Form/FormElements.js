@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import dynamic from 'next/dynamic'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Message = dynamic(
   () => import('../../utils/Message/index'),
@@ -223,10 +223,11 @@ export default function GenericInputForm({
                       </button>
                     </div>
 
-                    {formError
+                    {formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
                       ? <Message
                         state="Error"
                         header={responseMessage[0]}
+
                         content={responseMessage[1]}
                       />
                       : null}
@@ -239,7 +240,7 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {responseCodeSuccess
+                    {formSuccess
                       ? <Message
                         state="Success"
                         header={responseMessage[0]}
@@ -339,7 +340,7 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {formError && responseMessage[0] !== ''
+                    {formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
                       ? <Message
                         state="Error"
                         header={responseMessage[0]}
