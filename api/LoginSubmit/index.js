@@ -1,7 +1,4 @@
-import { useRouter } from 'next/router'
 import axios from 'axios';
-import { userDispatch } from '../../components/Context/UserContext'
-
 
 export default function loginSubmit(
   username,
@@ -12,9 +9,9 @@ export default function loginSubmit(
   setFormSuccess,
   setIsLoading,
   setResponseMessage,
+  dispatch,
+  router
 ) {
-  const { dispatch } = userDispatch();
-  const router = useRouter();
 
   axios
     .post('/api/login', {
@@ -71,13 +68,11 @@ export default function loginSubmit(
         if (error.response && error.response.status === 422) {
           const [{ value, param }] = error.response.data.errors;
 
-          console.log("value, param ", value, param);
           setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
         }
-
       }
     });
 }
