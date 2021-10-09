@@ -54,7 +54,7 @@ handler
       return res.status(401).json({
         msg: [
           'This email and/or password combo may be incorrect',
-          'Please confirm with the "Forgot password" link above or the "Register" link below!'
+          'Please confirm with the "Forgot password" link above or the "Create new account" link below!'
         ]
       })
     });
