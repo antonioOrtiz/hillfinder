@@ -1,6 +1,11 @@
 import nextConnect from 'next-connect'
 
 import auth from '../../../middleware/auth'
+import initMiddleware from '../../../middleware/init-middleware'
+import validateMiddleware from '../../../middleware/validate-middleware'
+import { check, body, validationResult } from 'express-validator'
+
+import errorHandler from '../error-handler'
 import User from '../../../models/User'
 import Token from '../../../models/Token'
 
@@ -8,6 +13,13 @@ import Token from '../../../models/Token'
 import connectDB from '../../../middleware/mongodb';
 
 import { nodeMailerFunc } from '../../../utils/index'
+
+const validateBody = initMiddleware(
+  validateMiddleware([
+    check('password').isLength({ min: 7, max: 11 }),
+  ], validationResult)
+)
+
 
 
 require('dotenv').config();
@@ -18,7 +30,25 @@ connectDB()
 
 handler
   .use(auth)
-  .post((req, res, next) => {
+  .post(async (req, res, next) => {
+
+    await validateBody(req, res)
+
+    const errors = validationResult(req);
+
+    const hasErrors = !errors.isEmpty()
+
+    console.log("hasErrors ", hasErrors);
+    if (hasErrors) {
+      console.log('has errors!')
+      return res.status(422).json({
+        msg: [
+          'Please follow the validations above',
+          're-enter a proper email and/or password.'
+        ]
+      })
+    }
+
     const {
       query: { token },
     } = req
@@ -58,7 +88,7 @@ handler
         }
       });
     } catch (err) {
-      return next(err);
+      return errorHandler(err, res);
     }
   })
 
