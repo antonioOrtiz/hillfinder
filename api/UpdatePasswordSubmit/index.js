@@ -2,15 +2,11 @@ import axios from 'axios';
 import { useRouter } from 'next/router'
 
 
-export default function updatePasswordSubmit(password, setPassword, setPasswordConfirmation, setFormError,
-  setFormSuccess,
-  setIsLoading,
-  setResponseCodeSuccess,
-  setResponseMessage,
-  setDisableButton) {
-  const router = useRouter();
+export default function updatePasswordSubmit(
+  password, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token) {
 
-  const { token } = router.query;
+
+  console.log("token ", token);
   axios.post(`/api/reset_password/${token}`, {
     password
   })
@@ -28,26 +24,25 @@ export default function updatePasswordSubmit(password, setPassword, setPasswordC
           router.push('/login');
         }, 5000);
       }
-    })
-    .catch((error) => {
+    }).catch((error) => {
       if (error.response) {
-        console.log("error.response ", error.response.data.errors);
-        if (error.response && error.response.status === 422) {
-          const [{ value, param }] = error.response.data.errors;
-
-          console.log("value, param ", value, param);
-          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
-          setFormError(true);
-          setFormSuccess(false);
-          setIsLoading(false);
-        }
-
         if (error.response.status === 401) {
+          setPassword('');
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
           setResponseMessage(error.response.data.msg);
         }
+
+        if (error.response && error.response.status === 422) {
+          const [{ value, param }] = error.response.data.errors;
+          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
+          setFormError(true);
+          setFormSuccess(false);
+          setIsLoading(false);
+        }
       }
     });
 }
+
+
