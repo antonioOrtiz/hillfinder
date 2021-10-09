@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 
 import { validateInputs } from '../../utils/index';
+import { useRouter } from 'next/router'
+
 
 import GenericFormComponent from './FormElements'
 import { userState, userDispatch } from '../Context/UserContext'
+import { userDispatch as uiUserDispatch } from '../../components/Context/UIContext'
 
 import forgotPasswordSubmit from '../../api/ForgotPasswordSubmit'
 import updatePasswordSubmit from '../../api/UpdatePasswordSubmit'
@@ -14,6 +17,11 @@ import registerSubmit from '../../api/RegisterSubmit'
 export default function FormComponent({
   formType,
 }) {
+  const router = useRouter();
+
+  const { dispatch } = userDispatch();
+  const { dispatch: uidispatch } = uiUserDispatch();
+  const { token } = router.query;
 
   console.log("formType ", formType);
 
@@ -41,7 +49,6 @@ export default function FormComponent({
   const [current_destination, setCurrentDestination] = useState('');
 
   const { state } = userState();
-  const { dispatch } = userDispatch();
 
   const { id, accountNotVerified } = state;
 
@@ -159,7 +166,10 @@ export default function FormComponent({
         error,
         setError,
         setResponseMessage,
-        responseMessage
+        responseMessage,
+        dispatch,
+        uidispatch,
+
       )
     ],
     ForgotPassword: [isForgotPasswordForm,
@@ -182,6 +192,8 @@ export default function FormComponent({
         setFormSuccess,
         setIsLoading,
         setResponseMessage,
+        dispatch,
+        router
       )
     ],
     Register: [isRegisterForm,
@@ -199,15 +211,7 @@ export default function FormComponent({
     ],
     UpdatePassword: [isUpdatePasswordForm,
       () => updatePasswordSubmit(
-        password,
-        setPassword,
-        setPasswordConfirmation,
-        setFormError,
-        setFormSuccess,
-        setIsLoading,
-        setResponseCodeSuccess,
-        setResponseMessage,
-        setDisableButton
+        password, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token
       )
     ]
   };
