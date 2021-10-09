@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import { userDispatch } from '../../components/Context/UserContext'
 import Layout from '../../components/Layout/index'
 import Message from '../../utils/Message';
-import { userDispatch as uiUserDispatch } from '../../components/Context/UIContext'
 
-export default function isConfirmation(error, setError, setResponseMessage, responseMessage) {
+export default function isConfirmation(error, setError, setResponseMessage, responseMessage, dispatch,
+  uidispatch) {
   const [showApi, setShowApi] = useState(true);
-  const { dispatch: uidispatch } = uiUserDispatch();
-  const { dispatch } = userDispatch();
 
   const router = useRouter();
 
