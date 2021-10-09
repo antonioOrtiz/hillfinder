@@ -1,4 +1,6 @@
-import Form from '../../components/Form';
+import dynamic from "next/dynamic";
+
+const Form = dynamic(() => import('../../components/Form'));
 
 export default function Confirmation() {
 
