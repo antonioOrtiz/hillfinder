@@ -26,7 +26,7 @@ export default function Message({ state, header, content }) {
             className="animate-fade-in-down my-4 py-2 p-3  text-orangeDark bg-orangeLight border border-orangeDark-300 rounded relative"
             role="alert"
           >
-            <strong className="font-bold">{header}:</strong>
+            <strong className="font-bold">{header}</strong>
             <span className="block sm">{content}</span>
           </div>,
         Success:
@@ -34,12 +34,12 @@ export default function Message({ state, header, content }) {
             className="my-4 py-2 p-3  text-green-700 bg-green-100 border border-green-300 rounded relative animate-fade-in-down"
             role="alert"
           >
-            <p className="font-bold">{header}:</p>
+            <p className="font-bold">{header}</p>
             <strong className="font-bold">{content}</strong>
           </div>,
         Error:
           <div className="animate-fade-in-down relative my-4 py-2 pl-3 pr-10 leading-normal text-red-700 bg-red-100 border border-red-700 rounded-lg" role="alert">
-            <p className="font-bold">{header}:</p>
+            <p className="font-bold">{header}</p>
             <p>{content}</p>
           </div>
       }[state]}
