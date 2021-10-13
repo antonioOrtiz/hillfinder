@@ -8,7 +8,7 @@ const SALT_ROUNDS = 12;
 
 const UserSchema = new mongoose.Schema(
   {
-    username: {
+    email: {
       type: String,
       required: true,
       trim: true,
