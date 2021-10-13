@@ -33,18 +33,12 @@ module.exports = {
   webpack5: true,
 
   webpack: (config, { isServer }) => {
-    const externals = {
-      ...config.externals,
-      bcrypt: 'bcrypt',
-      jimp: 'jimp',
-      'probe-image-size': 'probe-image-size'
-    }
+
     if (!isServer) {
       config.resolve.alias = {
         ...config.resolve.alias,
         ...{
           child_process: 'empty',
-          critters: false,
           fs: false,
           crypto: 'empty',
           net: false,
@@ -57,10 +51,6 @@ module.exports = {
       config.optimization.minimizer.push(new TerserPlugin());
     }
 
-    return {
-      ...config,
-
-      externals
-    }
+    return config;
   }
 }
