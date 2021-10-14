@@ -1,5 +1,5 @@
 import { validate, validateAll } from 'indicative/validator';
-import { sanitize } from 'indicative/sanitizer'
+
 
 import crypto from 'crypto';
 
@@ -45,16 +45,15 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     });
   }
 
-  sendMail(process.env.EMAIL_ADDRESS, user.username, subjectField, `${textField}${outputTokenInEmail(emailType)}`);
+  sendMail(process.env.EMAIL_ADDRESS, user.email, subjectField, `${textField}${outputTokenInEmail(emailType)}`);
 
 }
 
-
 export function validateInputs(
-  formType,
-  username,
-  setUsernameError,
-  setUsernameFeedback,
+  form,
+  email,
+  setEmailError,
+  setEmailFeedback,
   password,
   password_confirmation,
   setPasswordConfirmationError,
@@ -65,42 +64,55 @@ export function validateInputs(
   setFormSuccess,
   setFormError
 ) {
-  function getFormValidation(formType) {
+
+  function getFormValidation(form) {
     function isLoginOrRegistration() {
+
+
+
+      const rules = {
+        email: 'required|email',
+        password: 'required|min:7|max:11'
+      };
+
       const data = {
-        username,
+        email,
         password
       };
 
-      const schema = {
-        username: 'required|email',
-        password: 'required|min:7|max:11'
-      };
       const messages = {
-        email: 'Make sure this is a valid email.',
-        required: 'This is a required field.',
-        min: 'The password is too short. Minimum 7 characters.',
-        max: 'The password is too long. Maximum 11 characters.'
-      };
+        required: 'Make sure to enter the field value.',
+        email: 'Enter valid email address.',
+        min: 'The value is too small. Minimum seven characters.',
+        max: 'The value is too big. Minimum eleven characters.',
+      }
 
-
-      validateAll(data, schema, messages)
+      validate(data, rules, messages)
         .then(success => {
-          if (success.username) {
-            setUsernameError(false);
+
+          console.log("success ", success);
+          if (success.email) {
+            setEmailError(false);
+            setFormError(false)
           }
 
           if (success.password) {
             setPasswordError(false);
           }
-          if (success.username && success.password) {
+          if (success.email && success.password) {
             setDisableButton(true);
           }
         })
         .catch(errors => {
-          if (errors[0].field === 'username') {
-            setUsernameError(true);
-            setUsernameFeedback(errors[0].message);
+          const formattedErrors = {}
+
+          errors.forEach(error => formattedErrors[error.field] = error.message)
+
+          console.log("errors ", errors);
+
+          if (errors[0].field === 'email') {
+            setEmailError(() => true);
+            setEmailFeedback(errors[0].message);
             setDisableButton(true);
             setFormSuccess(false);
           }
@@ -112,15 +124,17 @@ export function validateInputs(
             setFormSuccess(false);
           }
         });
+
+
     }
 
     function isForgotPassword() {
       const data = {
-        username
+        email
       };
 
       const schema = {
-        username: 'email'
+        email
       };
       const messages = {
         required: 'Make sure to enter the field value.',
@@ -128,16 +142,16 @@ export function validateInputs(
       };
       validate(data, schema, messages)
         .then(success => {
-          if (success.username) {
-            setUsernameError(false);
+          if (success.email) {
+            setEmailError(false);
             setDisableButton(false);
           }
         })
         .catch(errors => {
           if (errors[0].validation === 'email') {
             const { message } = errors[0];
-            setUsernameError(true);
-            setUsernameFeedback(message);
+            setEmailError(true);
+            setEmailFeedback(message);
           }
         });
     }
@@ -148,7 +162,7 @@ export function validateInputs(
         password_confirmation
       };
       const schema = {
-        password: 'required|min:4|max:11|string',
+        password: 'required|min:4|max:11|string|confirmed',
         password_confirmation: 'required|min:7|max:11|string|same:password'
       };
       const messages = {
@@ -158,21 +172,27 @@ export function validateInputs(
         same: 'Passwords must match.'
       };
 
+
       validateAll(data, schema, messages)
         .then(success => {
+
+          // console.log("success.password === success.password_confirmation ", success.password === success.password_confirmation);
+          // console.log("success ", success);
           if (success.password) {
             setPasswordError(false);
+          }
+          if (success.password_confirmation) {
+            setPasswordConfirmationError(false);
           }
 
           if (success.password === success.password_confirmation) {
             setPasswordError(false);
             setPasswordConfirmationError(false);
+            setFormError(false)
           }
         })
         .catch(errors => {
           errors.map((error) => {
-
-            console.log("error 179", error);
             if (error.field === 'password') {
               setPasswordError(true);
               setPasswordFeedback(error.message);
@@ -188,21 +208,24 @@ export function validateInputs(
             }
           })
         });
+
     }
 
     const Forms = {
       Login: isLoginOrRegistration,
-      Registration: isLoginOrRegistration,
+      Register: isLoginOrRegistration,
       ForgotPassword: isForgotPassword,
       UpdatePassword: isUpdatePassword
     };
 
     try {
-      Forms[formType]();
+
+      console.log("formType utils 267 ", form);
+      Forms[form]();
     } catch (error) { console.log('Error', error) }
   }
 
-  return getFormValidation(formType);
+  return getFormValidation(form);
 }
 
 
