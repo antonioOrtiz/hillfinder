@@ -14,18 +14,17 @@ const Message = dynamic(
   }
 )
 
-
 export default function GenericInputForm({
   handleSubmit,
   formType,
   formError,
   formSuccess,
   accountNotVerified,
-  username,
-  userNameDup,
+  email,
+  emailDup,
   handleChange,
-  usernameError,
-  usernameFeedback,
+  emailError,
+  emailFeedback,
   password,
   passwordConfirmation,
   passwordConfirmationError,
@@ -39,7 +38,7 @@ export default function GenericInputForm({
   responseCodeSuccess
 }) {
 
-  function PasswordComponent({ name, value, placeholder, errorType, messageContent, label, changeHandler }) {
+  function PasswordComponent({ label, name, value, placeholder, errorType, messageContent, changeHandler }) {
     const [inputType, setInputType] = useState('password');
 
     const [passwordLabel, setpasswordLabel] = useState('show!');
@@ -90,7 +89,7 @@ export default function GenericInputForm({
   return (
     <>
       {{
-        ForgotPassword: <div className="container mx-auto px-4 h-full ">
+        ForgotPassword: <div className="container mx-auto px-4  ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
               <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
@@ -116,17 +115,17 @@ export default function GenericInputForm({
                       </label>
                       <input
                         type="email"
-                        name="username"
+                        name="email"
                         className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                         placeholder="E-mail address, e.g. joe@schmoe.com"
                         style={{ transition: "all .15s ease" }}
-                        value={username}
+                        value={email}
                         onChange={handleChange}
                       />
-                      {usernameError ? <Message
+                      {emailError ? <Message
                         state="Error"
                         header="Error"
-                        content={usernameFeedback}
+                        content={emailFeedback}
                       /> : null}
                     </div>
 
@@ -164,7 +163,7 @@ export default function GenericInputForm({
                 ForgotPassword: formError
                   ?
                   <div className="w-1/2 text-left">
-                    <Link href="/register">
+                    <Link href="/registration">
                       <a className="text-gray-300">
                         <small>Create new account</small>
                       </a>
@@ -176,7 +175,7 @@ export default function GenericInputForm({
             </div>
           </div>
         </div>,
-        UpdatePassword: <div className="container mx-auto px-4 h-full ">
+        UpdatePassword: <div className="container mx-auto px-4  ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
               <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
@@ -240,7 +239,7 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {formSuccess
+                    {formSuccess && !formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
                       ? <Message
                         state="Success"
                         header={responseMessage[0]}
@@ -267,7 +266,7 @@ export default function GenericInputForm({
             </div>
           </div>
         </div>
-      }[formType] || <div className="container mx-auto px-4 h-full ">
+      }[formType] || <div className="container mx-auto px-4 ">
           <div className="flex content-center items-center justify-center h-full">
             <div className="w-full max-w-md px-0">
               <div className="relative flex flex-col min-w-0 break-words  mb-6 shadow-lg rounded-lg bg-gray-300 border-0 bg-opacity-50">
@@ -296,18 +295,19 @@ export default function GenericInputForm({
                       </label>
                       <input
                         type="email"
-                        name="username"
+                        name="email"
                         className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                         placeholder="E-mail address, e.g. joe@schmoe.com"
                         style={{ transition: "all .15s ease" }}
-                        value={username}
+                        value={email}
                         onChange={handleChange}
                       />
 
-                      {usernameError ? <Message
+                      {console.log("emailError 306 ", emailError)}
+                      {emailError ? <Message
                         state="Error"
                         header="Error"
-                        content={usernameFeedback}
+                        content={emailFeedback}
                       /> : null}
                     </div>
 
@@ -340,7 +340,9 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
+                    {console.log("formError 343", formError)}
+
+                    {formError
                       ? <Message
                         state="Error"
                         header={responseMessage[0]}
@@ -348,7 +350,7 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {userNameDup
+                    {emailDup
                       ? <Message
                         state="Error"
                         header={responseMessage[0]}
