@@ -7,7 +7,6 @@ import Message from '../../utils/Message';
 export default function isConfirmation(error, setError, setResponseMessage, responseMessage, dispatch,
   uidispatch) {
   const [showApi, setShowApi] = useState(true);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -55,6 +54,6 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
     return showApi && <Layout showFooter> <Message state="Error" header={responseMessage[0]} /></Layout>
   }
   if (error === false) {
-    return showApi && <Layout showFooter> <Message state="Error" header={responseMessage[0]} /></Layout>
+    return showApi && <Layout showFooter> <Message state="Success" header={responseMessage[0]} /></Layout>
   }
 }
