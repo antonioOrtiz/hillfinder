@@ -6,7 +6,8 @@ import User from '../../models/User'
 
 import connectDB from '../../middleware/mongodb';
 
-import { nodeMailerFunc } from '../../utils/index'
+import { nodeMailerFunc } from '../../utils/index';
+import errorHandler from './error-handler';
 
 require('dotenv').config();
 
@@ -21,7 +22,7 @@ handler
     try {
       User.findOne(
         {
-          username: req.body.username
+          email: req.body.email
         },
         (err, user) => {
           if (!user) {
@@ -53,7 +54,7 @@ handler
         }
       );
     } catch (err) {
-      return next(err);
+      errorHandler(err, res)
     }
   })
 
