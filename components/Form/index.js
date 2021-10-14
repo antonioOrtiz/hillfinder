@@ -13,23 +13,23 @@ import updatePasswordSubmit from '../../api/UpdatePasswordSubmit'
 import isConfirmation from '../../api/Confirmation'
 import loginSubmit from '../../api/LoginSubmit'
 import registerSubmit from '../../api/RegisterSubmit'
+import { useUser } from '../../lib/hooks'
 
 export default function FormComponent({
   formType,
 }) {
   const router = useRouter();
+  const [user, { mutate }] = useUser()
 
   const { dispatch } = userDispatch();
   const { dispatch: uidispatch } = uiUserDispatch();
   const { token } = router.query;
 
-  console.log("formType ", formType);
-
   const [duration, setDuration] = useState(500);
-  const [username, setUsername] = useState('');
-  const [usernameFeedback, setUsernameFeedback] = useState('');
-  const [usernameError, setUsernameError] = useState(false);
-  const [userNameDup, setUserNameDup] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailFeedback, setEmailFeedback] = useState('');
+  const [emailError, setEmailError] = useState(false);
+  const [emailDup, setEmailDup] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordFeedback, setPasswordFeedback] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -52,7 +52,18 @@ export default function FormComponent({
 
   const { id, accountNotVerified } = state;
 
+  // useEffect(() => {
+  //   console.log("formError ", formError);
+  //   console.log("formSuccess ", formSuccess);
+  // });
+
   function isLoginForm() {
+
+    // useEffect(() => {
+    //   // redirect to home if user is authenticated
+    //   if (user) router.push('/profile')
+    // }, [user])
+
     useEffect(() => {
       dispatch({ type: 'resetUserAccountIsVerified' })
     }, [id]);
@@ -64,9 +75,9 @@ export default function FormComponent({
         formSuccess={formSuccess}
         formError={formError}
         accountNotVerified={accountNotVerified}
-        username={username}
-        usernameError={usernameError}
-        usernameFeedback={usernameFeedback}
+        email={email}
+        emailError={emailError}
+        emailFeedback={emailFeedback}
         handleChange={handleChange}
         duration={duration}
         password={password}
@@ -81,6 +92,7 @@ export default function FormComponent({
   }
 
   function isRegisterForm() {
+    console.log("formType ", formType);
     return (
       <GenericFormComponent
         handleSubmit={handleSubmit}
@@ -88,10 +100,10 @@ export default function FormComponent({
         formSuccess={formSuccess}
         formError={formError}
         accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
-        usernameError={usernameError}
-        usernameFeedback={usernameFeedback}
+        email={email}
+        emailDup={emailDup}
+        emailError={emailError}
+        emailFeedback={emailFeedback}
         handleChange={handleChange}
         duration={duration}
         password={password}
@@ -106,6 +118,11 @@ export default function FormComponent({
   }
 
   function isUpdatePasswordForm() {
+    useEffect(() => {
+
+      console.log("formError ", formError);
+      console.log("formSuccess ", formSuccess);
+    });
     return (
       <GenericFormComponent
         handleSubmit={handleSubmit}
@@ -113,12 +130,12 @@ export default function FormComponent({
         formSuccess={formSuccess}
         formError={formError}
         accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
+        email={email}
+        emailDup={emailDup}
         handleChange={handleChange}
-        usernameError={usernameError}
+        emailError={emailError}
         duration={duration}
-        usernameFeedback={usernameFeedback}
+        emailFeedback={emailFeedback}
         password={password}
         password_confirmation={password_confirmation}
         passwordError={passwordError}
@@ -143,12 +160,12 @@ export default function FormComponent({
         formSuccess={formSuccess}
         formError={formError}
         accountNotVerified={accountNotVerified}
-        username={username}
-        userNameDup={userNameDup}
+        email={email}
+        emailDup={emailDup}
         handleChange={handleChange}
-        usernameError={usernameError}
+        emailError={emailError}
         duration={duration}
-        usernameFeedback={usernameFeedback}
+        emailFeedback={emailFeedback}
         password={password}
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
@@ -174,8 +191,8 @@ export default function FormComponent({
     ],
     ForgotPassword: [isForgotPasswordForm,
       () => forgotPasswordSubmit(
-        username,
-        setUsername,
+        email,
+        setEmail,
         setResponseMessage,
         setFormError,
         setFormSuccess,
@@ -184,29 +201,31 @@ export default function FormComponent({
     ],
     Login: [isLoginForm,
       () => loginSubmit(
-        username,
+        email,
         password,
-        setUsername,
+        setEmail,
         setPassword,
         setFormError,
         setFormSuccess,
         setIsLoading,
         setResponseMessage,
         dispatch,
-        router
+        router,
+        mutate
       )
     ],
     Register: [isRegisterForm,
       () => registerSubmit(
-        username,
+        email,
         password,
-        setUsername,
+        setEmail,
         setPassword,
         setResponseMessage,
-        setUserNameDup,
+        setEmailDup,
         setFormError,
         setFormSuccess,
-        setIsLoading
+        setIsLoading,
+        router
       )
     ],
     UpdatePassword: [isUpdatePasswordForm,
@@ -220,20 +239,19 @@ export default function FormComponent({
     e.persist();
     setFormError(false);
     setFormSuccess(false);
-    setUsernameError(false);
+    setEmailError(false);
     setPasswordError(false);
     setPasswordConfirmationError(false);
-
     setDisableButton(false);
 
     dispatch({ type: 'resetUserAccountIsVerified', })
 
-    setUserNameDup(false);
+    setEmailDup(false);
 
     const { name, value } = e.target
 
-    if (name === 'username') {
-      setUsername(value);
+    if (name === 'email') {
+      setEmail(value);
     }
 
     if (name === 'password') {
@@ -254,12 +272,14 @@ export default function FormComponent({
   }
 
   function handleSubmit(event, form) {
+
+    console.log("form  260", form);
     event.preventDefault();
     validateInputs(
       form,
-      username,
-      setUsernameError,
-      setUsernameFeedback,
+      email,
+      setEmailError,
+      setEmailFeedback,
       password,
       password_confirmation,
       setPasswordConfirmationError,
@@ -271,7 +291,10 @@ export default function FormComponent({
       setFormError
     );
 
-    return Forms[form][1]();
+
+    console.log("formError 286 ", formError);
+
+    return formError === false ? Forms[form][1]() : console.log('form error');
   }
 
   return Forms[formType][0]();
