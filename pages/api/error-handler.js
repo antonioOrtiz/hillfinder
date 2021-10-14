@@ -13,6 +13,6 @@ export default function errorHandler(err, res) {
   }
 
   // default to 500 server error
-  console.error('err.message line 16', err.message);
+  console.log('err.message line 16', err);
   return res.status(500).json({ msg: [err.message] });
 }
