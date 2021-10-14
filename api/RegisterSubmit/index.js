@@ -1,23 +1,21 @@
 import axios from 'axios';
-import { useRouter } from 'next/router'
 
 export default
   function registerSubmit(
-    username,
+    email,
     password,
-    setUsername,
+    setEmail,
     setPassword,
     setResponseMessage,
-    setUserNameDup,
+    setEmailDup,
     setFormError,
     setFormSuccess,
-    setIsLoading) {
+    setIsLoading, router) {
 
-  const router = useRouter();
 
   axios
     .post('/api/registration', {
-      username,
+      email,
       password,
       withCredentials: true
     })
@@ -26,10 +24,10 @@ export default
         setTimeout(() => {
           router.push('/login');
         }, 5000);
-        setUsername('');
+        setEmail('');
         setPassword('');
         setResponseMessage(response.data.msg);
-        setUserNameDup(false);
+        setEmailDup(false);
         setFormError(false);
         setFormSuccess(true);
         setIsLoading(false);
@@ -37,23 +35,29 @@ export default
     })
     .catch((error) => {
       if (error.response) {
+        console.log("error.response ", error.response);
         if (error.response.status === 500) {
+          console.log('foo 41')
           setResponseMessage(error.response.data.msg);
           setFormError(true);
+          setFormSuccess(false);
           setIsLoading(false);
         }
 
         if (error.response.status === 401) {
           setResponseMessage(error.response.data.msg);
-          setIsLoading(false);
           setFormError(true);
-        }
+          setFormSuccess(false);
+          setIsLoading(false);
 
+        }
         if (error.response.status === 409) {
-          setUserNameDup(true);
+          setEmailDup(true);
           setResponseMessage(error.response.data.msg);
+          setFormError(true);
+          setFormSuccess(false);
           setIsLoading(false);
         }
       }
-    });
+    })
 }
