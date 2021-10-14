@@ -4,7 +4,9 @@ import auth from '../../../middleware/auth'
 import User from '../../../models/User'
 import Token from '../../../models/Token'
 
-import connectDB from '../../../middleware/mongodb';
+import connectDB from '../../../db/mongodb';
+
+import errorHandler from '../error-handler'
 
 require('dotenv').config();
 
@@ -14,7 +16,7 @@ connectDB()
 
 handler
   .use(auth)
-  .get((req, res, next) => {
+  .get((req, res) => {
     const { token } = req.query
     try {
       Token.findOne({ token }, (err, token) => {
@@ -51,7 +53,7 @@ handler
         }
       });
     } catch (err) {
-      return next(err);
+      errorHandler(err, res)
     }
   })
 
