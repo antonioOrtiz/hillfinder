@@ -1,14 +1,14 @@
 
 import axios from 'axios';
 
-export default function forgotPasswordSubmit(username, setUsername, setResponseMessage, setFormError, setFormSuccess, setIsLoading) {
+export default function forgotPasswordSubmit(email, setEmail, setResponseMessage, setFormError, setFormSuccess, setIsLoading) {
   axios
     .post('/api/forgot_password', {
-      username
+      email
     })
     .then(response => {
       if (response.status === 200) {
-        setUsername('');
+        setEmail('');
         setResponseMessage(response.data.msg);
         setFormError(false);
         setFormSuccess(true);
