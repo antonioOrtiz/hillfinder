@@ -35,7 +35,8 @@ export default function updatePasswordSubmit(
 
         if (error.response && error.response.status === 422) {
           const [{ value, param }] = error.response.data.errors;
-          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
+          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field.
+          Due to validation error above.`]);
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
