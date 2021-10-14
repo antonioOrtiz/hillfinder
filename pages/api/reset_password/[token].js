@@ -10,7 +10,7 @@ import User from '../../../models/User'
 import Token from '../../../models/Token'
 
 
-import connectDB from '../../../middleware/mongodb';
+import connectDB from '../../../db/mongodb';
 
 import { nodeMailerFunc } from '../../../utils/index'
 
@@ -30,7 +30,7 @@ connectDB()
 
 handler
   .use(auth)
-  .post(async (req, res, next) => {
+  .post(async (req, res) => {
 
     await validateBody(req, res)
 
