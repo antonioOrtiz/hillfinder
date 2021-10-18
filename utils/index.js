@@ -67,9 +67,6 @@ export function validateInputs(
 
   function getFormValidation(form) {
     function isLoginOrRegistration() {
-
-
-
       const rules = {
         email: 'required|email',
         password: 'required|min:7|max:11'
@@ -89,7 +86,6 @@ export function validateInputs(
 
       validate(data, rules, messages)
         .then(success => {
-
           console.log("success ", success);
           if (success.email) {
             setEmailError(false);
