@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 import emailValidator from 'email-validator'
 import bcrypt from 'bcrypt'
 
-import crypto from 'crypto'
+import crypto from 'crypto';
+import errorHandler from '../pages/api/error-handler';
 
 const SALT_ROUNDS = 12;
 
@@ -36,17 +37,21 @@ const UserSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+async function generateHash(password) {
+  return bcrypt.hash(password, 12)
+}
 
-UserSchema.pre('save', async function preSave(next) {
+UserSchema.pre('save', function preSave(next) {
   const user = this;
-  if (!user.isModified('password')) return next();
-  try {
-    const hash = await bcrypt.hash(user.password, SALT_ROUNDS);
-    user.password = hash;
-    return next();
-  } catch (err) {
-    return next(err);
+  if (user.isModified('password')) {
+    return generateHash(user.password)
+      .then((hash) => {
+        user.password = hash;
+        return true;
+      })
+      .catch((error) => errorHandler(error, false));
   }
+
 });
 
 UserSchema.methods.generatePasswordReset = function () {
@@ -56,9 +61,9 @@ UserSchema.methods.generatePasswordReset = function () {
   this.resetPasswordExpires = Date.now() + 3600000; // expires in an hour
 };
 
-UserSchema.methods.comparePassword = async function comparePassword(candidate) {
-  return bcrypt.compare(candidate, this.password);
-};
+UserSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password)
+}
 
 
 
