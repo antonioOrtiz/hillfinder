@@ -4,7 +4,7 @@ import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 import User from '../../models/User'
 
-import connectDB from '../../middleware/mongodb';
+import connectDB from '../../lib/mongodb';
 
 import { nodeMailerFunc } from '../../utils/index';
 import errorHandler from './error-handler';
@@ -25,7 +25,9 @@ handler
           email: req.body.email
         },
         (err, user) => {
-          if (!user) {
+
+          console.log("user ", user);
+          if (user == null) {
             return res.status(404).send({
               msg: [
                 'We were unable to find this user.',
