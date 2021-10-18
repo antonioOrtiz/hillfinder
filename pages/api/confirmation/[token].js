@@ -4,7 +4,7 @@ import auth from '../../../middleware/auth'
 import User from '../../../models/User'
 import Token from '../../../models/Token'
 
-import connectDB from '../../../db/mongodb';
+import connectDB from '../../../lib/mongodb';
 
 import errorHandler from '../error-handler'
 
