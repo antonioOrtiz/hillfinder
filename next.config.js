@@ -35,6 +35,16 @@ module.exports = {
   webpack: (config, { isServer }) => {
 
     if (!isServer) {
+      config.resolve.fallback = {
+        "crypto": false,
+        "https": false,
+        "http": false,
+        "stream": false,
+        "path": false,
+        "os": false,
+        "zlib": false,
+      }
+
       config.resolve.alias = {
         ...config.resolve.alias,
         ...{
@@ -50,6 +60,13 @@ module.exports = {
       config.optimization.minimize = true;
       config.optimization.minimizer.push(new TerserPlugin());
     }
+    config.module.rules.push(
+      {
+        test: /\.html$/i,
+        loader: 'html-loader'
+      },
+
+    )
 
     return config;
   }
