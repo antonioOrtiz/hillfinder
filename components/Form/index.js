@@ -51,19 +51,13 @@ export default function FormComponent({
   const { state } = userState();
 
   const { id, accountNotVerified } = state;
+  useEffect(() => () => {
 
-  // useEffect(() => {
-  //   console.log("formError ", formError);
-  //   console.log("formSuccess ", formSuccess);
-  // });
+    console.log("isLoading ", isLoading);
+    setIsLoading(() => false)
+  }, [])
 
   function isLoginForm() {
-
-    // useEffect(() => {
-    //   // redirect to home if user is authenticated
-    //   if (user) router.push('/profile')
-    // }, [user])
-
     useEffect(() => {
       dispatch({ type: 'resetUserAccountIsVerified' })
     }, [id]);
@@ -86,6 +80,7 @@ export default function FormComponent({
         disableButton={disableButton}
         buttonName="Log-in"
         isLoading={isLoading}
+        setIsLoading={setIsLoading}
         responseMessage={responseMessage}
       />
     );
@@ -211,6 +206,7 @@ export default function FormComponent({
         setResponseMessage,
         dispatch,
         router,
+        user,
         mutate
       )
     ],
@@ -292,9 +288,8 @@ export default function FormComponent({
     );
 
 
-    console.log("formError 286 ", formError);
 
-    return formError === false ? Forms[form][1]() : console.log('form error');
+    return Forms[form][1]()
   }
 
   return Forms[formType][0]();
