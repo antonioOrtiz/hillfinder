@@ -3,7 +3,7 @@ import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 import User from '../../models/User'
 
-import connectDB from '../../middleware/mongodb';
+import connectDB from '../../lib/mongodb';
 
 import { nodeMailerFunc } from '../../utils/index'
 
@@ -29,6 +29,8 @@ handler
         });
       }
       // Insert the new user if they do not exist yet
+
+      console.log("user ", user);
       user = new User({
         email: req.body.email,
         password: req.body.password
