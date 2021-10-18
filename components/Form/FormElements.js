@@ -3,14 +3,16 @@ import Link from "next/link";
 
 import dynamic from 'next/dynamic'
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Message = dynamic(
   () => import('../../utils/Message/index'),
   {
-    loading: () => (<div className=" flex justify-center items-center">
-      <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
-    </div>)
+    loading: () => (
+      <div className=" flex justify-center items-center">
+        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+      </div>
+    )
   }
 )
 
@@ -25,6 +27,7 @@ export default function GenericInputForm({
   handleChange,
   emailError,
   emailFeedback,
+  isLoading,
   password,
   passwordConfirmation,
   passwordConfirmationError,
@@ -34,8 +37,8 @@ export default function GenericInputForm({
   disableButton,
   buttonName,
   responseMessage,
+  setIsLoading = () => { },
   tokenExpired,
-  responseCodeSuccess
 }) {
 
   function PasswordComponent({ label, name, value, placeholder, errorType, messageContent, changeHandler }) {
@@ -303,7 +306,6 @@ export default function GenericInputForm({
                         onChange={handleChange}
                       />
 
-                      {console.log("emailError 306 ", emailError)}
                       {emailError ? <Message
                         state="Error"
                         header="Error"
@@ -327,10 +329,15 @@ export default function GenericInputForm({
                         type="submit"
                         style={{ transition: "all .15s ease" }}
                         disabled={disableButton}
+                        onClick={() => setIsLoading(true)}
                       >
                         {buttonName}
                       </button>
                     </div>
+
+                    {isLoading ? <div className="mt-4 flex justify-center items-center">
+                      <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+                    </div> : null}
 
                     {accountNotVerified && !formError
                       ? <Message
@@ -340,7 +347,6 @@ export default function GenericInputForm({
                       />
                       : null}
 
-                    {console.log("formError 343", formError)}
 
                     {formError
                       ? <Message
