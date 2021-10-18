@@ -1,7 +1,7 @@
 import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 
-import connectDB from '../../middleware/mongodb';
+import connectDB from '../../lib/mongodb';
 
 import errorHandler from './error-handler';
 
