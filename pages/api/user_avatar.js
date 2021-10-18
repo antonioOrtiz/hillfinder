@@ -3,7 +3,7 @@ import cloudinary from 'cloudinary';
 
 import auth from '../../middleware/auth'
 
-import connectDB from '../../middleware/mongodb';
+import connectDB from '../../lib/mongodb';
 
 const handler = nextConnect()
 
