@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export default function loginSubmit(
-  username,
+  email,
   password,
-  setUsername,
+  setEmail,
   setPassword,
   setFormError,
   setFormSuccess,
@@ -13,12 +13,22 @@ export default function loginSubmit(
   router
 ) {
 
+  const data = {
+    email,
+    password,
+  };
   axios
-    .post('/api/login', {
-      username,
-      password,
-    })
+    .post(`/api/login`,
+      data, // request body as string
+      { // options
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
     .then(response => {
+      console.log("response ", response);
       if (response.status === 200) {
         dispatch({
           type: 'setUserId',
@@ -28,7 +38,7 @@ export default function loginSubmit(
           router.push('/profile');
         }, 3000);
 
-        setUsername('');
+        setEmail('');
         setPassword('');
         setFormError(false);
         setFormSuccess(true);
@@ -38,9 +48,22 @@ export default function loginSubmit(
       }
     })
     .catch((error) => {
+
+      console.log("error.response ", error.response);
       if (error.response) {
+
+        if (error.response.status === 404) {
+          setEmail('');
+          setPassword('');
+          setFormError(true);
+          setFormSuccess(false);
+          setIsLoading(false);
+          setResponseMessage(error.response.data.msg);
+        }
+
+
         if (error.response.status === 401) {
-          setUsername('');
+          setEmail('');
           setPassword('');
           setFormError(true);
           setFormSuccess(false);
@@ -50,24 +73,16 @@ export default function loginSubmit(
 
         if (error.response.status === 403) {
           dispatch({ type: 'userAccountNotVerified' })
-          setUsername('');
+          setEmail('');
           setPassword('');
           setFormError(false);
           setFormSuccess(false);
           setIsLoading(false);
           setResponseMessage(error.response.data.msg);
         }
-        if (error.response.status === 404) {
-          setUsername('');
-          setPassword('');
-          setFormError(true);
-          setFormSuccess(false);
-          setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
-        }
+
         if (error.response && error.response.status === 422) {
           const [{ value, param }] = error.response.data.errors;
-
           setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
           setFormError(true);
           setFormSuccess(false);
