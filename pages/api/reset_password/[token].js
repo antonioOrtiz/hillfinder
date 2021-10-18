@@ -1,8 +1,6 @@
 import nextConnect from 'next-connect'
 
 import auth from '../../../middleware/auth'
-import initMiddleware from '../../../middleware/init-middleware'
-import validateMiddleware from '../../../middleware/validate-middleware'
 import { check, body, validationResult } from 'express-validator'
 
 import errorHandler from '../error-handler'
@@ -10,15 +8,10 @@ import User from '../../../models/User'
 import Token from '../../../models/Token'
 
 
-import connectDB from '../../../db/mongodb';
+import connectDB from '../../../lib/mongodb';
 
 import { nodeMailerFunc } from '../../../utils/index'
 
-const validateBody = initMiddleware(
-  validateMiddleware([
-    check('password').isLength({ min: 7, max: 11 }),
-  ], validationResult)
-)
 
 
 
@@ -32,22 +25,17 @@ handler
   .use(auth)
   .post(async (req, res) => {
 
-    await validateBody(req, res)
 
-    const errors = validationResult(req);
-
-    const hasErrors = !errors.isEmpty()
-
-    console.log("hasErrors ", hasErrors);
-    if (hasErrors) {
-      console.log('has errors!')
-      return res.status(422).json({
-        msg: [
-          'Please follow the validations above',
-          're-enter a proper email and/or password.'
-        ]
-      })
-    }
+    // console.log("hasErrors ", hasErrors);
+    // if (hasErrors) {
+    //   console.log('has errors!')
+    //   return res.status(422).json({
+    //     msg: [
+    //       'Please follow the validations above',
+    //       're-enter a proper email and/or password.'
+    //     ]
+    //   })
+    // }
 
     const {
       query: { token },
