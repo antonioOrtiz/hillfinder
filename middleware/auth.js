@@ -18,9 +18,11 @@ const auth = nextConnect()
       },
     })
   )
+
   .use(passport.initialize())
   .use(passport.session())
 
 export default auth
+
 
 
