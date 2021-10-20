@@ -1,7 +1,14 @@
 import React from 'react';
 import Head from 'next/head';
-import Layout from '../components/Layout/'
+
+import dynamic from "next/dynamic";
+
+
 import Home from './home'
+
+
+const Layout = dynamic(() => import('../components/Layout'));
+
 
 export default function Index() {
 
