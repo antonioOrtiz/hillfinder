@@ -1,7 +1,9 @@
 import dynamic from "next/dynamic";
 
-const Layout = dynamic(() => import('../components/Layout'));
-const Form = dynamic(() => import('../components/Form'));
+
+import Layout from '../components/Layout/'
+import Form from '../components/Form/'
+
 
 export default function ForgotPassword() {
   return (
