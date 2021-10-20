@@ -26,16 +26,16 @@ handler
   .post(async (req, res) => {
 
 
-    // console.log("hasErrors ", hasErrors);
-    // if (hasErrors) {
-    //   console.log('has errors!')
-    //   return res.status(422).json({
-    //     msg: [
-    //       'Please follow the validations above',
-    //       're-enter a proper email and/or password.'
-    //     ]
-    //   })
-    // }
+    console.log("hasErrors ", hasErrors);
+    if (hasErrors) {
+      console.log('has errors!')
+      return res.status(422).json({
+        msg: [
+          'Please follow the validations above',
+          're-enter a proper email and/or password.'
+        ]
+      })
+    }
 
     const {
       query: { token },
