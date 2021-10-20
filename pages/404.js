@@ -1,10 +1,12 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 
+import Layout from '../components/Layout/'
+
 export default function FourOhFour() {
   const router = useRouter()
   return (
-    <>
+    <Layout>
       <h1>
         404 - Page Not Found;
       </h1>
@@ -13,7 +15,7 @@ export default function FourOhFour() {
       <Link href="/">
         <a>Home</a>
       </Link>
-    </>
+    </Layout>
   )
 
 }
