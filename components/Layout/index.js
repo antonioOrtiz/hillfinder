@@ -7,9 +7,17 @@ import Router, { useRouter } from 'next/router'
 
 import { userState, userDispatch } from '../Context/UserContext'
 
-import Footer from './Footer';
+import dynamic from "next/dynamic";
 
-export default function Layout({ children, showFooter }) {
+
+
+
+const Footer = dynamic(() => import('./Footer'), { ssr: true });
+
+
+
+
+export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
 
   const { dispatch } = userDispatch();
@@ -38,7 +46,7 @@ export default function Layout({ children, showFooter }) {
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
         <div className="w-full navbar bg-base-300">
-          <div className="flex-none lg:hidden">
+          <div className={'flex-none lg:hidden'}>
             <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
