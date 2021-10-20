@@ -1,31 +1,73 @@
-.content,
-.bg-logo {
-    height: 100vh;
-    display: flex;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: -1;
-    background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
-    /* Set rules to fill background */
-    /* Set up proportionate scaling */
-    /* Set up positioning */
+@media screen and (orientation:portrait) {
+    .content,
+    .bg-logo {
+        height: 100vh;
+        display: flex;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: -1;
+        background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
+        /* Set rules to fill background */
+        /* Set up proportionate scaling */
+        /* Set up positioning */
+    }
+    .bg-logo:after {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        background-image: url('/logo/hillfinder-logo.png');
+        background-repeat: no-repeat;
+        opacity: .1;
+        background-position: center 58%;
+        /* Specify the background image */
+        -webkit-background-size: 512px;
+        -moz-background-size: 512px;
+        -o-background-size: 512px;
+        background-size: 512px;
+        /* Specify the background image */
+        height: 100%;
+        z-index: inherit;
+    }
 }
 
-.bg-logo:after {
-    content: "";
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-image: url('/logo/hillfinder-logo.png');
-    background-repeat: no-repeat;
-    opacity: .1;
-    background-position: center 80%;
-    /* Specify the background image */
-    background-size: contain;
-    height: 100%;
-    z-index: inherit;
+@media screen and (orientation:landscape) {
+    .content,
+    .bg-logo {
+        height: 100vh;
+        display: flex;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: -1;
+        background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
+        /* Set rules to fill background */
+        /* Set up proportionate scaling */
+        /* Set up positioning */
+    }
+    .bg-logo:after {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        background-image: url('/logo/hillfinder-logo.png');
+        background-repeat: no-repeat;
+        opacity: .1;
+        background-position: center -50px;
+        /* Specify the background image */
+        -webkit-background-size: 512px;
+        -moz-background-size: 512px;
+        -o-background-size: 512px;
+        background-size: 512px;
+        /* Specify the background image */
+        height: 100%;
+        z-index: inherit;
+    }
 }
