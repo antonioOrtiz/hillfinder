@@ -247,7 +247,7 @@ export default function GenericInputForm({
             UpdatePassword: tokenExpired
               ? <div className="flex flex-wrap mt-6">
                 <div className="w-1/2">
-                  <Link href="/forgot_password">
+                  <Link href="/forgot-password">
                     <a className="text-white">
                       <small>Reset password?</small>
                     </a>
@@ -365,7 +365,7 @@ export default function GenericInputForm({
             Login: formError
               ? <div className="flex flex-wrap mt-6">
                 <div className="w-1/2">
-                  <Link href="/forgot_password">
+                  <Link href="/forgot-password">
                     <a className="text-white">
                       <small>Forgot password?</small>
                     </a>
