@@ -16,12 +16,10 @@ const handler = nextConnect()
 
 handler
   .use(auth)
-  .post(async (req, res) => {
+  .post(async (req, res, next) => {
     await connectDB()
 
-    if (emailValidator(req, res, 'email')) {
-      return
-    }
+    emailValidator(req, res, next, 'email')
 
     try {
       User.findOne(
