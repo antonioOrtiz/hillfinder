@@ -14,7 +14,7 @@ handler.use(auth).get((req, res) => {
 
     req.logout();
     return res.status(201).send({
-      msg: ['Your have successfully logged out!']
+      msg: 'Your have successfully logged out!'
     });
   } catch (err) {
     errorHandler(err, res)
