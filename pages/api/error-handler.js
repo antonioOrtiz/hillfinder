@@ -1,9 +1,9 @@
 
 export default function errorHandler(err, res) {
   if (typeof (err) === 'string') {
-    // custom application error
     const is404 = err.toLowerCase().endsWith('not found');
     const statusCode = is404 ? 404 : 400;
+
     return res.status(statusCode).json({ message: err });
   }
 
@@ -11,8 +11,5 @@ export default function errorHandler(err, res) {
     // jwt authentication error
     return res.status(401).json({ message: 'Invalid Token' });
   }
-
-  // default to 500 server error
-  console.log('err.message line 16', err);
   return res.status(500).json({ msg: [err.message] });
 }
