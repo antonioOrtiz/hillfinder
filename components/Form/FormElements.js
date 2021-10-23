@@ -142,7 +142,7 @@ export default function GenericInputForm({
                   {buttonName}
                 </button>
               </div>
-
+              {console.log("responseMessage ", responseMessage)}
               {formError
                 ? <Message
                   state="Error"
@@ -219,7 +219,7 @@ export default function GenericInputForm({
                 </button>
               </div>
 
-              {formError && responseMessage
+              {formError && responseMessage !== undefined
                 ? <Message
                   state="Error"
                   content={responseMessage}
@@ -328,7 +328,7 @@ export default function GenericInputForm({
                 <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
               </div> : null}
 
-              {accountNotVerified && !formError
+              {accountNotVerified && !formError && responseMessage !== undefined
                 ? <Message
                   state="Waring"
                   content={responseMessage}
@@ -336,21 +336,22 @@ export default function GenericInputForm({
                 : null}
 
 
-              {formError
+              {console.log("responseMessage ", responseMessage)}
+              {formError && responseMessage !== undefined
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
                 : null}
 
-              {emailDup
+              {emailDup && responseMessage !== undefined
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
                 : null}
 
-              {formSuccess
+              {formSuccess && responseMessage !== undefined
                 ? <Message
                   state="Success"
                   content={responseMessage}
