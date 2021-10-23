@@ -60,13 +60,13 @@ module.exports = {
       config.optimization.minimize = true;
       config.optimization.minimizer.push(new TerserPlugin());
     }
-    config.module.rules.push(
-      {
-        test: /\.html$/i,
-        loader: 'html-loader'
-      },
+    // config.module.rules.push(
+    //   {
+    //     test: /\.html$/i,
+    //     loader: 'html-loader'
+    //   },
 
-    )
+    // )
 
     return config;
   }
