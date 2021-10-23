@@ -9,28 +9,30 @@ import { nodeMailerFunc } from '../../utils/index'
 
 import errorHandler from './error-handler'
 
+import emailValidator from '../../lib/emailVaildator'
+
 require('dotenv').config();
 
 const handler = nextConnect()
 
-connectDB()
-
 handler
   .use(auth)
   .post(async (req, res) => {
+    await connectDB();
+
+    if (emailValidator(req, res, 'email', 'password')) {
+      return
+    }
+
     let user = await User.findOne({ email: req.body.email });
     try {
       if (user) {
         return res.status(409).send({
-          msg: [
-            'The email address you have entered is already associated with another account.',
-            'Please re-enter another email address.'
-          ]
+          msg:
+            `The email address you have entered is already associated with another account.
+            Please re-enter another email address.`
         });
       }
-      // Insert the new user if they do not exist yet
-
-      console.log("user ", user);
       user = new User({
         email: req.body.email,
         password: req.body.password
@@ -45,16 +47,12 @@ handler
         res
       );
       return res.status(201).send({
-        msg: [
-          'Your user registration was successful.',
-          'Please check your email to complete your registration!'
-        ]
+        msg:
+          `Your user registration was successful. Please check your email to complete your registration!`
       });
     } catch (err) {
-      console.log('foo')
       errorHandler(err, res)
     }
-
   })
 
 export default handler;
