@@ -40,7 +40,7 @@ export default function FormComponent({
   const [formError, setFormError] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState({});
+  const [responseMessage, setResponseMessage] = useState([]);
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   const [error, setError] = useState(false);
