@@ -8,11 +8,11 @@ import GenericFormComponent from './FormElements'
 import { userState, userDispatch } from '../Context/UserContext'
 import { userDispatch as uiUserDispatch } from '../../components/Context/UIContext'
 
-import forgotPasswordSubmit from '../../api/ForgotPasswordSubmit'
-import updatePasswordSubmit from '../../api/UpdatePasswordSubmit'
-import isConfirmation from '../../api/Confirmation'
-import loginSubmit from '../../api/LoginSubmit'
-import registerSubmit from '../../api/RegisterSubmit'
+import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
+import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
+import isConfirmation from '../../clientApi/Confirmation'
+import loginSubmit from '../../clientApi/LoginSubmit'
+import registerSubmit from '../../clientApi/RegisterSubmit'
 import { useUser } from '../../lib/hooks'
 
 export default function FormComponent({
@@ -40,7 +40,7 @@ export default function FormComponent({
   const [formError, setFormError] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState([]);
+  const [responseMessage, setResponseMessage] = useState('');
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   const [error, setError] = useState(false);
@@ -51,9 +51,8 @@ export default function FormComponent({
   const { state } = userState();
 
   const { id, accountNotVerified } = state;
-  useEffect(() => () => {
 
-    console.log("isLoading ", isLoading);
+  useEffect(() => () => {
     setIsLoading(() => false)
   }, [])
 
@@ -286,9 +285,6 @@ export default function FormComponent({
       setFormSuccess,
       setFormError
     );
-
-
-
     return Forms[form][1]()
   }
 
