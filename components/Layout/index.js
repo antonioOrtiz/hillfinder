@@ -9,13 +9,7 @@ import { userState, userDispatch } from '../Context/UserContext'
 
 import dynamic from "next/dynamic";
 
-
-
-
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
-
-
-
 
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
