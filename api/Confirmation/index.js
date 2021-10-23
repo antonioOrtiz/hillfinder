@@ -22,7 +22,7 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
       .get(`/api/confirmation/${token}`)
       .then(response => {
         if (response.status === 200) {
-          isSubscribed ? setResponseMessage(response.data.msg) : null;
+          isSubscribed ? setResponseMessage(message => message.concat(response.data.msg)) : null;
         }
 
       })
@@ -31,7 +31,7 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
           dispatch({ type: 'resetUserAccountIsVerified' })
 
           setError(true);
-          isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          isSubscribed ? setResponseMessage(message => message.concat(error.response.data.msg)) : null;
 
         }
 
@@ -39,7 +39,7 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
           dispatch({ type: 'userAccountIsVerified' })
 
           setError(true);
-          isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          isSubscribed ? setResponseMessage(message => message.concat(error.response.data.msg)) : null;
 
         }
       });
@@ -51,7 +51,7 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
   }, [router.isReady]);
 
   if (error) {
-    return showApi && <Layout showFooter> <Message state="Error" header={responseMessage[0]} /></Layout>
+    return showApi && <Layout showFooter> <Message state="Error" content={responseMessage[0]} /></Layout>
   }
   if (error === false) {
     return showApi && <Layout showFooter> <Message state="Success" header={responseMessage[0]} /></Layout>
