@@ -12,7 +12,6 @@ const { v2: cloudinaryV2 } = cloudinary
 
 connectDB()
 
-
 handler
   .use(auth)
   .get((req, res, next) => {
@@ -21,7 +20,6 @@ handler
         if (error) {
           return res.send({ error });
         }
-
         return res.send({
           avatar_info: result.resources[0]
         });
