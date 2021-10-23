@@ -16,9 +16,7 @@ handler.use(auth).post(
   async (req, res, next) => {
     await connectDB();
 
-    if (emailValidator(req, res, 'email', 'password')) {
-      return
-    }
+    emailValidator(req, res, next, 'email', 'password')
 
     passport.authenticate('local', (err, user, info) => {
 
@@ -37,9 +35,11 @@ handler.use(auth).post(
       }
 
       else if (user === false) {
-        return res.status(404).send({
+
+        res.status(404).send({
           msg: `We were unable to find this user. Please confirm with the "Forgot password" link or the "Register" link below!`
         })
+
       }
 
     })(req, res, next);
