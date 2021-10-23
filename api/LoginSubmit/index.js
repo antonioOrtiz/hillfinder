@@ -43,7 +43,7 @@ export default function loginSubmit(
         setFormError(false);
         setFormSuccess(true);
         setIsLoading(false);
-        setResponseMessage(response.data.msg);
+        setResponseMessage(message => message.concat(response.data.msg));
         dispatch({ type: 'userAccountIsVerified' })
       }
     })
@@ -58,7 +58,8 @@ export default function loginSubmit(
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
+
         }
 
 
@@ -68,7 +69,7 @@ export default function loginSubmit(
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
         }
 
         if (error.response.status === 403) {
@@ -78,12 +79,25 @@ export default function loginSubmit(
           setFormError(false);
           setFormSuccess(false);
           setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
         }
 
         if (error.response && error.response.status === 422) {
-          const [{ value, param }] = error.response.data.errors;
-          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field. Follow validations above.`]);
+          let str = '';
+
+          const errors = error.response.data.errors
+
+          const IsEmptyOrWhiteSpace = (str) => (str.match(/^\s*$/) || []).length > 0;
+
+          for (let i = 0; i < errors.length; i++) {
+            const { value, msg, param } = errors[i]
+
+            str += `${IsEmptyOrWhiteSpace(value) ? 'Spaces or an empty value' : `"${value}"`} is an ${msg.toLowerCase()} for the ${param} input. `
+          }
+
+          str += 'Check details above.'
+
+          setResponseMessage(str)
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
