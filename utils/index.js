@@ -139,12 +139,14 @@ export function validateInputs(
       validateAll(data, rules, messages)
         .then(success => {
 
+          console.log("success ", success);
           if (success.email) {
             setEmailError(false);
             setDisableButton(false);
           }
         })
         .catch(errors => {
+          console.log("errors ", errors);
           errors.map((error) => {
             if (error.field === 'email') {
               setEmailError(() => true);
