@@ -3,9 +3,8 @@ export default function Footer() {
     <>
       <footer className="p-10 footer bg-base-200 text-base-content">
         <div>
-          <span className="footer-title">Info</span>
+          <span className="footer-title text-white">Info</span>
           <a className="link link-hover">About Hillfinder</a>
-          <a className="link link-hover">Press kit</a>
         </div>
       </footer>
       <footer className="px-10 py-4 border-t footer bg-base-200 text-base-content border-base-300">
