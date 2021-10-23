@@ -12,7 +12,7 @@ export function logOutUserSession() {
 
 export function getUserAvatar() {
   return axios
-    .get('/api/user_avatar')
+    .get('/api/user-avatar')
     .then(response => {
       if (response.status === 200) {
         if (!response.data.hasOwnProperty('avatar_info')) {
