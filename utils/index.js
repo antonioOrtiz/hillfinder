@@ -1,4 +1,4 @@
-import { validate, validateAll } from 'indicative/validator';
+import { validateAll } from 'indicative/validator';
 
 
 import crypto from 'crypto';
@@ -90,9 +90,8 @@ export function validateInputs(
         max: 'The value is too big. Minimum eleven characters.',
       }
 
-      validate(data, rules, messages)
+      validateAll(data, rules, messages)
         .then(success => {
-          console.log("success ", success);
           if (success.email) {
             setEmailError(false);
             setFormError(false)
@@ -106,28 +105,22 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          const formattedErrors = {}
+          errors.map((error) => {
+            if (error.field === 'email') {
+              setEmailError(() => true);
+              setEmailFeedback(errors[0].message);
+              setDisableButton(true);
+              setFormSuccess(false);
+            }
 
-          errors.forEach(error => formattedErrors[error.field] = error.message)
-
-          console.log("errors ", errors);
-
-          if (errors[0].field === 'email') {
-            setEmailError(() => true);
-            setEmailFeedback(errors[0].message);
-            setDisableButton(true);
-            setFormSuccess(false);
-          }
-
-          if (errors[0].field === 'password') {
-            setPasswordError(true);
-            setPasswordFeedback(errors[0].message);
-            setDisableButton(true);
-            setFormSuccess(false);
-          }
+            if (error.field === 'password') {
+              setPasswordError(true);
+              setPasswordFeedback(error.message);
+              setDisableButton(true);
+              setFormSuccess(false);
+            }
+          })
         });
-
-
     }
 
     function isForgotPassword() {
@@ -135,27 +128,36 @@ export function validateInputs(
         email
       };
 
-      const schema = {
-        email
+      const rules = {
+        email: 'required|email',
       };
+
       const messages = {
         required: 'Make sure to enter the field value.',
-        email: 'Enter valid email address.'
+        email: 'Enter valid email address.',
       };
-      validate(data, schema, messages)
+      validateAll(data, rules, messages)
         .then(success => {
+
           if (success.email) {
             setEmailError(false);
             setDisableButton(false);
           }
         })
         .catch(errors => {
-          if (errors[0].validation === 'email') {
-            const { message } = errors[0];
-            setEmailError(true);
-            setEmailFeedback(message);
-          }
+          errors.map((error) => {
+            if (error.field === 'email') {
+              setEmailError(() => true);
+              setEmailFeedback(error.message);
+              setDisableButton(true);
+              setFormSuccess(false);
+              setFormError(true)
+
+            }
+          })
         });
+
+
     }
 
     function isUpdatePassword() {
