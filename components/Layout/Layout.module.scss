@@ -1,4 +1,4 @@
-@media screen and (orientation:portrait) {
+@media only screen and (orientation:portrait) {
     .content,
     .bg-logo {
         height: 100vh;
@@ -35,7 +35,9 @@
     }
 }
 
-@media screen and (orientation:landscape) {
+// @media (max-width: 767px) and (orientation: landscape) {
+// }
+@media only screen and(orientation: landscape) {
     .content,
     .bg-logo {
         height: 100vh;
@@ -60,7 +62,7 @@
         background-image: url('/logo/hillfinder-logo.png');
         background-repeat: no-repeat;
         opacity: .1;
-        background-position: center -50px;
+        background-position: center 58%;
         /* Specify the background image */
         -webkit-background-size: 512px;
         -moz-background-size: 512px;
@@ -69,5 +71,21 @@
         /* Specify the background image */
         height: 100%;
         z-index: inherit;
+    }
+}
+
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+    /* your CSS to target only landscape mobile users */
+    .bg-logo:after {
+        background-position: center 220px;
+        background-size: contain;
+    }
+}
+
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+    /* your CSS to target only landscape mobile users */
+    .bg-logo:after {
+        background-position: center 60px;
+        background-size: contain;
     }
 }
