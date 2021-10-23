@@ -59,10 +59,10 @@ export default function GenericInputForm({
       <div className="relative w-full mb-3">
         <div className="absolute top-8 right-0 flex items-center px-2">
           <input className="hidden js-password-toggle" type="checkbox" />
-          <label className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
+          <label className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-black-600 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
         </div>
         <label
-          className="block uppercase text-gray-700 text-xs font-bold mb-2"
+          className="block uppercase text-black-700 text-xs font-bold mb-2"
           htmlFor="grid-password"
         >
           {label}
@@ -71,7 +71,7 @@ export default function GenericInputForm({
           name={name}
           type={inputType}
           value={value}
-          className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+          className="border-0 px-3 py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
           placeholder={placeholder}
           style={{ transition: "all .15s ease" }}
           onChange={changeHandler}
@@ -97,20 +97,21 @@ export default function GenericInputForm({
           <div className="relative flex flex-col min-w-0 break-words shadow-lg rounded-lg bg-gray-300  bg-opacity-50 flex-auto px-4 py-5 pt-0">
 
             <div className="my-3">
-              <h6 className="text-gray-600 text-sm text-center font-bold">
+              <h6 className="text-black-600 text-sm text-center font-bold">
                 Forgot Password
               </h6>
               <p> Not a problem. Just enter your email address below. If it's registered
                 with Hillfinder, we'll send you a link to reset your password.{' '}</p>
             </div>
-            <hr className="mt-6 border-b-1 border-gray-500" />
+            <hr className="mb-4 border-b-1 border-gray-500" />
 
-
-
-            <form noValidate onSubmit={e => handleSubmit(e, formType)}>
+            <form
+              noValidate
+              onSubmit={e => handleSubmit(e, formType)}
+            >
               <div className="relative w-full mb-3">
                 <label
-                  className="block uppercase text-gray-700 text-xs font-bold mb-2"
+                  className="block uppercase text-black-700 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                   Email
@@ -118,7 +119,7 @@ export default function GenericInputForm({
                 <input
                   type="email"
                   name="email"
-                  className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                  className="border-0 px-3 py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                   placeholder="E-mail address, e.g. joe@schmoe.com"
                   style={{ transition: "all .15s ease" }}
                   value={email}
@@ -145,16 +146,14 @@ export default function GenericInputForm({
               {formError
                 ? <Message
                   state="Error"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
               {formSuccess
                 ? <Message
                   state="Success"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
             </form>
@@ -166,7 +165,7 @@ export default function GenericInputForm({
               ?
               <div className="w-1/2 text-left">
                 <Link href="/registration">
-                  <a className="text-gray-300">
+                  <a className="text-white">
                     <small>Create new account</small>
                   </a>
                 </Link>
@@ -181,7 +180,7 @@ export default function GenericInputForm({
           <div className="relative flex flex-col min-w-0 break-words shadow-lg rounded-lg bg-gray-300  bg-opacity-50 flex-auto px-4 py-5 pt-0">
 
             <div className="my-3">
-              <h6 className="text-gray-600 text-sm text-center font-bold">
+              <h6 className="text-black-600 text-sm text-center font-bold">
                 {{ Login: 'Login', Register: 'Register', UpdatePassword: 'Update password' }[formType]}
               </h6>
             </div>
@@ -220,12 +219,10 @@ export default function GenericInputForm({
                 </button>
               </div>
 
-              {formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
+              {formError && responseMessage
                 ? <Message
                   state="Error"
-                  header={responseMessage[0]}
-
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
@@ -237,11 +234,10 @@ export default function GenericInputForm({
                 />
                 : null}
 
-              {formSuccess && !formError && responseMessage[0] !== undefined && responseMessage[1] !== undefined
+              {formSuccess && !formError && responseMessage !== undefined
                 ? <Message
                   state="Success"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
             </form>
@@ -252,7 +248,7 @@ export default function GenericInputForm({
               ? <div className="flex flex-wrap mt-6">
                 <div className="w-1/2">
                   <Link href="/forgot_password">
-                    <a className="text-gray-300">
+                    <a className="text-white">
                       <small>Reset password?</small>
                     </a>
                   </Link>
@@ -268,15 +264,13 @@ export default function GenericInputForm({
 
           <div className="relative flex flex-col min-w-0 break-words shadow-lg rounded-lg bg-gray-300  bg-opacity-50 flex-auto px-4 py-5 pt-0">
             <div className="my-3">
-              <h6 className="text-gray-600 text-sm text-center font-bold">
+              <h6 className="text-black-600 text-sm text-center font-bold">
                 {
                   { Login: 'Login', Register: 'Register' }[formType]
                 }
               </h6>
             </div>
             <hr className="mb-4 border-b-1 border-gray-500" />
-
-
 
             <form
               noValidate
@@ -286,7 +280,7 @@ export default function GenericInputForm({
             >
               <div className="relative w-full mb-3">
                 <label
-                  className="block uppercase text-gray-700 text-xs font-bold mb-2"
+                  className="block uppercase text-black-700 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                   Email
@@ -294,7 +288,7 @@ export default function GenericInputForm({
                 <input
                   type="email"
                   name="email"
-                  className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                  className="border-0 px-3 py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                   placeholder="E-mail address, e.g. joe@schmoe.com"
                   style={{ transition: "all .15s ease" }}
                   value={email}
@@ -337,8 +331,7 @@ export default function GenericInputForm({
               {accountNotVerified && !formError
                 ? <Message
                   state="Waring"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
@@ -346,24 +339,21 @@ export default function GenericInputForm({
               {formError
                 ? <Message
                   state="Error"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
               {emailDup
                 ? <Message
                   state="Error"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
               {formSuccess
                 ? <Message
                   state="Success"
-                  header={responseMessage[0]}
-                  content={responseMessage[1]}
+                  content={responseMessage}
                 />
                 : null}
 
@@ -376,14 +366,14 @@ export default function GenericInputForm({
               ? <div className="flex flex-wrap mt-6">
                 <div className="w-1/2">
                   <Link href="/forgot_password">
-                    <a className="text-gray-300">
+                    <a className="text-white">
                       <small>Forgot password?</small>
                     </a>
                   </Link>
                 </div>
                 <div className="w-1/2 text-right">
                   <Link href="/registration">
-                    <a className="text-gray-300">
+                    <a className="text-white">
                       <small>Create new account</small>
                     </a>
                   </Link>
