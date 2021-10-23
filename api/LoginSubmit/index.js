@@ -28,7 +28,6 @@ export default function loginSubmit(
       }
     )
     .then(response => {
-      console.log("response ", response);
       if (response.status === 200) {
         dispatch({
           type: 'setUserId',
@@ -48,10 +47,7 @@ export default function loginSubmit(
       }
     })
     .catch((error) => {
-
-      console.log("error.response ", error.response);
       if (error.response) {
-
         if (error.response.status === 404) {
           setEmail('');
           setPassword('');
@@ -61,7 +57,6 @@ export default function loginSubmit(
           setResponseMessage(message => message.concat(error.response.data.msg));
 
         }
-
 
         if (error.response.status === 401) {
           setEmail('');
