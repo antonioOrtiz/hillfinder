@@ -17,7 +17,7 @@ export default function updatePasswordSubmit(
         setFormSuccess(true);
         setIsLoading(false);
         setResponseCodeSuccess(true);
-        setResponseMessage(response.data.msg);
+        setResponseMessage(message => message.concat(response.data.msg));
         setDisableButton(true);
         setTimeout(() => {
           router.push('/login');
@@ -30,13 +30,11 @@ export default function updatePasswordSubmit(
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
         }
 
         if (error.response && error.response.status === 422) {
-          const [{ value, param }] = error.response.data.errors;
-          setResponseMessage(['Server Error', `The value ${value} is invalid for the ${param} field.
-          Due to validation error above.`]);
+          setResponseMessage(message => message.concat(error.response.data.msg));
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);

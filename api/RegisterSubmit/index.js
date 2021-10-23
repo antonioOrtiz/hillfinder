@@ -26,7 +26,7 @@ export default
         }, 5000);
         setEmail('');
         setPassword('');
-        setResponseMessage(response.data.msg);
+        setResponseMessage(message => message.concat(response.data.msg));
         setEmailDup(false);
         setFormError(false);
         setFormSuccess(true);
@@ -37,15 +37,14 @@ export default
       if (error.response) {
         console.log("error.response ", error.response);
         if (error.response.status === 500) {
-          console.log('foo 41')
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
         }
 
         if (error.response.status === 401) {
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
@@ -53,7 +52,7 @@ export default
         }
         if (error.response.status === 409) {
           setEmailDup(true);
-          setResponseMessage(error.response.data.msg);
+          setResponseMessage(message => message.concat(error.response.data.msg));
           setFormError(true);
           setFormSuccess(false);
           setIsLoading(false);
