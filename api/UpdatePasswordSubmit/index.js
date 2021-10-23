@@ -6,7 +6,7 @@ export default function updatePasswordSubmit(
 
 
   console.log("token ", token);
-  axios.post(`/api/reset_password/${token}`, {
+  axios.post(`/api/reset-password/${token}`, {
     password
   })
     .then(response => {
