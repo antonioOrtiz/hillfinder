@@ -1,36 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import axios from 'axios';
-
-import styles from './Layout.module.scss';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router'
-
-import { userState, userDispatch } from '../Context/UserContext'
-
 import dynamic from "next/dynamic";
+
+
+import styles from './Layout.module.scss';
+
+
+import { useUser } from '../../lib/hooks';
 
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
 
-  const { dispatch } = userDispatch();
-
-  const { state } = userState();
-  const { id: user } = state;
+  const [user, { mutate }] = useUser()
 
   useEffect(() => {
     if (router === undefined) return;
   }, [router])
 
+  useEffect(() => {
+    // console.log("user ", user);
+  }, []);
 
   async function handleLogout() {
     axios
-      .get('/api/logout').then(r => {
-        dispatch({
-          type: 'setUserId',
-          payload: { id: null }
-        });
+      .get('/api/logout').then(() => {
+        // mutate({ user: null })
         Router.push('/',)
       }).catch(err => console.log('err', err))
   }
