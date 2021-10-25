@@ -10,7 +10,9 @@ export default function loginSubmit(
   setIsLoading,
   setResponseMessage,
   dispatch,
-  router
+  router,
+  user,
+  mutate
 ) {
 
   const data = {
@@ -29,10 +31,7 @@ export default function loginSubmit(
     )
     .then(response => {
       if (response.status === 200) {
-        dispatch({
-          type: 'setUserId',
-          payload: { id: response.data.userId._id }
-        });
+        mutate(response.data.user.userId)
         setTimeout(() => {
           router.push('/profile');
         }, 3000);
