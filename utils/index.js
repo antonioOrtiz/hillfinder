@@ -46,9 +46,11 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       text: emailBody
     };
 
-    mg.messages().send(data, (error, body) => {
-      error ? console.log('error', error) : console.log(body);
-    });
+
+
+    mg.messages.create(process.env.MAILGUN_DOMAIN, data)
+      .then((msg) => console.log('success message:', msg))
+      .catch((err) => console.log('failure!', err));
   }
 
   sendMail(process.env.EMAIL_ADDRESS, user.email, subjectField, `${textField}${outputTokenInEmail(emailType)}`);
