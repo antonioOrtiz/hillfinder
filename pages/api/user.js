@@ -8,9 +8,19 @@ handler
   .get((req, res) => {
     // You do not generally want to return the whole user object
     // because it may contain sensitive field such as !!password!! Only return what needed
-    // const { name, username, favoriteColor } = req.user
-    // res.json({ user: { name, username, favoriteColor } })
-    res.json({ user: req.user })
+
+    // const { _id } = req.user
+    // res.json({ user: { _id } })
+    console.log("in api/user req.user ", req.user);
+
+
+    if (req.user) {
+      const { _id } = req.user
+      res.json({ user: { _id } })
+    } else {
+      res.json({ user: null })
+    }
+
   })
 // .post((req, res) => {
 //   const { username, password, name } = req.body
