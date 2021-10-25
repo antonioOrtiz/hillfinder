@@ -31,7 +31,7 @@ export default function loginSubmit(
     )
     .then(response => {
       if (response.status === 200) {
-        mutate(response.data.user.userId)
+        // mutate(response.data.user.userId)
         setTimeout(() => {
           router.push('/profile');
         }, 3000);
