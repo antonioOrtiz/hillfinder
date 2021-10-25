@@ -142,7 +142,11 @@ export default function GenericInputForm({
                   {buttonName}
                 </button>
               </div>
-              {console.log("responseMessage ", responseMessage)}
+
+              {isLoading ? <div className="mt-4 flex justify-center items-center">
+                <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+              </div> : null}
+
               {formError
                 ? <Message
                   state="Error"
@@ -218,6 +222,11 @@ export default function GenericInputForm({
                   {{ UpdatePassword: 'Update password' }[formType]}
                 </button>
               </div>
+
+
+              {isLoading ? <div className="mt-4 flex justify-center items-center">
+                <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+              </div> : null}
 
               {formError && responseMessage !== undefined
                 ? <Message
@@ -336,15 +345,14 @@ export default function GenericInputForm({
                 : null}
 
 
-              {console.log("responseMessage ", responseMessage)}
-              {formError && responseMessage !== undefined
+              {/* {formError && responseMessage !== undefined
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
-                : null}
+                : null} */}
 
-              {emailDup && responseMessage !== undefined
+              {emailDup || formError && responseMessage !== undefined
                 ? <Message
                   state="Error"
                   content={responseMessage}
