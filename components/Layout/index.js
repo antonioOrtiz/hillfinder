@@ -8,14 +8,16 @@ import dynamic from "next/dynamic";
 import styles from './Layout.module.scss';
 
 
-import { useUser } from '../../lib/hooks';
+import { userState, userDispatch } from '../Context/UserContext';
 
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
+  const { dispatch } = userDispatch();
+  const { state } = userState();
 
-  const [user, { mutate }] = useUser()
+  const { id: user } = state;
 
   useEffect(() => {
     if (router === undefined) return;
@@ -28,7 +30,11 @@ export default function Layout({ children, showFooter = false }) {
   async function handleLogout() {
     axios
       .get('/api/logout').then(() => {
-        // mutate({ user: null })
+        dispatch({
+          type: 'setUserId', payload: {
+            id: null
+          }
+        })
         Router.push('/',)
       }).catch(err => console.log('err', err))
   }
