@@ -11,7 +11,6 @@ connectDB()
 
 handler.use(auth).get((req, res) => {
   try {
-
     req.logout();
     return res.status(201).send({
       msg: 'Your have successfully logged out!'
