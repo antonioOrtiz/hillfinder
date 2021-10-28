@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { isJson } from '../../utils/index'
+
 export default function loginSubmit(
   email,
   password,
@@ -11,8 +13,6 @@ export default function loginSubmit(
   setResponseMessage,
   dispatch,
   router,
-  user,
-  mutate
 ) {
 
   const data = {
@@ -30,12 +30,12 @@ export default function loginSubmit(
       }
     )
     .then(response => {
+
+      console.log("response ", response);
       if (response.status === 200) {
-        // mutate(response.data.user.userId)
         setTimeout(() => {
           router.push('/profile');
         }, 3000);
-
         setEmail('');
         setPassword('');
         setFormError(false);
@@ -43,9 +43,16 @@ export default function loginSubmit(
         setIsLoading(false);
         setResponseMessage(response.data.msg);
         dispatch({ type: 'userAccountIsVerified' })
+        dispatch({
+          type: 'setUserId', payload: {
+            id: response.data.userId
+          }
+        })
       }
     })
     .catch((error) => {
+      console.log("error.response ", error.response);
+
       if (error.response) {
         if (error.response.status === 404) {
           setEmail('');
@@ -76,11 +83,9 @@ export default function loginSubmit(
           setResponseMessage(error.response.data.msg);
         }
 
-        if (error.response && error.response.status === 422) {
+        if (error.response.status === 422) {
           let str = '';
-
-          const errors = error.response.data.errors
-
+          const errors = error.response.data.errors;
           const IsEmptyOrWhiteSpace = (str) => (str.match(/^\s*$/) || []).length > 0;
 
           for (let i = 0; i < errors.length; i++) {
