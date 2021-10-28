@@ -83,8 +83,6 @@ export default function GenericInputForm({
           header="Error"
           content={messageContent}
         /> : null}
-
-
       </div>
     )
   }
@@ -147,14 +145,14 @@ export default function GenericInputForm({
                 <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
               </div> : null}
 
-              {formError
+              {formError && responseMessage
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
                 : null}
 
-              {formSuccess
+              {formSuccess && responseMessage
                 ? <Message
                   state="Success"
                   content={responseMessage}
@@ -228,7 +226,7 @@ export default function GenericInputForm({
                 <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
               </div> : null}
 
-              {formError && responseMessage !== undefined
+              {formError && responseMessage
                 ? <Message
                   state="Error"
                   content={responseMessage}
@@ -243,7 +241,7 @@ export default function GenericInputForm({
                 />
                 : null}
 
-              {formSuccess && !formError && responseMessage !== undefined
+              {formSuccess && !formError && responseMessage
                 ? <Message
                   state="Success"
                   content={responseMessage}
@@ -337,7 +335,7 @@ export default function GenericInputForm({
                 <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
               </div> : null}
 
-              {accountNotVerified && !formError && responseMessage !== undefined
+              {accountNotVerified && !formError && responseMessage
                 ? <Message
                   state="Waring"
                   content={responseMessage}
@@ -345,21 +343,21 @@ export default function GenericInputForm({
                 : null}
 
 
-              {/* {formError && responseMessage !== undefined
+              {/* {formError && responseMessage
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
                 : null} */}
 
-              {emailDup || formError && responseMessage !== undefined
+              {emailDup || formError && responseMessage
                 ? <Message
                   state="Error"
                   content={responseMessage}
                 />
                 : null}
 
-              {formSuccess && responseMessage !== undefined
+              {formSuccess && responseMessage
                 ? <Message
                   state="Success"
                   content={responseMessage}
