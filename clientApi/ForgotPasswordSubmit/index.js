@@ -3,9 +3,6 @@ import axios from 'axios';
 
 export default function forgotPasswordSubmit(email, setEmail, setResponseMessage, setFormError, setFormSuccess, setIsLoading) {
 
-
-  console.log("email", email);
-
   axios
     .post('/api/forgot-password', {
       email
