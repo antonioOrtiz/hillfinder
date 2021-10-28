@@ -13,13 +13,11 @@ import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
 import isConfirmation from '../../clientApi/Confirmation'
 import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
-import { useUser } from '../../lib/hooks'
 
 export default function FormComponent({
   formType,
 }) {
   const router = useRouter();
-  const [user, { mutate }] = useUser()
 
   const { dispatch } = userDispatch();
   const { dispatch: uidispatch } = uiUserDispatch();
@@ -112,11 +110,6 @@ export default function FormComponent({
   }
 
   function isUpdatePasswordForm() {
-    useEffect(() => {
-
-      console.log("formError ", formError);
-      console.log("formSuccess ", formSuccess);
-    });
     return (
       <GenericFormComponent
         handleSubmit={handleSubmit}
@@ -190,7 +183,8 @@ export default function FormComponent({
         setResponseMessage,
         setFormError,
         setFormSuccess,
-        setIsLoading
+        setIsLoading,
+
       )
     ],
     Login: [isLoginForm,
@@ -204,9 +198,7 @@ export default function FormComponent({
         setIsLoading,
         setResponseMessage,
         dispatch,
-        router,
-        user,
-        mutate
+        router
       )
     ],
     Register: [isRegisterForm,
@@ -225,13 +217,16 @@ export default function FormComponent({
     ],
     UpdatePassword: [isUpdatePasswordForm,
       () => updatePasswordSubmit(
-        password, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token
+        password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token
       )
     ]
   };
 
   function handleChange(e) {
     e.persist();
+    setResponseMessage('');
+    setPasswordFeedback('')
+    setPasswordConfirmationFeedback('')
     setFormError(false);
     setFormSuccess(false);
     setEmailError(false);
@@ -267,8 +262,6 @@ export default function FormComponent({
   }
 
   function handleSubmit(event, form) {
-
-    console.log("form  260", form);
     event.preventDefault();
     validateInputs(
       form,
