@@ -23,22 +23,6 @@ const UserStateContext = React.createContext();
 const UserContextDispatch = React.createContext();
 
 function setLocalStorage(key, value) {
-  function isJson(item) {
-    item = typeof item !== 'string' ? JSON.stringify(item) : item;
-
-    try {
-      item = JSON.parse(item);
-    } catch (e) {
-      return false;
-    }
-
-    if (typeof item === 'object' && item !== null) {
-      return true;
-    }
-
-    return false;
-  }
-
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (errors) {
