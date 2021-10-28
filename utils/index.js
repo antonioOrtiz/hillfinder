@@ -1,4 +1,4 @@
-import { validateAll } from 'indicative/validator';
+import { validateAll, validate } from 'indicative/validator';
 
 
 import crypto from 'crypto';
@@ -141,14 +141,12 @@ export function validateInputs(
       validateAll(data, rules, messages)
         .then(success => {
 
-          console.log("success ", success);
           if (success.email) {
             setEmailError(false);
             setDisableButton(false);
           }
         })
         .catch(errors => {
-          console.log("errors ", errors);
           errors.map((error) => {
             if (error.field === 'email') {
               setEmailError(() => true);
@@ -171,21 +169,17 @@ export function validateInputs(
       };
       const schema = {
         password: 'required|min:4|max:11|string|confirmed',
-        password_confirmation: 'required|min:7|max:11|string|same:password'
       };
       const messages = {
+        confirmed: 'Please confirm your new password below.',
         required: 'Make sure to enter the field value.',
         min: 'The password is too short. Minimum 7 characters.',
         max: 'The password is too long. Maximum 11 characters.',
-        same: 'Passwords must match.'
       };
 
 
       validateAll(data, schema, messages)
         .then(success => {
-
-          // console.log("success.password === success.password_confirmation ", success.password === success.password_confirmation);
-          // console.log("success ", success);
           if (success.password) {
             setPasswordError(false);
           }
@@ -227,8 +221,6 @@ export function validateInputs(
     };
 
     try {
-
-      console.log("formType utils 267 ", form);
       Forms[form]();
     } catch (error) { console.log('Error', error) }
   }
@@ -236,7 +228,21 @@ export function validateInputs(
   return getFormValidation(form);
 }
 
+export function isJson(item) {
+  item = typeof item !== 'string' ? JSON.stringify(item) : item;
 
+  try {
+    item = JSON.parse(item);
+  } catch (e) {
+    return false;
+  }
+
+  if (typeof item === 'object' && item !== null) {
+    return true;
+  }
+
+  return false;
+}
 
 
 
