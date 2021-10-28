@@ -2,45 +2,59 @@ import axios from 'axios';
 
 
 export default function updatePasswordSubmit(
-  password, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token) {
+  password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token) {
 
-
-  console.log("token ", token);
-  axios.post(`/api/reset-password/${token}`, {
-    password
-  })
-    .then(response => {
-      if (response.status === 201) {
-        setPassword('');
-        setPasswordConfirmation('');
-        setFormError(false);
-        setFormSuccess(true);
-        setIsLoading(false);
-        setResponseCodeSuccess(true);
-        setResponseMessage(response.data.msg);
-        setDisableButton(true);
-        setTimeout(() => {
-          router.push('/login');
-        }, 5000);
-      }
-    }).catch((error) => {
-      if (error.response) {
-        if (error.response.status === 401) {
+  if (password === password_confirmation) {
+    axios.post(`/api/update-password/${token}`, {
+      password
+    })
+      .then(response => {
+        if (response.status === 201) {
           setPassword('');
-          setFormError(true);
-          setFormSuccess(false);
-          setIsLoading(false);
-          setResponseMessage(error.response.data.msg);
-        }
 
-        if (error.response && error.response.status === 422) {
-          setResponseMessage(error.response.data.msg);
-          setFormError(true);
-          setFormSuccess(false);
+          setPasswordConfirmation('');
+          setFormError(false);
+          setFormSuccess(true);
           setIsLoading(false);
+          setResponseCodeSuccess(true);
+          setResponseMessage(response.data.msg);
+          setDisableButton(true);
+          setTimeout(() => {
+            router.push('/login');
+          }, 5000);
         }
-      }
-    });
+      }).catch((error) => {
+        if (error.response) {
+
+          console.log("error.response ", error.response);
+          if (error.response.status === 401) {
+            setPassword('');
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+            setResponseMessage(error.response.data.msg);
+          }
+
+          if (error.response.status === 422) {
+            setResponseMessage(error.response.data.msg);
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+          }
+
+          if (error.response.status === 500) {
+            setResponseMessage(error.response.data.message)
+            setFormError(true);
+            setFormSuccess(false);
+            setIsLoading(false);
+          }
+        }
+      });
+  } else {
+    console.log('Passwords must match');
+    return false
+  }
+
 }
 
 
