@@ -45,6 +45,7 @@ export default function FormComponent({
 
   const [current_location, setCurrentLocation] = useState('');
   const [current_destination, setCurrentDestination] = useState('');
+  const [mounted, setMounted] = useState(false);
 
   const { state } = userState();
 
@@ -54,13 +55,20 @@ export default function FormComponent({
     setIsLoading(() => false)
   }, [])
 
+  useEffect(() => {
+
+    console.log("mounted ", mounted);
+    setMounted(true)
+  }, [])
+
+
   function isLoginForm() {
     useEffect(() => {
       dispatch({ type: 'resetUserAccountIsVerified' })
     }, [id]);
 
     return (
-      <GenericFormComponent
+      mounted && <GenericFormComponent
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -86,7 +94,7 @@ export default function FormComponent({
   function isRegisterForm() {
     console.log("formType ", formType);
     return (
-      <GenericFormComponent
+      mounted && <GenericFormComponent
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -111,7 +119,7 @@ export default function FormComponent({
 
   function isUpdatePasswordForm() {
     return (
-      <GenericFormComponent
+      mounted && <GenericFormComponent
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -141,7 +149,7 @@ export default function FormComponent({
 
   function isForgotPasswordForm() {
     return (
-      <GenericFormComponent
+      mounted && <GenericFormComponent
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
