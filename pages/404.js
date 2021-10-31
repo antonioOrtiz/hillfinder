@@ -1,7 +1,10 @@
+import dynamic from "next/dynamic";
+
+
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 
-import Layout from '../components/Layout/'
+const Layout = dynamic(() => import('../components/Layout'), { ssr: false });
 
 export default function FourOhFour() {
   const router = useRouter()
