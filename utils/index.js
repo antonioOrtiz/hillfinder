@@ -49,7 +49,12 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 
 
     mg.messages.create(process.env.MAILGUN_DOMAIN, data)
-      .then((msg) => console.log('success message:', msg))
+      .then((msg) => {
+
+        console.log("data ", data);
+        console.log("msg ", msg);
+        console.log('success message:', msg)
+      })
       .catch((err) => console.log('failure!', err));
   }
 
