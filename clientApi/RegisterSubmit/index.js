@@ -57,8 +57,12 @@ export default
           setFormSuccess(false);
           setIsLoading(false);
         }
-
-
+        if (error.response.status === 400) {
+          setResponseMessage(error.response.data.msg);
+          setFormError(true);
+          setFormSuccess(false);
+          setIsLoading(false);
+        }
         if (error.response.status === 422) {
           let str = '';
           const errors = error.response.data.errors;
