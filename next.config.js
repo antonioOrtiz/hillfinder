@@ -4,7 +4,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 
 module.exports = {
-  target: "serverless",
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
     DEVELOPMENT_DB_DSN: process.env.DEVELOPMENT_DB_DSN,
