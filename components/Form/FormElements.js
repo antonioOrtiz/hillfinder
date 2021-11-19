@@ -35,11 +35,18 @@ export default function GenericInputForm({
   passwordError,
   passwordFeedback,
   disableButton,
+  setDisableButton,
   buttonName,
   responseMessage,
   setIsLoading = () => { },
   tokenExpired,
 }) {
+
+  useEffect(() => {
+    if (formType === 'ForgotPassword' && email === '') {
+      setDisableButton(() => true)
+    }
+  }, [])
 
   function PasswordComponent({ label, name, value, placeholder, errorType, messageContent, changeHandler }) {
     const [inputType, setInputType] = useState('password');

@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-import { isJson } from '../../utils/index'
-
 export default function loginSubmit(
   email,
   password,
@@ -13,8 +11,8 @@ export default function loginSubmit(
   setResponseMessage,
   dispatch,
   router,
+  mutate,
 ) {
-
   const data = {
     email,
     password,
@@ -30,8 +28,6 @@ export default function loginSubmit(
       }
     )
     .then(response => {
-
-      console.log("response ", response);
       if (response.status === 200) {
         setTimeout(() => {
           router.push('/profile');
@@ -43,16 +39,10 @@ export default function loginSubmit(
         setIsLoading(false);
         setResponseMessage(response.data.msg);
         dispatch({ type: 'userAccountIsVerified' })
-        dispatch({
-          type: 'setUserId', payload: {
-            id: response.data.userId
-          }
-        })
+        mutate(response.data.user)
       }
     })
     .catch((error) => {
-      console.log("error.response ", error.response);
-
       if (error.response) {
         if (error.response.status === 404) {
           setEmail('');

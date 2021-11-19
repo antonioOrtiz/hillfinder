@@ -2,8 +2,10 @@
     box-sizing: border-box;
 }
 
-
-/*overides */
+html,
+body {
+    background-color: #4e9525;
+}
 
 .navbar {
     border-bottom: 1px solid #386F22;

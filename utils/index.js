@@ -46,8 +46,6 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
       text: emailBody
     };
 
-
-
     mg.messages.create(process.env.MAILGUN_DOMAIN, data)
       .then((msg) => {
 
@@ -75,7 +73,8 @@ export function validateInputs(
   setPasswordFeedback,
   setDisableButton,
   setFormSuccess,
-  setFormError
+  setFormError = () => { },
+
 ) {
 
   function getFormValidation(form) {
@@ -112,18 +111,16 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          errors.map((error) => {
+          Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailError(() => true);
               setEmailFeedback(errors[0].message);
-              setDisableButton(true);
               setFormSuccess(false);
             }
 
             if (error.field === 'password') {
               setPasswordError(true);
               setPasswordFeedback(error.message);
-              setDisableButton(true);
               setFormSuccess(false);
             }
           })
@@ -156,7 +153,6 @@ export function validateInputs(
             if (error.field === 'email') {
               setEmailError(() => true);
               setEmailFeedback(error.message);
-              setDisableButton(true);
               setFormSuccess(false);
               setFormError(true)
 
@@ -203,14 +199,12 @@ export function validateInputs(
             if (error.field === 'password') {
               setPasswordError(true);
               setPasswordFeedback(error.message);
-              setDisableButton(true);
               setFormError(true)
             }
 
             if (error.field === 'password_confirmation') {
               setPasswordConfirmationError(true);
               setPasswordConfirmationFeedback(error.message);
-              setDisableButton(true);
               setFormError(true)
             }
           })

@@ -14,6 +14,8 @@ import isConfirmation from '../../clientApi/Confirmation'
 import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
 
+import { useUser } from '../../lib/hooks'
+
 export default function FormComponent({
   formType,
 }) {
@@ -34,6 +36,7 @@ export default function FormComponent({
   const [password_confirmation, setPasswordConfirmation] = useState('');
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
   const [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
+  const [preventSubmit, setPreventSubmit] = useState(false)
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
@@ -51,15 +54,29 @@ export default function FormComponent({
 
   const { id, accountNotVerified } = state;
 
-  useEffect(() => () => {
+  const { mutate } = useUser()
+
+
+
+
+  useEffect(() => {
     setIsLoading(() => false)
   }, [])
 
   useEffect(() => {
-
-    console.log("mounted ", mounted);
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+
+    console.log("preventSubmit ", preventSubmit);
+    if (preventSubmit) {
+      setPreventSubmit(() => true)
+    }
+    return () => {
+      setPreventSubmit(() => false)
+    }
+  }, [emailError, passwordError])
 
 
   function isLoginForm() {
@@ -165,6 +182,7 @@ export default function FormComponent({
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
         disableButton={disableButton}
+        setDisableButton={setDisableButton}
         buttonName="Yes, send a link"
         isLoading={isLoading}
         responseMessage={responseMessage}
@@ -206,7 +224,8 @@ export default function FormComponent({
         setIsLoading,
         setResponseMessage,
         dispatch,
-        router
+        router,
+        mutate
       )
     ],
     Register: [isRegisterForm,
@@ -246,7 +265,9 @@ export default function FormComponent({
 
     setEmailDup(false);
 
-    const { name, value } = e.target
+    const { name, value } = e.target;
+
+    if (value === '') setDisableButton(() => true)
 
     if (name === 'email') {
       setEmail(value);
@@ -270,6 +291,8 @@ export default function FormComponent({
   }
 
   function handleSubmit(event, form) {
+
+    console.log("preventSubmit ", preventSubmit);
     event.preventDefault();
     validateInputs(
       form,
@@ -282,11 +305,10 @@ export default function FormComponent({
       setPasswordConfirmationFeedback,
       setPasswordError,
       setPasswordFeedback,
-      setDisableButton,
       setFormSuccess,
-      setFormError
+      setFormError,
     );
-    return Forms[form][1]()
+    return preventSubmit ? false : Forms[form][1]()
   }
 
   return Forms[formType][0]();

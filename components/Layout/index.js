@@ -7,37 +7,30 @@ import dynamic from "next/dynamic";
 
 import styles from './Layout.module.scss';
 
-
-import { userState, userDispatch } from '../Context/UserContext';
+import { useUser } from '../../lib/hooks'
 
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
-  const { dispatch } = userDispatch();
-  const { state } = userState();
+  const { user, mutate } = useUser()
 
-  const { id: user } = state;
 
   useEffect(() => {
     if (router === undefined) return;
   }, [router])
 
-  useEffect(() => {
-    // console.log("user ", user);
-  }, []);
-
   async function handleLogout() {
     axios
       .get('/api/logout').then(() => {
-        dispatch({
-          type: 'setUserId', payload: {
-            id: null
-          }
-        })
+        mutate({ user: null })
         Router.push('/',)
       }).catch(err => console.log('err', err))
   }
+
+  useEffect(() => {
+    console.log("user page layout", user);
+  }, [])
 
   return <>
     <div className="shadow bg-base-200 drawer h-screen">
@@ -64,7 +57,7 @@ export default function Layout({ children, showFooter = false }) {
                   <a>Home</a>
                 </Link>
               </li>
-              {user
+              {user && user.isVerified
                 ?
                 <>
                   <li>
@@ -118,8 +111,7 @@ export default function Layout({ children, showFooter = false }) {
               <a>Home</a>
             </Link>
           </li>
-          {user
-            ?
+          {user && user.isVerified ?
             <>
               <li>
                 <Link href="/profile">
