@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router'
@@ -8,13 +8,17 @@ import dynamic from "next/dynamic";
 import styles from './Layout.module.scss';
 
 import { useUser } from '../../lib/hooks'
+import { uiState, uiDispatch } from '../Context/UIContext'
+import Modal from '../Modal'
 
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
-  const { user, mutate } = useUser()
+  const { user, mutate } = useUser();
+  const { showModal } = uiState().state;
 
+  const { dispatch } = uiDispatch();
 
   useEffect(() => {
     if (router === undefined) return;
@@ -28,12 +32,14 @@ export default function Layout({ children, showFooter = false }) {
       }).catch(err => console.log('err', err))
   }
 
-  useEffect(() => {
-    console.log("user page layout", user);
-  }, [])
-
   return <>
     <div className="shadow bg-base-200 drawer h-screen">
+      <Modal
+        message="Are you sure you want to log out of your account?"
+        handleLogout={handleLogout}
+        showModal={showModal}
+        setShowModal={dispatch}
+      />
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
         <div className="w-full navbar bg-base-300">
@@ -45,6 +51,11 @@ export default function Layout({ children, showFooter = false }) {
             </label>
           </div>
           <div className="flex-1 px-2 mx-2">
+            {showModal ?
+              <Modal
+                message="Are you sure you want to log out of your account?"
+                handleLogout={handleLogout}
+              /> : null}
             <span>
               Hillfinder
             </span>
@@ -71,7 +82,12 @@ export default function Layout({ children, showFooter = false }) {
                     </Link>
                   </li>
                   <li>
-                    <a role="button" onClick={handleLogout}>
+                    <a
+                      role="button"
+                      onClick={() => dispatch({ type: 'showModal' })}
+
+                    >
+
                       Logout
                     </a>
                   </li>
@@ -124,7 +140,10 @@ export default function Layout({ children, showFooter = false }) {
                 </Link>
               </li>
               <li>
-                <a role="button" onClick={handleLogout}>
+                <a
+                  role="button"
+                  onClick={() => dispatch({ type: 'showModal' })}
+                >
                   Logout
                 </a>
               </li>
