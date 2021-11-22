@@ -19,7 +19,7 @@ export const AuthCheck = ({ children }) => {
             <i className="fas fa-circle-notch fa-spin fa-5x" />
           </span>
         </div>
-      </Layout >)
+      </Layout>)
   }
   const { user } = useUser();
 
