@@ -1,6 +1,7 @@
 import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 
+
 const handler = nextConnect()
 
 handler
@@ -8,10 +9,13 @@ handler
   .get((req, res) => {
     if (req.user != undefined && req.user.isVerified) {
       const { id, isVerified } = req.user
-      res.json({ user: { id, isVerified } })
+      res.status(200).send({ user: { id, isVerified } })
     } else {
-      res.json(null)
+      res.status(401).json({
+        user: null,
+      })
     }
-  })
+  });
+
 
 export default handler
