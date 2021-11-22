@@ -8,6 +8,8 @@ module.exports = {
         orangeLight: '#ffe0b2',
         DEFAULT: '#f57c00',
         orangeDark: '#e65100',
+        textButton: '#386F22',
+
       },
       keyframes: {
         'fade-in-down': {
