@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 
 import GenericFormComponent from './FormElements'
 import { userState, userDispatch } from '../Context/UserContext'
-import { userDispatch as uiUserDispatch } from '../../components/Context/UIContext'
+import { uiDispatch } from '../Context/UIContext'
 
 import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
 import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
@@ -22,7 +22,6 @@ export default function FormComponent({
   const router = useRouter();
 
   const { dispatch } = userDispatch();
-  const { dispatch: uidispatch } = uiUserDispatch();
   const { token } = router.query;
 
   const [duration, setDuration] = useState(500);
@@ -56,9 +55,6 @@ export default function FormComponent({
 
   const { mutate } = useUser()
 
-
-
-
   useEffect(() => {
     setIsLoading(() => false)
   }, [])
@@ -68,8 +64,6 @@ export default function FormComponent({
   }, [])
 
   useEffect(() => {
-
-    console.log("preventSubmit ", preventSubmit);
     if (preventSubmit) {
       setPreventSubmit(() => true)
     }
@@ -109,7 +103,6 @@ export default function FormComponent({
   }
 
   function isRegisterForm() {
-    console.log("formType ", formType);
     return (
       mounted && <GenericFormComponent
         handleSubmit={handleSubmit}
@@ -198,7 +191,7 @@ export default function FormComponent({
         setResponseMessage,
         responseMessage,
         dispatch,
-        uidispatch,
+        uiDispatch,
 
       )
     ],
