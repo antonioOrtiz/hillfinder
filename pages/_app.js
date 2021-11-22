@@ -10,14 +10,14 @@ import { CloudinaryContext } from 'cloudinary-react';
 
 import '../styles/styles.scss'
 
-import { userState as uiUserState, UIProvider } from '../components/Context/UIContext'
+import { UIProvider, uiState } from '../components/Context/UIContext'
 
 import { UserProvider, userState } from '../components/Context/UserContext';
 
 function MyApp({ Component, pageProps }) {
   return (
     <UserProvider value={userState}>
-      <UIProvider value={uiUserState}>
+      <UIProvider value={uiState}>
         <CloudinaryContext cloudName="hillfinders">
           <Head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
