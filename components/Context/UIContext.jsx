@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 import React, { useContext, useReducer } from 'react';
 
-const initialState = { modalActive: false, avatarModalActive: false, token: '' };
+const initialState = { showModal: false, avatarModalActive: false, token: '' };
 
 
 const UserStateContext = React.createContext();
@@ -9,24 +9,24 @@ const UserContextDispatch = React.createContext();
 
 
 function UIProvider({ children }) {
-  function userReducer(state, { type, payload }) {
+  function userReducer(state, action) {
 
-    switch (type) {
+    switch (action.type) {
 
-      case 'modalActive': {
-        return { ...state, ...{ modalActive: true } }
+      case 'showModal': {
+        return { ...state, ...{ showModal: true } }
       }
 
-      case 'modalInactive': {
-        return { ...state, ...{ modalActive: false } }
+      case 'hideModal': {
+        return { ...state, ...{ showModal: false } }
       }
 
       case 'token': {
-        return { ...state, ...{ token: payload.token } }
+        return { ...state, ...{ token: action.payload.token } }
       }
 
       default: {
-        throw new Error(`Unhandled action type: ${type}`);
+        throw new Error(`Unhandled action type: ${action.type}`);
       }
     }
   }
@@ -43,22 +43,22 @@ function UIProvider({ children }) {
   );
 }
 
-function userState() {
+function uiState() {
   const context = useContext(UserStateContext);
   if (context === undefined) {
-    throw new Error('userState must be used within a UserProvider');
+    throw new Error('uiState must be used within a UserProvider');
   }
   return context;
 }
 
-function userDispatch() {
+function uiDispatch() {
   const context = useContext(UserContextDispatch);
   if (context === undefined) {
-    throw new Error('userDispatch must be used within a UserProvider');
+    throw new Error('uiDispatch must be used within a UserProvider');
   }
   return context;
 }
 
 export default UserContextDispatch;
 
-export { UIProvider, userState, userDispatch };
+export { UIProvider, uiState, uiDispatch };
