@@ -5,7 +5,7 @@ import Layout from '../../components/Layout/index'
 import Message from '../../components/Message/index';
 
 export default function isConfirmation(error, setError, setResponseMessage, responseMessage, dispatch,
-  uidispatch) {
+  uiDispatch) {
   const [showApi, setShowApi] = useState(true);
   const router = useRouter();
 
@@ -14,7 +14,7 @@ export default function isConfirmation(error, setError, setResponseMessage, resp
 
     if (!router.isReady) return;
     const { token } = router.query;
-    uidispatch({
+    uiDispatch({
       type: 'token', payload: { token }
     })
 
