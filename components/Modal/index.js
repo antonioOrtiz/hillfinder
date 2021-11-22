@@ -48,7 +48,7 @@ export default function Modal({
                   <button
                     className="btn btn-primary ease-linear transition-all duration-150"
                     type="button"
-                    onClick={() => { setShowModal({ type: 'hideModal' }); handleLogout() }}
+                    onClick={() => { handleLogout(); setShowModal({ type: 'hideModal' }); }}
                   >
                     Yes
                   </button>
