@@ -4,12 +4,12 @@ import React, { useContext, useReducer } from 'react';
 const initialState = { showModal: false, avatarModalActive: false, token: '' };
 
 
-const UserStateContext = React.createContext();
-const UserContextDispatch = React.createContext();
+const UiStateContext = React.createContext();
+const UiContextDispatch = React.createContext();
 
 
 function UIProvider({ children }) {
-  function userReducer(state, action) {
+  function uiReducer(state, action) {
 
     switch (action.type) {
 
@@ -31,20 +31,20 @@ function UIProvider({ children }) {
     }
   }
 
-  const [state, dispatch] = useReducer(userReducer, initialState);
+  const [state, dispatch] = useReducer(uiReducer, initialState);
 
 
   return (
-    <UserStateContext.Provider value={{ state: state }}>
-      <UserContextDispatch.Provider value={{ dispatch: dispatch }}>
+    <UiStateContext.Provider value={{ uiState: state }}>
+      <UiContextDispatch.Provider value={{ uidispatch: dispatch }}>
         {children}
-      </UserContextDispatch.Provider>
-    </UserStateContext.Provider>
+      </UiContextDispatch.Provider>
+    </UiStateContext.Provider>
   );
 }
 
 function uiState() {
-  const context = useContext(UserStateContext);
+  const context = useContext(UiStateContext);
   if (context === undefined) {
     throw new Error('uiState must be used within a UserProvider');
   }
@@ -52,13 +52,13 @@ function uiState() {
 }
 
 function uiDispatch() {
-  const context = useContext(UserContextDispatch);
+  const context = useContext(UiContextDispatch);
   if (context === undefined) {
     throw new Error('uiDispatch must be used within a UserProvider');
   }
   return context;
 }
 
-export default UserContextDispatch;
+export default UiContextDispatch;
 
 export { UIProvider, uiState, uiDispatch };

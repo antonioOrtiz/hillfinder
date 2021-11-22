@@ -16,7 +16,7 @@ const Footer = dynamic(() => import('./Footer'), { ssr: true });
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
-  const { showModal } = uiState().state;
+  const { showModal } = uiState();
 
   const { dispatch } = uiDispatch();
 

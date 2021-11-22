@@ -22,6 +22,8 @@ export default function FormComponent({
   const router = useRouter();
 
   const { dispatch } = userDispatch();
+  const { uidispatch } = uiDispatch();
+
   const { token } = router.query;
 
   const [duration, setDuration] = useState(500);
@@ -191,8 +193,7 @@ export default function FormComponent({
         setResponseMessage,
         responseMessage,
         dispatch,
-        uiDispatch,
-
+        uidispatch,
       )
     ],
     ForgotPassword: [isForgotPasswordForm,
