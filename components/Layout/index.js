@@ -16,13 +16,12 @@ const Footer = dynamic(() => import('./Footer'), { ssr: true });
 export default function Layout({ children, showFooter = false }) {
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
-  const { showModal } = uiState();
-
-  const { dispatch } = uiDispatch();
+  const { showModal } = uiState().uiState;
+  const { uidispatch } = uiDispatch();
 
   useEffect(() => {
     if (router === undefined) return;
-  }, [router])
+  }, [router]);
 
   async function handleLogout() {
     axios
@@ -38,7 +37,7 @@ export default function Layout({ children, showFooter = false }) {
         message="Are you sure you want to log out of your account?"
         handleLogout={handleLogout}
         showModal={showModal}
-        setShowModal={dispatch}
+        setShowModal={uidispatch}
       />
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
@@ -84,7 +83,7 @@ export default function Layout({ children, showFooter = false }) {
                   <li>
                     <a
                       role="button"
-                      onClick={() => dispatch({ type: 'showModal' })}
+                      onClick={() => uidispatch({ type: 'showModal' })}
 
                     >
 
@@ -142,7 +141,7 @@ export default function Layout({ children, showFooter = false }) {
               <li>
                 <a
                   role="button"
-                  onClick={() => dispatch({ type: 'showModal' })}
+                  onClick={() => uidispatch({ type: 'showModal' })}
                 >
                   Logout
                 </a>
