@@ -13,11 +13,10 @@ import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
 import isConfirmation from '../../clientApi/Confirmation'
 import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
-
 import { useUser } from '../../lib/hooks'
 
 export default function FormComponent({
-  formType,
+  formType
 }) {
   const router = useRouter();
 
@@ -53,10 +52,11 @@ export default function FormComponent({
 
   const { state } = userState();
 
+
   const { id, accountNotVerified } = state;
+  const { user, mutate } = useUser()
 
-  const { mutate } = useUser()
-
+  console.log("user ", user);
   useEffect(() => {
     setIsLoading(() => false)
   }, [])
@@ -219,6 +219,7 @@ export default function FormComponent({
         setResponseMessage,
         dispatch,
         router,
+        user,
         mutate
       )
     ],
@@ -285,8 +286,6 @@ export default function FormComponent({
   }
 
   function handleSubmit(event, form) {
-
-    console.log("preventSubmit ", preventSubmit);
     event.preventDefault();
     validateInputs(
       form,

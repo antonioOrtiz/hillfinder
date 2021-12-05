@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 import React, { useContext, useReducer } from 'react';
 
-const initialState = { showModal: false, avatarModalActive: false, token: '' };
+const initialState = { avatarModalActive: false, showFooter: false, showModal: false, token: '' };
 
 
 const UiStateContext = React.createContext();
@@ -12,6 +12,14 @@ function UIProvider({ children }) {
   function uiReducer(state, action) {
 
     switch (action.type) {
+
+      case 'showFooter': {
+        return { ...state, ...{ showFooter: true } }
+      }
+
+      case 'hideFooter': {
+        return { ...state, ...{ showFooter: false } }
+      }
 
       case 'showModal': {
         return { ...state, ...{ showModal: true } }
@@ -35,7 +43,7 @@ function UIProvider({ children }) {
 
 
   return (
-    <UiStateContext.Provider value={{ uiState: state }}>
+    <UiStateContext.Provider value={{ uistate: state }}>
       <UiContextDispatch.Provider value={{ uidispatch: dispatch }}>
         {children}
       </UiContextDispatch.Provider>

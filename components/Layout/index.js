@@ -14,9 +14,11 @@ import Modal from '../Modal'
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
+  const { uistate } = uiState();
+
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
-  const { showModal } = uiState().uiState;
+  const { showModal } = uistate;
   const { uidispatch } = uiDispatch();
 
   useEffect(() => {
@@ -26,10 +28,16 @@ export default function Layout({ children, showFooter = false }) {
   async function handleLogout() {
     axios
       .get('/api/logout').then(() => {
-        mutate({ user: null })
-        Router.push('/',)
+        const userFromLogOut = { user: null }
+        mutate('/api/user', { ...user, userFromLogOut }, false)
       }).catch(err => console.log('err', err))
   }
+
+
+  useEffect(() => {
+    console.log("user in Layout", user);
+
+  }, [])
 
   return <>
     <div className="shadow bg-base-200 drawer h-screen">

@@ -11,12 +11,15 @@ export default function loginSubmit(
   setResponseMessage,
   dispatch,
   router,
+  user,
   mutate,
 ) {
   const data = {
     email,
     password,
   };
+  console.log("user ", user);
+  console.log("mutate ", mutate);
   axios
     .post(`/api/login`,
       data, // request body as string
@@ -29,6 +32,7 @@ export default function loginSubmit(
     )
     .then(response => {
       if (response.status === 200) {
+        const userFromLogin = response.data.user
         setTimeout(() => {
           router.push('/profile');
         }, 3000);
@@ -39,7 +43,7 @@ export default function loginSubmit(
         setIsLoading(false);
         setResponseMessage(response.data.msg);
         dispatch({ type: 'userAccountIsVerified' })
-        mutate(response.data.user)
+        mutate('/api/user', { ...user, userFromLogin }, false)
       }
     })
     .catch((error) => {

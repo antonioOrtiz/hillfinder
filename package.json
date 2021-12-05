@@ -39,6 +39,7 @@
         "next-cookies": "^2.0.3",
         "next-session": "^3.4.3",
         "nextjs-cors": "^2.0.0",
+        "nextjs-progressbar": "0.0.13",
         "passport": "^0.4.1",
         "passport-local": "^1.0.0",
         "postcss-flexbugs-fixes": "^5.0.2",

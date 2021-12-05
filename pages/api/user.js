@@ -11,9 +11,9 @@ handler
       const { id, isVerified } = req.user
       res.status(200).send({ user: { id, isVerified } })
     } else {
-      res.status(401).json({
-        user: null,
-      })
+      res.status(401).json(
+        { user: null }
+      )
     }
   });
 
