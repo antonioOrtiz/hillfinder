@@ -5,7 +5,7 @@ const Layout = dynamic(() => import('../components/Layout'), {
   ssr: false,
   loading: () => <Loader />
 });
-import { AuthCheck } from './AuthCheck/index'
+import { AuthCheck } from '../components/AuthCheck/'
 
 export default function Profile() {
   return (

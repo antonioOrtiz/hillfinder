@@ -4,7 +4,7 @@ import { Loader } from '../components/Loader/index'
 const Layout = dynamic(() => import('../components/Layout'), {
   loading: () => <Loader />
 });
-import { AuthCheck } from './AuthCheck/index'
+import { AuthCheck } from '../components/AuthCheck/'
 
 function Dashboard() {
   return (
