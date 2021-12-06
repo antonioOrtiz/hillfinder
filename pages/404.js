@@ -12,7 +12,7 @@ export default function FourOhFour() {
       <h1>
         404 - Page Not Found;
       </h1>
-      <h2 style={{ fontWeight: 'strong' }}>Sorry but the page{' '}
+      <h2 className="primary-content" style={{ fontWeight: 'strong' }}>Sorry but the page{' '}
         {router.pathname.substring(1)} could not be found</h2>{' '}
       <Link href="/">
         <a>Home</a>
