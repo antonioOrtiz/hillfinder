@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUser } from '../../lib/hooks'
 import { PageLoader } from '../../components/Loader'
+import { Index } from '../../components/Loader'
 
 
 export const AuthCheck = ({ children }) => {
   const router = useRouter()
-  const { user, isLoading, isError } = useUser()
+  const { user, isLoading, isError } = useUser();
+
+  console.log("user 12 ", user);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && isError === 'Unauthorized') router.push('/');
@@ -14,8 +17,10 @@ export const AuthCheck = ({ children }) => {
 
   if (isLoading) return <PageLoader />// a loading component that prevents the page from rendering
 
-
-  return children
-
+  if (user === undefined) {
+    return null
+  } else if (user.isVerified) {
+    return children
+  }
 }
 
