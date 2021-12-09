@@ -11,7 +11,7 @@ export default function Profile() {
   return (
     <>
       <AuthCheck>
-        <Layout showFooter={false}>
+        <Layout>
           <h1>Profile</h1>
         </Layout>
       </AuthCheck>

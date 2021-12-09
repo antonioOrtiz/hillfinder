@@ -6,7 +6,7 @@ const Form = dynamic(() => import('../components/Form'));
 export default function FormComponent() {
   return (
     <>
-      <Layout showFooter={false}>
+      <Layout>
         <Form formType="Register" />
       </Layout>
     </>
