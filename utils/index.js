@@ -1,5 +1,4 @@
-import { validateAll, validate } from 'indicative/validator';
-
+import { validateAll } from 'indicative/validator';
 
 import crypto from 'crypto';
 
