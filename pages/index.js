@@ -3,11 +3,11 @@ import Head from 'next/head';
 import dynamic from "next/dynamic";
 
 import Home from './home'
-import { Loader } from '../components/Loader/index'
+import { PageLoader } from '../components/Loader/index'
 
 const Layout = dynamic(() => import('../components/Layout'), {
   ssr: false,
-  loading: () => <Loader />
+  loading: () => <PageLoader />
 });
 export default function Index() {
   return (

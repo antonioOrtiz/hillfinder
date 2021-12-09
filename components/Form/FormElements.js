@@ -10,7 +10,7 @@ import { Loader } from '../Loader/index'
 const Message = dynamic(
   () => import('../Message/index'),
   {
-    loading: () => <Loader />
+    loading: () => <PageLoader />
   }
 )
 

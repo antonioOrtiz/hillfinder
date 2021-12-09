@@ -1,8 +1,8 @@
 import dynamic from "next/dynamic";
-import { Loader } from '../components/Loader/index'
+import { PageLoader } from '../components/Loader/index'
 
 const Layout = dynamic(() => import('../components/Layout'), {
-  loading: () => <Loader />
+  loading: () => <PageLoader />
 });
 import { AuthCheck } from '../components/AuthCheck/'
 
