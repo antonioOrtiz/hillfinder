@@ -7,7 +7,6 @@ export default function Message({ state, content }) {
       setTimeout(() => {
         const replacers = document.querySelectorAll('[data-replace]');
         for (var i = 0; i < replacers.length; i++) {
-          console.log('hit here2');
           const replaceClasses = JSON.parse(replacers[i].dataset.replace.replace(/'/g, '"'));
           Object.keys(replaceClasses).forEach((key) => {
             replacers[i].classList.remove(key);
