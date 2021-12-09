@@ -14,8 +14,8 @@ export const AuthCheck = ({ children }) => {
 
   if (isLoading) return <PageLoader />// a loading component that prevents the page from rendering
 
-  if (user) {
-    return children
-  } return null
+
+  return children
+
 }
 
