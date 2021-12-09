@@ -6,7 +6,7 @@ import { PageLoader } from '../../components/Loader'
 
 export const AuthCheck = ({ children }) => {
   const router = useRouter()
-  const { isLoading, isError } = useUser()
+  const { user, isLoading, isError } = useUser()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && isError === 'Unauthorized') router.push('/');
@@ -14,7 +14,10 @@ export const AuthCheck = ({ children }) => {
 
   if (isLoading) return <PageLoader />
 
-  return children
+  if (user) {
+    return children
+  }
+  return null
 
 }
 
