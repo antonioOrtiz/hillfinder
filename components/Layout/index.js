@@ -34,12 +34,6 @@ export default function Layout({ children, showFooter = false }) {
       }).catch(err => console.log('err', err))
   }
 
-  useEffect(() => () => {
-    if (!user) {
-      handleLogout()
-    }
-  }, [])
-
   return <>
     <div className="shadow bg-base-200 drawer h-screen">
       <Modal
