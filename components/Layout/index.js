@@ -25,7 +25,6 @@ export default function Layout({ children, showFooter = false }) {
     if (router === undefined) return;
   }, [router]);
 
-
   async function handleLogout() {
     axios
       .get('/api/logout').then(() => {

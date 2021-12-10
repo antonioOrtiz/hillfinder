@@ -18,8 +18,7 @@ export default function loginSubmit(
     email,
     password,
   };
-  console.log("user ", user);
-  console.log("mutate ", mutate);
+
   axios
     .post(`/api/login`,
       data, // request body as string
@@ -55,7 +54,6 @@ export default function loginSubmit(
           setFormSuccess(false);
           setIsLoading(false);
           setResponseMessage(error.response.data.msg);
-
         }
 
         if (error.response.status === 401) {
