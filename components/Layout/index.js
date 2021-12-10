@@ -25,6 +25,7 @@ export default function Layout({ children, showFooter = false }) {
     if (router === undefined) return;
   }, [router]);
 
+
   async function handleLogout() {
     axios
       .get('/api/logout').then(() => {
@@ -33,10 +34,10 @@ export default function Layout({ children, showFooter = false }) {
       }).catch(err => console.log('err', err))
   }
 
-
-  useEffect(() => {
-    console.log("user in Layout", user);
-
+  useEffect(() => () => {
+    if (!user) {
+      handleLogout()
+    }
   }, [])
 
   return <>
@@ -92,9 +93,7 @@ export default function Layout({ children, showFooter = false }) {
                     <a
                       role="button"
                       onClick={() => uidispatch({ type: 'showModal' })}
-
                     >
-
                       Logout
                     </a>
                   </li>

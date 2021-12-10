@@ -1,23 +1,15 @@
-import dynamic from "next/dynamic";
-import { PageLoader } from '../components/Loader/index'
-
-const Layout = dynamic(() => import('../components/Layout'), {
-  loading: () => <PageLoader />
-});
-import { AuthCheck } from '../components/AuthCheck/'
-
-function Dashboard() {
+export default function Dashboard() {
   return (
     <>
-      <AuthCheck>
-        <Layout>
-          <h1>Dashboard</h1>
-        </Layout>
-      </AuthCheck>
-
+      <h1>Dashboard</h1>
     </>
   )
 }
 
-
-export default Dashboard;
+export async function getStaticProps() {
+  return {
+    props: {
+      auth: true
+    },
+  }
+}
