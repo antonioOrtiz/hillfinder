@@ -35,12 +35,10 @@ export default function Layout({ children, showFooter = false }) {
   }
 
   useEffect(() => () => {
-
-    console.log("user in Logout useEffect", user);
     if (!user) {
       handleLogout()
     }
-  }, [user])
+  }, [])
 
   return <>
     <div className="shadow bg-base-200 drawer h-screen">
