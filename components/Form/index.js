@@ -56,7 +56,6 @@ export default function FormComponent({
   const { id, accountNotVerified } = state;
   const { user, mutate } = useUser()
 
-  console.log("user ", user);
   useEffect(() => {
     setIsLoading(() => false)
   }, [])
