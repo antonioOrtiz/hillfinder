@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { useState } from 'react';
 
-export default function Nav({ mobile = true, uidispatch, user }) {
+export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
+
   const nav = [
     { route: '/', name: 'Home' },
     { route: '/profile', name: 'Profile' },
@@ -10,12 +12,15 @@ export default function Nav({ mobile = true, uidispatch, user }) {
     { route: '/registration', name: 'Registration' }
   ];
 
-  function AnchorIsLogOut({ route, children }) {
-    return (route === '/logout'
-      ? <a role="button" onClick={route === '/logout' ? () => uidispatch({ type: 'showModal' }) : null}>{children}</a>
-      : <a>{children}</a>)
+  function LogOutAnchor({ name }) {
+    return (
+      <a
+        role="button"
+        onClick={() => uidispatch({ type: 'showModal' })}
+      >{name}</a>
+    )
   }
-
+  // "p-4 overflow-y-auto menu w-80 bg-base-100"
   return (
     <ul className={mobile ? "p-4 overflow-y-auto menu w-80 bg-base-100" : "menu horizontal"}>
       {
@@ -23,20 +28,15 @@ export default function Nav({ mobile = true, uidispatch, user }) {
           <>
             {
               user && user.isVerified ?
-                ((route === '/login') || route === '/registration') ? null :
-                  <li>
-                    <Link href={route}>
-                      <AnchorIsLogOut route={'/logout'}>
-                        {name}
-                      </AnchorIsLogOut>
-                    </Link>
-                  </li>
+                ((route === '/login') || route === '/registration') ? null : <li>
+                  <Link href={route}>
+                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
+                  </Link>
+                </li>
                 :
                 ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li>
                   <Link href={route}>
-                    <AnchorIsLogOut route={'/logout'}>
-                      {name}
-                    </AnchorIsLogOut>
+                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
             }

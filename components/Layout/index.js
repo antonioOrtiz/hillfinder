@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router'
 import dynamic from "next/dynamic";
@@ -9,18 +9,25 @@ import styles from './Layout.module.scss';
 import { useUser } from '../../lib/hooks'
 import { uiState, uiDispatch } from '../Context/UIContext'
 import Modal from '../Modal'
-
 import Nav from './Nav'
 
 const Footer = dynamic(() => import('./Footer'), { ssr: true });
 
 export default function Layout({ children, showFooter = false }) {
+
+  const inputRef = useRef();
+
   const { uistate } = uiState();
 
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
   const { showModal } = uistate;
   const { uidispatch } = uiDispatch();
+
+
+  useEffect(() => () => {
+    inputRef.current.checked = false
+  }, [])
 
   useEffect(() => {
     if (router === undefined) return;
@@ -34,6 +41,10 @@ export default function Layout({ children, showFooter = false }) {
       }).catch(err => console.log('err', err))
   }
 
+  function handleClickOnInput(e) {
+    inputRef.current.checked = false
+  }
+
   return <>
     <div className="shadow bg-base-200 drawer h-screen">
       <Modal
@@ -42,7 +53,12 @@ export default function Layout({ children, showFooter = false }) {
         showModal={showModal}
         setShowModal={uidispatch}
       />
-      <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+      <input
+        ref={inputRef}
+        id="my-drawer-3"
+        type="checkbox"
+        className="drawer-toggle"
+      />
       <div className="flex flex-col drawer-content">
         <div className="w-full navbar bg-base-300">
           <div className={'flex-none lg:hidden'}>
@@ -75,7 +91,7 @@ export default function Layout({ children, showFooter = false }) {
 
       <div className="drawer-side">
         <label htmlFor="my-drawer-3" className="drawer-overlay" />
-        <Nav mobile uidispatch={uidispatch} user={user} />
+        <Nav mobile uidispatch={uidispatch} user={user} handleClickOnInput={handleClickOnInput} />
       </div>
     </div>
   </>;
