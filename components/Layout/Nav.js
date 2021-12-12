@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import { useState } from 'react';
 
 export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
-
   const nav = [
     { route: '/', name: 'Home' },
     { route: '/profile', name: 'Profile' },
@@ -20,7 +18,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       >{name}</a>
     )
   }
-  // "p-4 overflow-y-auto menu w-80 bg-base-100"
+
   return (
     <ul className={mobile ? "p-4 overflow-y-auto menu w-80 bg-base-100" : "menu horizontal"}>
       {

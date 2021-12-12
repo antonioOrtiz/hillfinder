@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router'
 import dynamic from "next/dynamic";
@@ -18,12 +18,11 @@ export default function Layout({ children, showFooter = false }) {
   const inputRef = useRef();
 
   const { uistate } = uiState();
-
-  const { route, router } = useRouter();
-  const { user, mutate } = useUser();
   const { showModal } = uistate;
   const { uidispatch } = uiDispatch();
 
+  const { route, router } = useRouter();
+  const { user, mutate } = useUser();
 
   useEffect(() => () => {
     inputRef.current.checked = false
@@ -41,7 +40,7 @@ export default function Layout({ children, showFooter = false }) {
       }).catch(err => console.log('err', err))
   }
 
-  function handleClickOnInput(e) {
+  function handleClickOnInput() {
     inputRef.current.checked = false
   }
 
