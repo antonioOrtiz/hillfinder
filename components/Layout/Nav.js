@@ -26,13 +26,13 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
           <>
             {
               user && user.isVerified ?
-                ((route === '/login') || route === '/registration') ? null : <li>
+                ((route === '/login') || route === '/registration') ? null : <li key={route}>
                   <Link href={route}>
                     {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
                 :
-                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li>
+                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li key={route}>
                   <Link href={route}>
                     {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
