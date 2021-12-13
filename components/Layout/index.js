@@ -23,6 +23,10 @@ export default function Layout({ children, showFooter = false }) {
 
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
+  useEffect(() => {
+    console.log("  user in Layout 27", user);
+
+  }, [user])
 
   useEffect(() => () => {
     inputRef.current.checked = false

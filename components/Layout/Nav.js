@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
   const nav = [
@@ -18,6 +19,12 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       >{name}</a>
     )
   }
+
+
+  useEffect(() => {
+    console.log("  user in Nav 24", user);
+
+  }, [user])
 
   return (
     <ul className={mobile ? "p-4 overflow-y-auto menu w-80 bg-base-100" : "menu horizontal"}>
