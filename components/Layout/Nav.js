@@ -2,12 +2,12 @@ import Link from 'next/link';
 
 export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
   const nav = [
-    { route: '/', name: 'Home' },
-    { route: '/profile', name: 'Profile' },
-    { route: '/dashboard', name: 'Dashboard' },
-    { route: '/logout', name: 'Logout' },
-    { route: '/login', name: 'Login' },
-    { route: '/registration', name: 'Registration' }
+    { id: 1, route: '/', name: 'Home' },
+    { id: 2, route: '/profile', name: 'Profile' },
+    { id: 3, route: '/dashboard', name: 'Dashboard' },
+    { id: 4, route: '/logout', name: 'Logout' },
+    { id: 5, route: '/login', name: 'Login' },
+    { id: 6, route: '/registration', name: 'Registration' }
   ];
 
   function LogOutAnchor({ name }) {
@@ -26,14 +26,24 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
           <>
             {
               user && user.isVerified ?
-                ((route === '/login') || route === '/registration') ? null : <li key={route}>
-                  <Link href={route}>
+                ((route === '/login') || route === '/registration') ? null : <li
+                  key={route.id + Math.random()}
+                >
+                  <Link
+                    href={route}
+                    key={route.id}
+                  >
                     {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
                 :
-                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li key={route}>
-                  <Link href={route}>
+                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li
+                  key={route.id + Math.random()}
+                >
+                  <Link
+                    href={route}
+                    key={route.id}
+                  >
                     {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
