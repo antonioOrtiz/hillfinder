@@ -29,7 +29,7 @@ export default function Layout({ children, showFooter = false }) {
   }, [user])
 
   useEffect(() => () => {
-    inputRef.current.checked = false
+    if (inputRef.current != null) inputRef.current.checked = false
   }, [])
 
   useEffect(() => {
