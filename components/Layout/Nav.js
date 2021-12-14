@@ -11,11 +11,11 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     { id: 6, route: '/registration', name: 'Registration' }
   ];
 
-  function LogOutAnchor({ name }) {
+  function LogOutAnchor({ name, handleClickOnInput = () => { } }) {
     return (
       <a
         role="button"
-        onClick={() => uidispatch({ type: 'showModal' })}
+        onClick={() => { uidispatch({ type: 'showModal' }); handleClickOnInput() }}
       >{name}</a>
     )
   }
@@ -40,7 +40,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
                     href={route}
                     key={route.id}
                   >
-                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
+                    {route === '/logout' ? <LogOutAnchor name={name} handleClickOnInput={handleClickOnInput} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
                 :
@@ -51,7 +51,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
                     href={route}
                     key={route.id}
                   >
-                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
+                    {route === '/logout' ? <LogOutAnchor name={name} handleClickOnInput={handleClickOnInput} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
                   </Link>
                 </li>
             }
