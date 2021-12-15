@@ -22,7 +22,7 @@ import { PageLoader } from '../components/Loader/index'
 
 import { useUser } from '../lib/hooks'
 
-import Index from '../pages/Index'
+import Index from '../pages/index'
 
 const Layout = dynamic(() => import('../components/Layout'));
 
