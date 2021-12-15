@@ -11,20 +11,55 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     { id: 6, route: '/registration', name: 'Registration' }
   ];
 
-  function LogOutAnchor({ name }) {
-    return (
-      <a
-        role="button"
-        onClick={() => uidispatch({ type: 'showModal' })}
-      >{name}</a>
-    )
+  function LogOutAnchor({ route, name, isMobile }) {
+    if (route === '/logout' && isMobile) {
+      console.log('foo')
+      return (<li>
+        <Link
+          href={route}
+          key={route.id}
+        ><a
+          role="button"
+          onClick={() => { uidispatch({ type: 'showModal' }); handleClickOnInput() }}
+        >{name}</a>
+        </Link>
+      </li>)
+    } else if (route !== '/logout' && isMobile) {
+      return (
+        <li>
+          <Link
+            href={route}
+            key={route.id}
+          >
+            <a
+              role="button"
+              onClick={() => { handleClickOnInput() }}
+            >{name}</a>
+          </Link>
+        </li>)
+    }
+    else if (route == '/logout' && !isMobile) {
+      return (
+        <li>
+          <Link
+            href={route}
+            key={route.id}
+          >
+            <a
+              role="button"
+              onClick={() => uidispatch({ type: 'showModal' })}
+            >{name}</a></Link></li>)
+    }
+    else if (route != '/logout' && !isMobile) {
+      return (<li>
+        <Link
+          href={route}
+          key={route.id}
+        ><a >{name}</a>
+        </Link>
+      </li>)
+    }
   }
-
-
-  useEffect(() => {
-    console.log("  user in Nav 24", user);
-
-  }, [user])
 
   return (
     <ul className={mobile ? "p-4 overflow-y-auto menu w-80 bg-base-100" : "menu horizontal"}>
@@ -33,27 +68,11 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
           <>
             {
               user && user.isVerified ?
-                ((route === '/login') || route === '/registration') ? null : <li
-                  key={route.id + Math.random()}
-                >
-                  <Link
-                    href={route}
-                    key={route.id}
-                  >
-                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
-                  </Link>
-                </li>
+                ((route === '/login') || route === '/registration') ? null :
+                  <LogOutAnchor route={route} name={name} isMobile={mobile} />
                 :
-                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null : <li
-                  key={route.id + Math.random()}
-                >
-                  <Link
-                    href={route}
-                    key={route.id}
-                  >
-                    {route === '/logout' ? <LogOutAnchor name={name} /> : mobile ? <a onClick={handleClickOnInput}>{name}</a> : <a>{name}</a>}
-                  </Link>
-                </li>
+                ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null :
+                  <LogOutAnchor route={route} name={name} isMobile={mobile} />
             }
           </>
         ))
