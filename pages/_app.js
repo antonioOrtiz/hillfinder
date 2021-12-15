@@ -22,7 +22,7 @@ import { PageLoader } from '../components/Loader/index'
 
 import { useUser } from '../lib/hooks'
 
-import Login from '../pages/login'
+import Index from '../pages/Index'
 
 const Layout = dynamic(() => import('../components/Layout'));
 
@@ -36,9 +36,9 @@ function MyApp({ Component, pageProps }) {
 
   function AuthLogin() {
     useEffect(() => {
-      router.replace('/login', undefined, { shallow: true })
+      router.replace('/', undefined, { shallow: true })
     }, [])
-    return <Login />
+    return <Index />
   }
 
   return (
