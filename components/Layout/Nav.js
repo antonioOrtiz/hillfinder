@@ -16,7 +16,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       console.log('foo')
       return (<li>
         <Link
-          href={route}
+          href='#'
           key={route.id}
         ><a
           role="button"
@@ -42,7 +42,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       return (
         <li>
           <Link
-            href={route}
+            href='#'
             key={route.id}
           >
             <a
@@ -69,10 +69,10 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
             {
               user && user.isVerified ?
                 ((route === '/login') || route === '/registration') ? null :
-                  <LogOutAnchor route={route} name={name} isMobile={mobile} />
+                  <LogOutAnchor key={route.id} route={route} name={name} isMobile={mobile} />
                 :
                 ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null :
-                  <LogOutAnchor route={route} name={name} isMobile={mobile} />
+                  <LogOutAnchor key={route.id} route={route} name={name} isMobile={mobile} />
             }
           </>
         ))
