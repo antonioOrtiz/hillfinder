@@ -32,7 +32,9 @@ export default function loginSubmit(
     .then(response => {
       if (response.status === 200) {
         const userFromLogin = response.data.user
-        router.push('/profile');
+        setTimeout(() => {
+          router.push('/profile');
+        }, 2000);
         setEmail('');
         setPassword('');
         setFormError(false);
