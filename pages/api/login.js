@@ -34,7 +34,7 @@ handler
           if (user.isVerified) {
             return res.status(200).send({
               user,
-              msg: `Your have successfully logged in; Welcome to Hillfinder!`
+              msg: `Your have successfully logged in; Welcome to Hillfinder! You will be redirected to your profile page!`
             });
           }
           return res.status(403).send({
