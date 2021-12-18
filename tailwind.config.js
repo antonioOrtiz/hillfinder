@@ -9,7 +9,7 @@ module.exports = {
         DEFAULT: '#f57c00',
         orangeDark: '#e65100',
         textButton: '#386F22',
-
+        textColor: '#34343',
       },
       keyframes: {
         'fade-in-down': {
