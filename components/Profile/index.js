@@ -59,7 +59,7 @@ export default function ProfilePage({ }) {
       </div>
       <div className="divider glass h-px " />
       <div className="px-4 mt-5">
-        <h2 className="card-title">Name</h2>
+        <h2 className="card-title text-darkTextColor" >Name</h2>
       </div>
 
       <div className="px-4 ">
@@ -67,12 +67,12 @@ export default function ProfilePage({ }) {
           {profileValues.map((data, index) => {
             const { id, name, value } = data
             return (
-              <li key={id} className="text-textColor" onClick={() => handleClick(index)}>{name}{' '}
+              <li key={id} className="text-darkTextColor" onClick={() => handleClick(index)}>{name}{' '}
                 <input
                   ref={(el) => textInput.current.push(el)}
                   type="text"
                   value={value}
-                  className="bg-transparent border-0 px-3 py-3 text-primary-content   rounded focus:outline-none focus:ring w-full"
+                  className=" mt-1 mb-2 bg-transparent border-0 px-3 py-3 text-textColor   rounded focus:outline-none focus:ring w-full"
                   onChange={(e) => {
                     console.log("e.target.value; ", e.target.value);
                     data.value = e.target.value;
@@ -85,7 +85,7 @@ export default function ProfilePage({ }) {
           })}
         </ul>
       </div>
-      <p className="text-sm text-white block mt-5">*Click on Avatar, namet etc. to upate</p>
+      <p className="text-sm text-textColor block mt-5">*Click on text e.g. "Interested Activities" to upate values.</p>
     </div>
   </div >)
 
