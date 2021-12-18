@@ -59,7 +59,9 @@ export default function ProfilePage({ }) {
       </div>
       <div className="divider glass h-px " />
       <div className="px-4 mt-5">
-        <h2 className="card-title text-darkTextColor" >Name</h2>
+        <h2 className="card-title text-textColor" >Name</h2>
+        <p className="text-sm text-textColor block mb-5">Click on text e.g. "Interested Activities" to upate values.</p>
+
       </div>
 
       <div className="px-4 ">
@@ -67,7 +69,7 @@ export default function ProfilePage({ }) {
           {profileValues.map((data, index) => {
             const { id, name, value } = data
             return (
-              <li key={id} className="text-darkTextColor" onClick={() => handleClick(index)}>{name}{' '}
+              <li key={id} className="text-textColor" onClick={() => handleClick(index)}>{name}{' '}
                 <input
                   ref={(el) => textInput.current.push(el)}
                   type="text"
@@ -85,7 +87,6 @@ export default function ProfilePage({ }) {
           })}
         </ul>
       </div>
-      <p className="text-sm text-textColor block mt-5">*Click on text e.g. "Interested Activities" to upate values.</p>
     </div>
   </div >)
 
