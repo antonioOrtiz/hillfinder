@@ -1,7 +1,10 @@
 import nextConnect from 'next-connect'
-
+import mongoose from 'mongoose';
 import auth from '../../middleware/auth'
 import User from '../../models/User'
+import Profile from '../../models/Profile'
+console.log("Profile ", Profile);
+
 
 import connectDB from '../../lib/mongodb';
 
@@ -35,9 +38,14 @@ handler
         }
         user = new User({
           email: req.body.email,
+          _id: new mongoose.Types.ObjectId(),
           password: req.body.password
         });
+
+        const profile = new Profile({ _user: user._id });
+
         await user.save();
+        await profile.save();
         nodeMailerFunc(
           user,
           `Account Verification`,
