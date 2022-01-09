@@ -1,59 +1,72 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import Layout from '../../components/Layout/index'
 import Message from '../../components/Message/index';
+import { uiState } from '../../components/Context/UIContext'
 
-export default function isConfirmation(error, setError, setResponseMessage, responseMessage, dispatch,
-  uiDispatch) {
+export default function isConfirmation(
+  dispatch,
+  error,
+  setError,
+  setResponseMessage = () => { },
+  responseMessage,
+) {
+
   const [showApi, setShowApi] = useState(true);
   const router = useRouter();
+  const { token } = router.query
+
+
+
 
   useEffect(() => {
-    let isSubscribed = true;
+    let isSubscribed = true
 
     if (!router.isReady) return;
-    const { token } = router.query;
-    uiDispatch({
-      type: 'token', payload: { token }
-    })
 
-    axios
-      .get(`/api/confirmation/${token}`)
-      .then(response => {
-        if (response.status === 200) {
-          isSubscribed ? setResponseMessage(response.data.msg) : null;
-        }
+    if (typeof token !== 'undefined') {
+      axios
+        .get(`/api/confirmation/${token}`)
+        .then(response => {
 
-      })
-      .catch((error) => {
-        if (error.response.status === 404) {
-          dispatch({ type: 'resetUserAccountIsVerified' })
+          console.log("response ", response);
+          if (response.status === 200) {
+            isSubscribed ? setResponseMessage(response.data.msg) : null;
+          }
 
-          setError(true);
-          isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            dispatch({ type: 'resetUserAccountIsVerified' })
 
-        }
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
 
-        if (error.response.status === 400) {
-          dispatch({ type: 'userAccountIsVerified' })
+          }
 
-          setError(true);
-          isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+          if (error.response.status === 400) {
+            dispatch({ type: 'userAccountIsVerified' })
 
-        }
-      });
+            setError(true);
+            isSubscribed ? setResponseMessage(error.response.data.msg) : null;
+
+          }
+        });
+    }
+
 
     return () => {
       isSubscribed = false;
       setShowApi(prev => !prev);
     };
-  }, [router.isReady]);
+  }, [token]);
+
+
 
   if (error) {
-    return showApi && <Layout showFooter> <Message state="Error" content={responseMessage} /></Layout>
+    return showApi && <Message state="Error" content={responseMessage} />
   }
   if (error === false) {
-    return showApi && <Layout showFooter> <Message state="Success" header={responseMessage} /></Layout>
+    return showApi && <Message state="Success" header={responseMessage} />
   }
 }
