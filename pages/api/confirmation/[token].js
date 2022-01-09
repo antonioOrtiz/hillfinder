@@ -18,6 +18,9 @@ handler
     await connectDB();
 
     const { token } = req.query
+
+
+    console.log("API token ", token);
     try {
       Token.findOne({ token }, (err, token) => {
         if (token === null) {
