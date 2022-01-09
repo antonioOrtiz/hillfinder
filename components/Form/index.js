@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { validateInputs } from '../../utils/index';
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 
 
 import GenericFormComponent from './FormElements'
@@ -23,8 +23,8 @@ export default function FormComponent({
   const { dispatch } = userDispatch();
   const { uidispatch } = uiDispatch();
 
-  const { token } = router.query;
 
+  const [token, setToken] = useState(null)
   const [duration, setDuration] = useState(500);
   const [email, setEmail] = useState('');
   const [emailFeedback, setEmailFeedback] = useState('');
@@ -54,7 +54,16 @@ export default function FormComponent({
 
 
   const { id, accountNotVerified } = state;
-  const { user, mutate } = useUser()
+  const { user, mutate } = useUser();
+
+  useEffect(() => {
+    const { token } = router.query;
+
+    uidispatch({
+      type: 'token', payload: token
+    })
+
+  }, [])
 
   useEffect(() => {
     setIsLoading(() => false)
@@ -186,13 +195,13 @@ export default function FormComponent({
 
   const Forms = {
     Confirmation: [
-      () => isConfirmation(
+      () => (isConfirmation(
+        dispatch,
         error,
         setError,
         setResponseMessage,
         responseMessage,
-        dispatch,
-        uidispatch,
+      )
       )
     ],
     ForgotPassword: [isForgotPasswordForm,
