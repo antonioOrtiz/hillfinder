@@ -5,10 +5,11 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto';
 import errorHandler from '../pages/api/error-handler';
 
-const SALT_ROUNDS = 12;
+
 
 const UserSchema = new mongoose.Schema(
   {
+    _id: mongoose.Schema.Types.ObjectId,
     email: {
       type: String,
       required: true,
@@ -31,11 +32,16 @@ const UserSchema = new mongoose.Schema(
     roles: [{ type: 'String' }],
     isVerified: { type: Boolean, default: false },
     passwordResetToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    profile: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+    }],
   },
+
   {
     timestamps: true
-  }
+  },
 );
 async function generateHash(password) {
   return bcrypt.hash(password, 12)
