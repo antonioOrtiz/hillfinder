@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import dynamic from "next/dynamic";
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 
 import { useEffect } from 'react';
 import NextNprogress from 'nextjs-progressbar';
@@ -26,12 +26,16 @@ import Index from '../pages/index'
 
 const Layout = dynamic(() => import('../components/Layout'));
 
+
+
 function MyApp({ Component, pageProps }) {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    router.replace(router.pathname, undefined, { shallow: true })
+    if (router.pathname !== '/confirmation/[token]') {
+      router.replace(router.pathname, undefined, { shallow: true })
+    }
   }, [user])
 
   function AuthLogin() {
