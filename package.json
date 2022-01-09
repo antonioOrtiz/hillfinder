@@ -30,6 +30,7 @@
         "leaflet-routing-machine": "^3.2.12",
         "mailgun-js": "^0.22.0",
         "mailgun.js": "^3.6.1",
+        "moment": "^2.29.1",
         "mongoose": "^6.0.11",
         "morgan": "^1.10.0",
         "next": "latest",
@@ -50,6 +51,7 @@
         "swr": "^0.1.18",
         "tailwindcss": "^2.2.4",
         "terser-webpack-plugin": "^5.2.4",
+        "uuid": "^8.3.2",
         "uuidv4": "6.2.5",
         "vm-browserify": "^1.1.2"
     },
