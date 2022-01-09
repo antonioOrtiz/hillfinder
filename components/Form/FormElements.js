@@ -49,7 +49,7 @@ export default function GenericInputForm({
   function PasswordComponent({ label, name, value, placeholder, errorType, messageContent, changeHandler }) {
     const [inputType, setInputType] = useState('password');
 
-    const [passwordLabel, setpasswordLabel] = useState('show!');
+    const [passwordLabel, setpasswordLabel] = useState('show');
 
     const handleChangePasswordToggle = () => {
       if (inputType === 'password') {
