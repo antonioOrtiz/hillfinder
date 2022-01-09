@@ -11,6 +11,7 @@ const UiContextDispatch = React.createContext();
 function UIProvider({ children }) {
   function uiReducer(state, action) {
 
+    console.log("action ", action);
     switch (action.type) {
 
       case 'showFooter': {
@@ -30,7 +31,7 @@ function UIProvider({ children }) {
       }
 
       case 'token': {
-        return { ...state, ...{ token: action.payload.token } }
+        return { ...state, ...{ token: action.payload } }
       }
 
       default: {
