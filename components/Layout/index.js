@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useRouter } from 'next/router'
 import dynamic from "next/dynamic";
 
-
 import styles from './Layout.module.scss';
 
 import { useUser } from '../../lib/hooks'
@@ -23,9 +22,9 @@ export default function Layout({ children, showFooter = false }) {
 
   const { route, router } = useRouter();
   const { user, mutate } = useUser();
-  useEffect(() => {
-    console.log("  user in Layout 27", user);
 
+  useEffect(() => {
+    console.log("user in Layout 27", user);
   }, [user])
 
   useEffect(() => () => {
