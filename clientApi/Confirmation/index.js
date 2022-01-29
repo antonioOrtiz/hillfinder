@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import Message from '../../components/Message/index';
-import { uiState } from '../../components/Context/UIContext'
 
 export default function isConfirmation(
   dispatch,
@@ -15,10 +14,6 @@ export default function isConfirmation(
   const [showApi, setShowApi] = useState(true);
   const router = useRouter();
   const { token } = router.query
-
-
-
-
   useEffect(() => {
     let isSubscribed = true
 
