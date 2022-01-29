@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useEffect } from 'react';
+import React from 'react';
 
 export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
   const nav = [
@@ -11,10 +11,9 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     { id: '6', route: '/registration', name: 'Registration' }
   ];
 
-  function LogOutAnchor({ route, name, id, isMobile }) {
-
+  function LogOutAnchor({ route, name, isMobile }) {
     if (route === '/logout' && isMobile) {
-      return (<li key={id} >
+      return (<li>
         <Link
           href='#'
         ><a
@@ -24,8 +23,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
         </Link>
       </li>)
     } else if (route !== '/logout' && isMobile) {
-      return (<li key={id} >
-
+      return (<li>
         <Link
           href={route}
         >
@@ -37,8 +35,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       </li>)
     }
     else if (route == '/logout' && !isMobile) {
-      return (<li key={id} >
-
+      return (<li>
         <Link
           href='#'
         >
@@ -48,7 +45,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
           >{name}</a></Link></li>)
     }
     else if (route != '/logout' && !isMobile) {
-      return (<li key={id} >
+      return (<li>
         <Link
           href={route}
         ><a >{name}</a>
@@ -64,10 +61,10 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
           {
             user && user.isVerified ?
               ((route === '/login') || route === '/registration') ? null :
-                <LogOutAnchor key={id} id={id} route={route} name={name} isMobile={mobile} />
+                <LogOutAnchor id={id} route={route} name={name} isMobile={mobile} />
               :
               ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null :
-                <LogOutAnchor key={id} id={id} route={route} name={name} isMobile={mobile} />
+                <LogOutAnchor id={id} route={route} name={name} isMobile={mobile} />
           }
         </>)
       }
