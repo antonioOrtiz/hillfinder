@@ -5,13 +5,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+
         orangeLight: '#ffe0b2',
         input: '#8eba75',
+        isDisabled: '#b7bab9',
+        isDisabledTextColor: '#79827f',
         DEFAULT: '#f57c00',
         orangeDark: '#e65100',
-        textButton: '#386F22',
+        textButton: '#bbf7d0',
         textColor: '#f0fff0',
-        darkTextColor: '#292900',
+        successAlert: '#bbf7d0',
+        succesAlertBorder: '#4ade80'
       },
       keyframes: {
         'fade-in-down': {
