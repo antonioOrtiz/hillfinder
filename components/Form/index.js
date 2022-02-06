@@ -230,6 +230,7 @@ export default function FormComponent({
 
   function handleSubmit(event, form) {
     event.preventDefault();
+    setDisableButton(true);
     validateInputs(
       form,
       email,
