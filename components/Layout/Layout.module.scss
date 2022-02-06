@@ -1,91 +1,48 @@
-@media only screen and (orientation:portrait) {
-    .content,
-    .bg-logo {
-        height: 100vh;
-        display: flex;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: -1;
-        background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
-        /* Set rules to fill background */
-        /* Set up proportionate scaling */
-        /* Set up positioning */
+    @media only screen and (orientation:portrait) {
+        .content,
+        .bg-logo {
+            height: 100vh;
+            display: flex;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent), url('/logo/hillfinder-logo.png') center;
+            background-repeat: no-repeat;
+        }
     }
-    .bg-logo:after {
-        content: "";
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-        left: 0px;
-        background-image: url('/logo/hillfinder-logo.png');
-        background-repeat: no-repeat;
-        opacity: .1;
-        background-position: center 58%;
-        /* Specify the background image */
-        -webkit-background-size: 512px;
-        -moz-background-size: 512px;
-        -o-background-size: 512px;
-        background-size: 512px;
-        /* Specify the background image */
-        height: 100%;
-        z-index: inherit;
+    
+    // @media (max-width: 767px) and (orientation: landscape) {
+    // }
+    @media only screen and(orientation: landscape) {
+        .content,
+        .bg-logo {
+            height: 100vh;
+            display: flex;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent), url('/logo/hillfinder-logo.png') center;
+            background-repeat: no-repeat;
+            /* Set up positioning */
+        }
     }
-}
-
-// @media (max-width: 767px) and (orientation: landscape) {
-// }
-@media only screen and(orientation: landscape) {
-    .content,
-    .bg-logo {
-        height: 100vh;
-        display: flex;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: -1;
-        background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent);
-        /* Set rules to fill background */
-        /* Set up proportionate scaling */
-        /* Set up positioning */
+    
+    @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+        /* your CSS to target only landscape mobile users */
+        .bg-logo:after {
+            background-position: center 220px;
+            background-size: contain;
+        }
     }
-    .bg-logo:after {
-        content: "";
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-        left: 0px;
-        background-image: url('/logo/hillfinder-logo.png');
-        background-repeat: no-repeat;
-        opacity: .1;
-        background-position: center 58%;
-        /* Specify the background image */
-        -webkit-background-size: 512px;
-        -moz-background-size: 512px;
-        -o-background-size: 512px;
-        background-size: 512px;
-        /* Specify the background image */
-        height: 100%;
-        z-index: inherit;
+    
+    @media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+        /* your CSS to target only landscape mobile users */
+        .bg-logo:after {
+            background-position: center 60px;
+            background-size: contain;
+        }
     }
-}
-
-@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
-    /* your CSS to target only landscape mobile users */
-    .bg-logo:after {
-        background-position: center 220px;
-        background-size: contain;
-    }
-}
-
-@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
-    /* your CSS to target only landscape mobile users */
-    .bg-logo:after {
-        background-position: center 60px;
-        background-size: contain;
-    }
-}
