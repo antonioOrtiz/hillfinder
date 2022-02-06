@@ -20,12 +20,12 @@ export default function Message({ state, content }) {
   return (
     <>
       {{
-        Waring:
+        Warning:
           <div
             className="animate-fade-in-down my-4 py-2 p-3 text-orangeDark bg-orangeLight border border-orangeDark-300 rounded relative"
             role="alert"
           >
-            <strong className="font-bold">Waring:</strong>
+            <strong className="font-bold">Warning:</strong>
             <span className="block sm">{content}</span>
           </div>,
         Success:
