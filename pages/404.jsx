@@ -7,7 +7,7 @@ export default function FourOhFour() {
 
   return (
     <>
-      <div className="hero min-h-screen bg-base-200">
+      <div className="hero min- bg-base-200">
         <div className="flex-col hero-content lg:flex-row-reverse">
           <div>
             <h1 className="mb-5 text-5xl text-white font-bold">

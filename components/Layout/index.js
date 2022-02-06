@@ -47,8 +47,8 @@ export default function Layout({ children, showFooter = false }) {
     inputRef.current.checked = false
   }
 
-  return <>
-    <div className="shadow bg-base-200 drawer h-screen">
+  return (
+    <div className="shadow bg-base-200 drawer">
       <Modal
         message="Are you sure you want to log out of your account?"
         handleLogout={handleLogout}
@@ -96,5 +96,5 @@ export default function Layout({ children, showFooter = false }) {
         <Nav mobile uidispatch={uidispatch} user={user} handleClickOnInput={handleClickOnInput} />
       </div>
     </div>
-  </>;
+  )
 }
