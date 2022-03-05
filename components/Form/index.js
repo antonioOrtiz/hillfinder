@@ -63,6 +63,7 @@ export default function FormComponent({
   const { id, accountNotVerified } = state;
   const { user, mutate } = useUser();
 
+
   useEffect(() => {
     setIsLoading(() => false)
   }, [])
@@ -92,11 +93,9 @@ export default function FormComponent({
 
         const { data } = await getProfile();
 
-
-        console.log("data 95", data);
         const { email } = data[0]._user
         const obj = data[0];
-        const { __v, _user, _id, 'member-since': memberSince, ...profile } = obj;
+        const { __v, _user, _id, 'Member since': memberSince, ...profile } = obj;
 
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
 
@@ -105,7 +104,7 @@ export default function FormComponent({
         profile.email = email;
 
         for (const profileProp in profile) {
-          if (profileProp === 'interested-activities') {
+          if (profileProp === 'Interested activities') {
             setInterestedActivities(oldArray => [...oldArray, { id: uuidv4(), 'name': profileProp, 'value': profile[profileProp], }]);
           } else {
             setProfileDataFromApi(oldArray => [...oldArray, { id: uuidv4(), 'name': profileProp, 'value': profile[profileProp], }]);
@@ -222,13 +221,14 @@ export default function FormComponent({
       setCurrentDestination(value);
     }
 
-    console.log("name, value  ", name, value);
     if (name === 'interested_activities') {
       setInterestedActivitiesInput(value);
     }
   }
 
   function handleSubmit(event, form) {
+
+    console.log("event, form ", event, form);
     event.preventDefault();
     setDisableButton(true);
     validateInputs(
@@ -379,8 +379,6 @@ export default function FormComponent({
       />
     )
   }
-
-
 
   console.log("formType ", formType);
 
