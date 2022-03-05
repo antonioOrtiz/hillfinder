@@ -29,7 +29,16 @@ function MyApp({ Component, pageProps }) {
   const { user, isLoading } = useUser()
   const router = useRouter()
 
-  console.log('user ', pageProps.auth)
+  // console.log('user LINE 32 ', user, router.pathname)
+
+  useEffect(() => {
+    if (router.pathname === '/login' && user?.isVerified) {
+      setTimeout(() => {
+        router.push('/profile');
+      }, 2000);
+    }
+  }, [user])
+  useEffect(() => console.log("isLoading ", isLoading), [])
 
   useEffect(() => {
     if (router.pathname !== '/confirmation/[token]') {
