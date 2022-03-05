@@ -8,12 +8,12 @@ const profile = new Schema({
   _user: {
     type: Schema.Types.ObjectId, ref: 'User'
   },
-  name: {
+  'Display name': {
     type: String,
     default: ''
   },
-  'interested-activities': [],
-  'member-since': { type: Date, default: Date.now }
+  'Interested activities': ['Ping-pong'],
+  'Member since': { type: Date, default: Date.now }
 }
 )
 
