@@ -9,11 +9,12 @@ export default function loginSubmit(
   setFormSuccess,
   setIsLoading,
   setResponseMessage,
-  dispatch,
+  userdispatch,
   router,
   user,
-  mutate,
+  mutate
 ) {
+
   const data = {
     email,
     password,
@@ -38,7 +39,9 @@ export default function loginSubmit(
         setFormSuccess(true);
         setIsLoading(false);
         setResponseMessage(response.data.msg);
-        dispatch({ type: 'userAccountIsVerified' })
+        userdispatch({ type: 'setIsLoggedIn', payload: true })
+        userdispatch({ type: 'userAccountIsVerified' })
+
         mutate('/api/user', { ...user, userFromLogin }, false)
       }
     })
@@ -63,7 +66,7 @@ export default function loginSubmit(
         }
 
         if (error.response.status === 403) {
-          dispatch({ type: 'userAccountNotVerified' })
+          userdispatch({ type: 'userAccountNotVerified' })
           setEmail('');
           setPassword('');
           setFormError(false);
