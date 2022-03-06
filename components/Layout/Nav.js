@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-export default function Nav({ mobile = true, uidispatch, user, handleClickOnInput }) {
+export default function Nav({ mobile = true, uidispatch, isLoggedIn, handleClickOnInput }) {
   const nav = [
     { id: '1', route: '/', name: 'Home' },
     { id: '2', route: '/profile', name: 'Profile' },
@@ -15,6 +15,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     if (route === '/logout' && isMobile) {
       return (<li>
         <Link
+          suppressHydrationWarning
           href='#'
         ><a
           role="button"
@@ -25,6 +26,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     } else if (route !== '/logout' && isMobile) {
       return (<li>
         <Link
+          suppressHydrationWarning
           href={route}
         >
           <a
@@ -37,6 +39,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     else if (route == '/logout' && !isMobile) {
       return (<li>
         <Link
+          suppressHydrationWarning
           href='#'
         >
           <a
@@ -47,6 +50,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
     else if (route != '/logout' && !isMobile) {
       return (<li>
         <Link
+          suppressHydrationWarning
           href={route}
         ><a >{name}</a>
         </Link>
@@ -59,7 +63,7 @@ export default function Nav({ mobile = true, uidispatch, user, handleClickOnInpu
       {
         nav.map(({ route, name, id }) => <>
           {
-            user && user.isVerified ?
+            isLoggedIn ?
               ((route === '/login') || route === '/registration') ? null :
                 <LogOutAnchor id={id} route={route} name={name} isMobile={mobile} />
               :
