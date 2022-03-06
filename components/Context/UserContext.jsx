@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext, useReducer } from 'react';
 const initialState = {
   avatar: '/uploads/profile-avatars/placeholder.jpg',
   accountNotVerified: null,
-  isLoggedIn: false,
+  isLoggedIn: null,
   id: null,
   isRoutingVisible: false,
   removeRoutingMachine: false,
@@ -26,7 +26,6 @@ function setLocalStorage(key, value) {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (errors) {
-    // catch possible errors:
     console.log(errors);
   }
 }
@@ -55,15 +54,10 @@ function UserProvider({ children }) {
 
       case 'userAccountNotVerified': {
         return { ...state, ...{ accountNotVerified: true } }
-
       }
 
-      case 'isLoggdIn': {
-        return { ...state, ...{ isLoggedIn: true } };
-      }
-
-      case 'isLoggdOut': {
-        return { ...state, ...{ isLoggedIn: false } };
+      case 'setIsLoggedIn': {
+        return { ...state, ...{ isLoggedIn: payload } };
       }
 
       case 'setUserId': {
@@ -204,7 +198,7 @@ function UserProvider({ children }) {
     }
   }
 
-  const [user, setUser] = useState(() => getLocalStorage('user', initialState));
+  const [user] = useState(() => getLocalStorage('user', initialState));
 
   const [state, dispatch] = useReducer(userReducer, user);
 
@@ -213,8 +207,8 @@ function UserProvider({ children }) {
   }, [state]);
 
   return (
-    <UserStateContext.Provider value={{ state: state }}>
-      <UserContextDispatch.Provider value={{ dispatch: dispatch }}>
+    <UserStateContext.Provider value={{ userstate: state }}>
+      <UserContextDispatch.Provider value={{ userdispatch: dispatch }}>
         {children}
       </UserContextDispatch.Provider>
     </UserStateContext.Provider>
