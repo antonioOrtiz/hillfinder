@@ -26,10 +26,9 @@ import Index from '../pages/index'
 const Layout = dynamic(() => import('../components/Layout'))
 
 function MyApp({ Component, pageProps }) {
-  const { user, isLoading } = useUser()
+  const { user, isLoading } = useUser(true)
   const router = useRouter()
 
-  // console.log('user LINE 32 ', user, router.pathname)
 
   useEffect(() => {
     if (router.pathname === '/login' && user?.isVerified) {
@@ -38,7 +37,6 @@ function MyApp({ Component, pageProps }) {
       }, 2000);
     }
   }, [user])
-  useEffect(() => console.log("isLoading ", isLoading), [])
 
   useEffect(() => {
     if (router.pathname !== '/confirmation/[token]') {
