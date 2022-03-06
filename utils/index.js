@@ -76,6 +76,7 @@ export function validateInputs(
 
 ) {
 
+  console.log("form ", form);
   function getFormValidation(form) {
     function isLoginOrRegistration() {
       const rules = {
@@ -212,6 +213,7 @@ export function validateInputs(
     }
 
     const Forms = {
+      Profile: isForgotPassword,
       Login: isLoginOrRegistration,
       Register: isLoginOrRegistration,
       ForgotPassword: isForgotPassword,
