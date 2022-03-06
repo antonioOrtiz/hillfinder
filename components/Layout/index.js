@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import styles from './Layout.module.scss';
 
 import { useUser } from '../../lib/hooks'
+import { userState, userDispatch } from '../Context/UserContext'
 import { uiState, uiDispatch } from '../Context/UIContext'
 import Modal from '../Modal'
 import Nav from './Nav'
@@ -17,15 +18,14 @@ export default function Layout({ children, showFooter = false }) {
   const inputRef = useRef();
 
   const { uistate } = uiState();
+  const { userstate } = userState();
+  const { userdispatch } = userDispatch()
+  const { isLoggedIn } = userstate
   const { showModal } = uistate;
   const { uidispatch } = uiDispatch();
-
-  const { route, router } = useRouter();
-  const { user, mutate } = useUser();
-
-  useEffect(() => {
-    console.log("user in Layout 27", user);
-  }, [user])
+  const router = useRouter();
+  const { route } = useRouter();
+  const { user, mutate } = useUser(!isLoggedIn ? false : true);
 
   useEffect(() => () => {
     if (inputRef.current != null) inputRef.current.checked = false
@@ -40,6 +40,8 @@ export default function Layout({ children, showFooter = false }) {
       .get('/api/logout').then(() => {
         const userFromLogOut = { user: null }
         mutate('/api/user', { ...user, userFromLogOut }, false)
+        userdispatch({ type: 'setIsLoggedIn', payload: false })
+        router.push('/');
       }).catch(err => console.log('err', err))
   }
 
@@ -82,7 +84,8 @@ export default function Layout({ children, showFooter = false }) {
           </div>
 
           <div className="flex-none hidden lg:block">
-            <Nav mobile={false} uidispatch={uidispatch} user={user} />
+            <Nav
+              mobile={false} uidispatch={uidispatch} isLoggedIn={isLoggedIn} />
           </div>
         </div>
         <div className={`${route != '/' ? styles['bg-logo'] : styles.content}`} >
@@ -93,7 +96,8 @@ export default function Layout({ children, showFooter = false }) {
 
       <div className="drawer-side">
         <label htmlFor="my-drawer-3" className="drawer-overlay" />
-        <Nav mobile uidispatch={uidispatch} user={user} handleClickOnInput={handleClickOnInput} />
+        <Nav
+          mobile uidispatch={uidispatch} isLoggedIn={isLoggedIn} handleClickOnInput={handleClickOnInput} />
       </div>
     </div>
   )
