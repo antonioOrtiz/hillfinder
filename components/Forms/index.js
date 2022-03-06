@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+/* eslint-disable react/jsx-key */
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import moment from 'moment';
@@ -6,8 +7,13 @@ import moment from 'moment';
 import { validateInputs } from '../../utils/index';
 import { useRouter } from 'next/router'
 
-import GenericFormComponent from './FormElements'
 import { userState, userDispatch } from '../Context/UserContext'
+
+import LoginForm from './LoginForm'
+import RegisterForm from './RegisterForm'
+import UpdatePasswordForm from './UpdatePasswordForm'
+import ForgotPasswordForm from './ForgotPasswordForm'
+import ProfileForm from './ProfileForm'
 
 import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
@@ -19,12 +25,12 @@ import updateProfileSubmit from '../../clientApi/UpdateProfileSubmit'
 
 import { useUser } from '../../lib/hooks'
 
-export default function FormComponent({
-  formType
+function FormComponent({
+  formType,
 }) {
   const router = useRouter();
 
-  const { dispatch } = userDispatch();
+  const { userdispatch } = userDispatch();
 
   const interestedActivitiesRef = useRef();
   const notInterestedActivitiesRef = useRef();
@@ -58,18 +64,19 @@ export default function FormComponent({
   const [responseMessage, setResponseMessage] = useState('');
   const [interestedActivitiesInput, setInterestedActivitiesInput] = useState('')
 
-  const { state } = userState();
+  const { userstate } = userState();
 
-  const { id, accountNotVerified } = state;
-  const { user, mutate } = useUser();
+  const { id, accountNotVerified, isLoggedIn } = userstate;
 
+  const { user, mutate } = useUser(!isLoggedIn ? false : true);
 
   useEffect(() => {
     setIsLoading(() => false)
   }, [])
 
   useEffect(() => {
-    setMounted(true)
+    if (!mounted) setMounted(true)
+    return () => setMounted(false)
   }, [])
 
   useEffect(() => {
@@ -117,72 +124,7 @@ export default function FormComponent({
     return () => { setProfileLoaded(true) }
   }, [])
 
-  const Forms = {
-    Login: [LoginForm,
-      () => loginSubmit(
-        email,
-        password,
-        setEmail,
-        setPassword,
-        setFormError,
-        setFormSuccess,
-        setIsLoading,
-        setResponseMessage,
-        dispatch,
-        router,
-        user,
-        mutate
-      )
-    ],
-    Register: [RegisterForm,
-      () => registerSubmit(
-        email,
-        password,
-        setEmail,
-        setPassword,
-        setResponseMessage,
-        setEmailDup,
-        setFormError,
-        setFormSuccess,
-        setIsLoading,
-        router
-      )
-    ],
-    UpdatePassword: [UpdatePasswordForm,
-      () => updatePasswordSubmit(
-        password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token
-      )
-    ],
-    ForgotPassword: [ForgotPasswordForm,
-      () => forgotPasswordSubmit(
-        email,
-        setEmail,
-        setResponseMessage,
-        setFormError,
-        setFormSuccess,
-        setIsLoading,
-
-      )
-    ],
-    Confirmation: [
-      () => (isConfirmation(
-        dispatch,
-        error,
-        setError,
-        setResponseMessage,
-        responseMessage,
-      )
-      )
-    ],
-    Profile: [ProfileForm,
-      () => (updateProfileSubmit(
-        name, email, interestedActivities, setFormError, setFormSuccess, setIsLoading, setResponseMessage)
-      )
-    ],
-  };
-
-  function handleChange(e) {
-    e.persist();
+  function handleChangeForUseCallBack(name, value) {
     setResponseMessage('');
     setPasswordFeedback('')
     setPasswordConfirmationFeedback('')
@@ -193,11 +135,8 @@ export default function FormComponent({
     setPasswordConfirmationError(false);
     setDisableButton(false);
 
-    dispatch({ type: 'resetUserAccountIsVerified', })
-
+    userdispatch({ type: 'resetUserAccountIsVerified', })
     setEmailDup(false);
-
-    const { name, value } = e.target;
 
     if (value === '') setDisableButton(() => true)
 
@@ -226,10 +165,14 @@ export default function FormComponent({
     }
   }
 
-  function handleSubmit(event, form) {
+  const handleChange = useCallback((e) => {
+    e.persist();
+    const { name, value } = e.target;
+    handleChangeForUseCallBack(name, value);
+  }, [email, formType, password, password_confirmation, handleChangeForUseCallBack, setIsLoading]);
 
-    console.log("event, form ", event, form);
-    event.preventDefault();
+  function handleSubmitForUseCallBack(e, form) {
+    e.preventDefault();
     setDisableButton(true);
     validateInputs(
       form,
@@ -248,13 +191,17 @@ export default function FormComponent({
     return preventSubmit ? false : Forms[form][1]()
   }
 
-  function LoginForm() {
-    useEffect(() => {
-      dispatch({ type: 'resetUserAccountIsVerified' })
-    }, [id]);
+  const handleSubmit = useCallback((e, form) => {
+    handleSubmitForUseCallBack(e, form);
+  }, [email, password, password_confirmation, interestedActivities, handleSubmitForUseCallBack]);
 
-    return (
-      mounted && <GenericFormComponent
+  const Forms = {
+    Login: [
+      <LoginForm
+        suppressHydrationWarning
+        userdispatch={userdispatch}
+        id={id}
+        mounted={mounted}
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -271,14 +218,26 @@ export default function FormComponent({
         buttonName="Log-in"
         isLoading={isLoading}
         setIsLoading={setIsLoading}
-        responseMessage={responseMessage}
-      />
-    );
-  }
-
-  function RegisterForm() {
-    return (
-      mounted && <GenericFormComponent
+        responseMessage={responseMessage} />,
+      () => loginSubmit(
+        email,
+        password,
+        setEmail,
+        setPassword,
+        setFormError,
+        setFormSuccess,
+        setIsLoading,
+        setResponseMessage,
+        userdispatch,
+        router,
+        user,
+        mutate
+      )
+    ],
+    Register: [
+      <RegisterForm
+        suppressHydrationWarning
+        mounted={mounted}
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -293,16 +252,27 @@ export default function FormComponent({
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
         disableButton={disableButton}
-        buttonName="Register"
+        buttonName={"Register"}
         isLoading={isLoading}
         responseMessage={responseMessage}
-      />
-    );
-  }
-
-  function UpdatePasswordForm() {
-    return (
-      mounted && <GenericFormComponent
+      />,
+      () => registerSubmit(
+        email,
+        password,
+        setEmail,
+        setPassword,
+        setResponseMessage,
+        setEmailDup,
+        setFormError,
+        setFormSuccess,
+        setIsLoading,
+        router
+      )
+    ],
+    UpdatePassword: [
+      <UpdatePasswordForm
+        suppressHydrationWarning
+        mounted={mounted}
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -324,13 +294,14 @@ export default function FormComponent({
         responseMessage={responseMessage}
         tokenExpired={tokenExpired}
         responseCodeSuccess={responseCodeSuccess}
-      />
-    );
-  }
-
-  function ForgotPasswordForm() {
-    return (
-      mounted && <GenericFormComponent
+      />,
+      () => updatePasswordSubmit(
+        password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token
+      )
+    ],
+    ForgotPassword: [
+      <ForgotPasswordForm
+        suppressHydrationWarning
         handleSubmit={handleSubmit}
         formType={formType}
         formSuccess={formSuccess}
@@ -347,13 +318,30 @@ export default function FormComponent({
         buttonName="Yes, send a link"
         isLoading={isLoading}
         responseMessage={responseMessage}
-      />
-    );
-  }
+      />,
+      () => forgotPasswordSubmit(
+        email,
+        setEmail,
+        setResponseMessage,
+        setFormError,
+        setFormSuccess,
+        setIsLoading,
 
-  function ProfileForm() {
-    return (
-      mounted && <GenericFormComponent
+      )
+    ],
+    Confirmation: [
+      () => (isConfirmation(
+        error,
+        setError,
+        setResponseMessage,
+        responseMessage,
+      )
+      )
+    ],
+    Profile: [
+      <ProfileForm
+        suppressHydrationWarning
+        mounted={mounted}
         notInterestedActivitiesRef={notInterestedActivitiesRef}
         email={email}
         emailError={emailError}
@@ -376,11 +364,14 @@ export default function FormComponent({
         setProfileDataFromApi={setProfileDataFromApi}
         updateProfileSubmit={updateProfileSubmit}
         responseMessage={responseMessage}
-      />
-    )
-  }
+      />,
+      () => (updateProfileSubmit(
+        name, email, interestedActivities, setFormError, setFormSuccess, setIsLoading, setResponseMessage)
+      )
+    ],
+  };
 
-  console.log("formType ", formType);
-
-  return Forms[formType][0]();
+  return Forms[formType][0];
 }
+
+export default React.memo(FormComponent)

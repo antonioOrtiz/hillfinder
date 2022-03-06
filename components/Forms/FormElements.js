@@ -190,13 +190,17 @@ export default function GenericInputForm({
   }
 
   useEffect(() => {
+    console.log("formType ", formType);
+  }, [formType])
+
+
+  useEffect(() => {
     if (formType === 'ForgotPassword' && email === '') {
       setDisableButton(() => true)
     }
   }, [])
 
   function handleEditProfileOrSave(e) {
-
     console.log("e ", e.target.computedName);
     if (e.target.computedName === 'SAVE CHANGES') {
       handleSubmit(e, formType)
@@ -352,7 +356,7 @@ export default function GenericInputForm({
                     return (
                       <li key={id}
                         className="text-green-900 font-semibold mt-5 mb-3 w-full">
-                        <label forHtml={name} className="inline-block align-bottom mb-1">{`${name.toUpperCase()}:`} {' '} </label>
+                        <label forhtml={name} className="inline-block align-bottom mb-1">{`${name.toUpperCase()}:`} {' '} </label>
                         <input id={id}
                           disabled={isProfileInEditMode}
                           ref={notInterestedActivitiesRef}
@@ -377,7 +381,7 @@ export default function GenericInputForm({
                       {typeof interestedActivities !== 'undefined' ? interestedActivities[0]?.value && interestedActivities[0].value.join(', ') : null}</span>
                   </li>
 
-                  <label forHtml="Interested activities" className="inline-block align-bottom mb-1"> <span className="text-green-900 text-sm mb-3">Accept comma separated input:</span></label>
+                  <label forhtml="Interested activities" className="inline-block align-bottom mb-1"> <span className="text-green-900 text-sm mb-3">Accept comma separated input:</span></label>
 
                   <input
                     name="interested_activities"
@@ -442,11 +446,9 @@ export default function GenericInputForm({
               </button>
             </div>
 
-
             {isLoading ? <div className="mt-4 flex justify-center items-center">
               <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
             </div> : null}
-
 
             <FormResponse
               tokenExpired={tokenExpired}
@@ -526,7 +528,6 @@ export default function GenericInputForm({
             {isLoading ? <div className="mt-4 flex justify-center items-center">
               <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
             </div> : null}
-
             <FormResponse
               accountNotVerified={accountNotVerified}
               emailDup={emailDup}
@@ -534,11 +535,8 @@ export default function GenericInputForm({
               formSuccess={formSuccess}
               formError={formError}
               responseMessage={responseMessage} />
-
           </form>
-
         </div>
-
         {{
           Login: formError
             ? <div className="flex flex-wrap mt-6">
@@ -559,8 +557,6 @@ export default function GenericInputForm({
             </div>
             : null,
         }[formType]}
-
-
       </div>}
   </>;
 }
