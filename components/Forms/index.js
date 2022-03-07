@@ -20,7 +20,6 @@ import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
 import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
 import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
-import isConfirmation from '../../clientApi/Confirmation'
 import getProfile from '../../clientApi/GetProfile'
 import updateProfileSubmit from '../../clientApi/UpdateProfileSubmit'
 
