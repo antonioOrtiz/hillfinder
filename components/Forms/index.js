@@ -9,11 +9,12 @@ import { useRouter } from 'next/router'
 
 import { userState, userDispatch } from '../Context/UserContext'
 
-import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
-import UpdatePasswordForm from './UpdatePasswordForm'
-import ForgotPasswordForm from './ForgotPasswordForm'
-import ProfileForm from './ProfileForm'
+import LoginForm from './Login'
+import RegisterForm from './Register'
+import UpdatePasswordForm from './UpdatePassword'
+import ForgotPasswordForm from './ForgotPassword'
+import ProfileForm from './Profile'
+import Confirmation from './Confirmation';
 
 import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
@@ -330,13 +331,13 @@ function FormComponent({
       )
     ],
     Confirmation: [
-      () => (isConfirmation(
-        error,
-        setError,
-        setResponseMessage,
-        responseMessage,
-      )
-      )
+      <Confirmation
+        userdispatch={userdispatch}
+        error={error}
+        setError={setError}
+        setResponseMessage={setResponseMessage}
+        responseMessage={responseMessage}
+      />
     ],
     Profile: [
       <ProfileForm
