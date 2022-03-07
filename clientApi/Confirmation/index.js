@@ -3,13 +3,13 @@ import { useRouter } from 'next/router'
 import axios from 'axios';
 import Message from '../../components/Message/index';
 
-export default function isConfirmation(
+export default function Confirmation({
   dispatch,
   error,
   setError,
   setResponseMessage = () => { },
   responseMessage,
-) {
+}) {
 
   const [showApi, setShowApi] = useState(true);
   const router = useRouter();
