@@ -6,9 +6,7 @@ const Form = dynamic(() => import('../../components/Forms'));
 export default function UpdatePassword() {
   return (
     <>
-      <Layout>
-        <Form formType="UpdatePassword" />
-      </Layout>
+      <Form formType="UpdatePassword" />
     </>
   )
 }
