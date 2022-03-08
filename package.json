@@ -3,7 +3,7 @@
     "scripts": {
         "dev": "NODE_ENV=development NODE_OPTIONS='--inspect' next dev -p 8016",
         "build": "NODE_ENV=production next build",
-        "start": "next start",
+        "start": "node_modules/next/dist/bin/next start -p $PORT",
         "find:unused": "next-unused",
         "lint": "eslint ./ --ext js,jsx"
     },
