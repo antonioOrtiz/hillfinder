@@ -4,7 +4,13 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 
 module.exports = {
-  ignoreDuringBuilds: true,
+  reactStrictMode: true,
+  eslint: {
+
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
     DEVELOPMENT_DB_DSN: process.env.DEVELOPMENT_DB_DSN,
