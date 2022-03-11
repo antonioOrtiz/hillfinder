@@ -56,9 +56,11 @@ module.exports = {
           fs: false,
           crypto: 'empty',
           net: false,
+          "process": require.resolve("process/browser"),
           tls: false,
           dns: false,
           "vm": require.resolve("vm-browserify"),
+
         }
       }
       config.optimization.minimize = true;
