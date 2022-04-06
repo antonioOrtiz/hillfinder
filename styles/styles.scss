@@ -1,0 +1,72 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: #4e9525;
+}
+
+.navbar {
+    border-bottom: 1px solid #386F22;
+}
+
+.footer,
+.navbar,
+ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
+    background-color: #4e9525;
+    color: #fff;
+}
+
+ul.p-4.overflow-y-auto.menu.w-80.bg-base-100 {
+    border-right: 1px solid #2e5a1c;
+    background-color: #5dad2f;
+}
+
+.hero {
+    color: #36454f
+}
+
+.text-center.mt-6 button:disabled,
+.text-center.mt-6 button[disabled] {
+    border: 1px solid #999999;
+    background-color: #adadad;
+    opacity: 0.8;
+    color: #6f6565;
+}
+
+.loader {
+    border-top-color: #386F22;
+    -webkit-animation: spinner 1.5s linear infinite;
+    animation: spinner 1.5s linear infinite;
+}
+
+@-webkit-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Change autocomplete styles in WebKit */
+
+input,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    font-size: 16px;
+}

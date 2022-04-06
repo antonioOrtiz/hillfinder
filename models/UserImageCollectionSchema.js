@@ -1,0 +1,17 @@
+import mongoose from 'mongoose';
+
+/* Image Schema for storing images in the mongodb database */
+
+const UserImageCollectionSchema = new mongoose.Schema({
+  avatar: {
+    _userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+    imageName: { type: String, default: 'none', required: true },
+    imageData: {
+      data: Buffer,
+      contentType: String
+    },
+    filePath: { type: String, required: true }
+  }
+});
+
+module.exports = mongoose.model('UserImageCollection', UserImageCollectionSchema);
