@@ -90,7 +90,8 @@ export default function ProfileForm({
     toggle()
   }
 
-  function handleFiles(files) {
+  function handleFiles(e) {
+    const { files } = e.target
     for (let i = 0; i < files.length; i++) {
       console.log(files[i]);
     }
@@ -145,15 +146,12 @@ export default function ProfileForm({
 
           <div className="relative z-50 rounded-full w-24 h-24">
             <label className="cursor-pointer mt-6">
-              <
-                input
+              <input
                 ref={fileSelect}
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={
-                  (e) => handleFiles(e.target.files)
-                }
+                onChange={handleFiles}
               /> <img
                 onClick={handleImageUpload}
                 src="http://daisyui.com/tailwind-css-component-profile-1@94w.png" />
