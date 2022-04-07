@@ -55,7 +55,7 @@ module.exports = {
         ...config.resolve.alias,
         ...{
           child_process: 'empty',
-          fs: false,
+          fs: 'empty',
           crypto: 'empty',
           net: false,
           tls: false,
