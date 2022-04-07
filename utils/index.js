@@ -1,4 +1,5 @@
-import { indicative, validateAll } from 'indicative';
+
+import { indicative, validate } from 'indicative/validator'
 
 import crypto from 'crypto';
 
@@ -128,7 +129,7 @@ export function validateInputs(
       const sanitizedData = indicative.sanitize(data, sanitizationRules)
 
 
-      validateAll(sanitizedData, rules, messages)
+      validate(sanitizedData, rules, messages)
         .then(success => {
           if (success.email) {
             setEmailError(false);
@@ -192,7 +193,7 @@ export function validateInputs(
         max: 'The value is too big. Minimum eleven characters.',
       }
 
-      validateAll(data, rules, messages)
+      validate(data, rules, messages)
         .then(success => {
           if (success.email) {
             setEmailError(false);
@@ -237,7 +238,7 @@ export function validateInputs(
         email: 'Enter valid email address.',
       };
 
-      validateAll(data, rules, messages)
+      validate(data, rules, messages)
         .then(success => {
 
           if (success.email) {
@@ -276,7 +277,7 @@ export function validateInputs(
         max: 'The password is too long. Maximum 11 characters.',
       };
 
-      validateAll(data, schema, messages)
+      validate(data, schema, messages)
         .then(success => {
           if (success.password) {
             setPasswordError(false);
