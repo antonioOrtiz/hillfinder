@@ -21,7 +21,7 @@ export default function ForgotPasswordForm({
   tokenExpired,
 }) {
   return (
-    mounted && <div className="container px-4 max-w-md ">
+    !(!mounted || !<div className= "container px-4 max-w-md " >
 
       <div className="relative flex flex-col min-w-0 break-words shadow-lg rounded-lg bg-gray-300  bg-opacity-50 flex-auto px-4 py-5 pt-0">
 
@@ -30,7 +30,7 @@ export default function ForgotPasswordForm({
             Forgot Password
           </h6>
           <p> Not a problem. Just enter your email address below. If it's registered
-            with Hillfinder, we'll send you a link to reset your password.{' '}</p>
+            with Hillfinder, we'll send you a link to reset your password.</p>
         </div>
         <hr className="mb-4 border-b-1 border-gray-500" />
 
@@ -69,6 +69,6 @@ export default function ForgotPasswordForm({
           </a>
         </Link>
       </div>
-    </div>
+    </div >)
   );
 }
