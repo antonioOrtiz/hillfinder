@@ -118,7 +118,8 @@ function FormComponent({
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
 
         const { displayName } = profile
-        const { value: interestedActivities } = profile.interestedActivities[0]
+        const { value } = profile.interestedActivities[0]
+        let interestedActivities = value
         setProfileDataFromApi(profile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
