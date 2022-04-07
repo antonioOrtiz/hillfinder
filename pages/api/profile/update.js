@@ -22,11 +22,13 @@ handler
       await connectDB()
       console.log("      req.body; ", req.body);
       const {
+        userAvatar,
         profileDisplayName,
         profileEmail,
         interestedActivities } = req.body;
 
       const update = {
+        userAvatar,
         email: profileEmail,
         "displayName": profileDisplayName,
         $push: {
