@@ -32,8 +32,10 @@ module.exports = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
-  webpack5: true,
-
+  future: {
+    webpack5: true, // by default, if you customize webpack config, they switch back to version 4.
+    // Looks like backward compatibility approach.
+  },
   webpack: (config, { isServer }) => {
 
     if (!isServer) {
