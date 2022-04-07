@@ -45,6 +45,8 @@ module.exports = {
         "http": false,
         "stream": false,
         "path": false,
+        "process": require.resolve("process/browser"),
+
         "os": false,
         "zlib": false,
       }
