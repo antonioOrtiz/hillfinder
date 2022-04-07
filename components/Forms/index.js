@@ -101,13 +101,10 @@ function FormComponent({
     notInterestedActivitiesRef.current = "notInterestedActivitiesRef"
     interestedActivitiesRef.current = "interestedActivitiesRef"
     if (user !== undefined && profileLoaded) {
-      setProfileLoaded(false);
 
       const fetchProfile = async () => {
 
         const { data } = await getProfile();
-
-        console.log("data ", data);
 
         const { email } = data[0]._user
 
@@ -118,18 +115,16 @@ function FormComponent({
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
 
         const { displayName } = profile
-        const { value } = profile.interestedActivities[0]
-        let interestedActivities = value
+
         setProfileDataFromApi(profile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
         setProfileEmail(email)
-        setInterestedActivities(interestedActivities)
+        setInterestedActivities(profile.interestedActivities[0].value)
 
       }
       fetchProfile()
     }
-    return () => { setProfileLoaded(true) }
   }, [])
 
 
