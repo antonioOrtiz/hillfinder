@@ -5,7 +5,6 @@ import { useToggle } from '../../../lib/hooks'
 
 import { Loader } from '../../Loader'
 
-
 const Message = dynamic(
   () => import('../../Message'),
   {
@@ -13,7 +12,7 @@ const Message = dynamic(
   }
 )
 
-import { InterestedActivitiesComponent, UserNameComponent as ProfileEmailComponent, ProfileInputComponent as ProfileDisplayNameComponent } from '../FormElements'
+import { InterestedActivitiesComponent, UserNameComponent as ProfileEmailComponent, ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent } from '../FormElements'
 
 export default function ProfileForm({
   handleSubmit,
@@ -51,7 +50,6 @@ export default function ProfileForm({
   setProfileEmail
 }) {
 
-  const fileSelect = useRef(null);
   const profileEditSaveButtonRef = useRef(null)
   const [isProfileInEditMode, toggle] = useToggle(true);
   const saveChangesEditProfileButton = `mb-5 mr-2.5 w-40 self-center inline-block text-textColor  btn btn-primary ${disableButton ? "opacity-40 cursor-not-allowed border-none bdisabled" : "  btn-outline "}`
@@ -66,11 +64,6 @@ export default function ProfileForm({
     }
   }, [formSuccess])
 
-  async function handleImageUpload() {
-    if (fileSelect) {
-      fileSelect.current.click();
-    }
-  }
 
   function handleEditProfileOrSave(e) {
     if (formError) return false
@@ -88,13 +81,6 @@ export default function ProfileForm({
     setEmailError(false)
     setProfileDisplayNameError(false)
     toggle()
-  }
-
-  function handleFiles(e) {
-    const { files } = e.target
-    for (let i = 0; i < files.length; i++) {
-      console.log(files[i]);
-    }
   }
 
   function handleClick(e, id) {
@@ -141,23 +127,9 @@ export default function ProfileForm({
         /> : null}
 
       <div className="card-body card glass p-0">
-        <div className="relative py-5 avatar online flex justify-center">
-          <hr className="absolute z-49 mt-10 w-full divider glass h-px"></hr>
 
-          <div className="relative z-50 rounded-full w-24 h-24">
-            <label className="cursor-pointer mt-6">
-              <input
-                ref={fileSelect}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleFiles}
-              /> <img
-                onClick={handleImageUpload}
-                src="http://daisyui.com/tailwind-css-component-profile-1@94w.png" />
-            </label>
-          </div>
-        </div>
+        <UserAvatarComponent />
+
         <div className="text-center">
           <button ref={profileEditSaveButtonRef}
             className={saveChangesEditProfileButton}
