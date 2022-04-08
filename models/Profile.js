@@ -13,7 +13,11 @@ const profile = new Schema({
     default: ''
   },
   'interestedActivities': ['Ping-pong'],
-  'memberSince': { type: Date, default: Date.now }
+  'memberSince': { type: Date, default: Date.now },
+  'userAvatar': {
+    type: String,
+    default: 'https://www.fillmurray.com/g/141/100'
+  }
 }
 )
 
