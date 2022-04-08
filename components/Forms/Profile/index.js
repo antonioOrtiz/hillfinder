@@ -34,6 +34,7 @@ export default function ProfileForm({
   profileDisplayName,
   profileDisplayNameError,
   profileDisplayNameFeedback,
+  profileUserAvatar,
   responseMessage,
   profileEmail,
   setFormError,
@@ -128,7 +129,8 @@ export default function ProfileForm({
 
       <div className="card-body card glass p-0">
 
-        <UserAvatarComponent />
+        {console.log("profileUserAvatar ", profileUserAvatar)}
+        <UserAvatarComponent isProfileInEditMode={isProfileInEditMode} profileUserAvatar={profileUserAvatar} />
 
         <div className="text-center">
           <button ref={profileEditSaveButtonRef}
