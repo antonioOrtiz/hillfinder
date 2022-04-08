@@ -113,7 +113,7 @@ export default function ProfileForm({
   }
 
   return (
-    mounted && <div className="px-4 gap-3 grid">
+    mounted && <div className="px-4 gap-3 ">
       {formSuccess
         ? <Message
           state="Success"
