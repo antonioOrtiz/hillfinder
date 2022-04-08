@@ -89,7 +89,12 @@ export default function Layout({ children, showFooter = false }) {
           </div>
         </div>
         <div className={`${route != '/' ? styles['bg-logo'] : styles.content}`} >
-          {children}
+          <div className="grid place-items-center h-screen">
+
+            <div className="break-words shadow-lg rounded-lg bg-gray-300 w-96 bg-opacity-50 px-4 pb-5 pt-2">
+              {children}
+            </div>
+          </div>
         </div>
         {showFooter ? <Footer /> : null}
       </div>
