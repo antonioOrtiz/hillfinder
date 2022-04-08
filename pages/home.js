@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className=" lg:flex-row-reverse">
+    <div className="p-10">
       <img src="https://picsum.photos/id/1005/600/600" className="max-w-sm rounded-lg shadow-2xl" />
       <div>
         <h1 className="mb-5 text-5xl text-white font-bold">
