@@ -65,6 +65,7 @@ function FormComponent({
   const [profileDisplayNameError, setProfileDisplayNameError] = useState(false);
   const [profileEmail, setProfileEmail] = useState('')
   const [profileLoaded, setProfileLoaded] = useState(true);
+  const [profileUserAvatar, setProfileUserAvatar] = useState('')
   const [token, setToken] = useState(null)
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
@@ -100,28 +101,24 @@ function FormComponent({
   useEffect(() => {
     notInterestedActivitiesRef.current = "notInterestedActivitiesRef"
     interestedActivitiesRef.current = "interestedActivitiesRef"
-    if (user !== undefined && profileLoaded) {
 
+    if (user !== undefined && profileLoaded) {
       const fetchProfile = async () => {
 
         const { data } = await getProfile();
-
         const { email } = data[0]._user
-
         const obj = data[0];
-
         const { __v, _user, _id, memberSince, ...profile } = obj;
-
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
+        const { displayName, userAvatar } = profile
 
-        const { displayName } = profile
-
+        console.log("userAvatar ", userAvatar);
         setProfileDataFromApi(profile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
         setProfileEmail(email)
-        setInterestedActivities(profile.interestedActivities[0].value)
-
+        setInterestedActivities(profile.interestedActivities)
+        setProfileUserAvatar(userAvatar)
       }
       fetchProfile()
     }
@@ -373,6 +370,7 @@ function FormComponent({
         profileDisplayName={profileDisplayName}
         profileDisplayNameError={profileDisplayNameError}
         profileDisplayNameFeedback={profileDisplayNameFeedback}
+        profileUserAvatar={profileUserAvatar}
         responseMessage={responseMessage}
         setDisableButton={setDisableButton}
         setEmailError={setEmailError}
@@ -386,10 +384,11 @@ function FormComponent({
         setProfileDisplayName={setProfileDisplayName}
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
+        setProfileUserAvatar={setProfileUserAvatar}
 
       />,
       () => (updateProfileSubmit(
-        profileDisplayName, profileEmail, interestedActivities, setFormError, setFormSuccess, setIsLoading, setResponseMessage)
+        interestedActivities, profileDisplayName, profileEmail, profileUserAvatar, setFormError, setFormSuccess, setIsLoading, setResponseMessage)
       )
     ],
   };
