@@ -1,12 +1,19 @@
 import dynamic from 'next/dynamic'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader } from '../Loader/index'
+
+import { RiImageEditLine } from 'react-icons/ri';
+
+
 const Message = dynamic(
   () => import('../Message/index'),
   {
     loading: () => <Loader />
   }
 )
+
+import saveAvatar from '../../clientApi/SaveAvatar';
+
 export function FormResponse({
   accountNotVerified,
   emailDup,
@@ -222,4 +229,55 @@ export function InterestedActivitiesComponent({
     </ul>
   )
 
+}
+
+export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) {
+
+  const [imageSrc, setImageSrc] = useState('');
+
+  useEffect(() => {
+    if (imageSrc === '') {
+      setImageSrc(profileUserAvatar)
+    }
+  }, [profileUserAvatar])
+
+  async function handleOnSubmit(e) {
+    e.preventDefault()
+    const form = e.currentTarget;
+    const fileInput = Array.from(form.elements).find(({ name }) => name === 'file')
+    const formData = new FormData();
+    for (const file of fileInput.files) {
+      formData.append('file', file)
+      formData.append('upload_preset', 'user_avatar')
+    }
+
+    const { data } = await saveAvatar(formData)
+    setImageSrc(data.secure_url)
+  }
+
+  return (
+
+    <form onSubmit={handleOnSubmit}
+    >
+      <div className="py-5 relative avatar online flex items-end justify-center items-center		">
+        <hr className="absolute mt-10 w-full divider glass h-px"></hr>
+        <div className="z-50 border-2 border-editModeTextColor rounded-full w-24 h-24 shadow-md">
+          <label className="cursor-pointer mt-6">
+            <input
+              name="file"
+              type="file"
+              className="hidden"
+            /> <img className=""
+              src={imageSrc} />
+          </label>
+        </div>
+        {isProfileInEditMode ? null : <button
+          type="submit"
+          className="absolute z-50 top-5 left-60 "
+        >
+          <RiImageEditLine className="glass border-profileColor " style={{ 'color': '#bbf7d0', border: 'black', 'fontSize': '1.5em', 'cursor': 'pointer' }} />
+        </button>}
+      </div>
+    </form>
+  )
 }
