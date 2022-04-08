@@ -27,8 +27,6 @@ import Index from './index'
 const Layout = dynamic(() => import('../components/Layout'))
 
 function MyApp({ Component, pageProps }) {
-
-
   const { isLoggedIn } = getLocalStorage('user') || {}
 
   const { user, isLoading } = useUser(isLoggedIn);
