@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 export default function updateProfileSubmit(
-  profileDisplayName, profileEmail, interestedActivities, setFormError, setFormSuccess, setIsLoading, setResponseMessage) {
+  interestedActivities, profileDisplayName, profileEmail, profileUserAvatar, setFormError, setFormSuccess, setIsLoading, setResponseMessage) {
   const data = {
+    profileUserAvatar,
     profileDisplayName,
     profileEmail,
     interestedActivities
