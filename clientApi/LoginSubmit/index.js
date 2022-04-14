@@ -30,13 +30,14 @@ export default function loginSubmit(
       }
     )
     .then(response => {
+      setIsLoading(false);
+
       if (response.status === 200) {
         const userFromLogin = response.data.user
         setEmail('');
         setPassword('');
         setFormError(false);
         setFormSuccess(true);
-        setIsLoading(false);
         setResponseMessage(response.data.msg);
         userdispatch({ type: 'setIsLoggedIn', payload: true })
         userdispatch({ type: 'userAccountIsVerified' })
@@ -46,12 +47,12 @@ export default function loginSubmit(
     })
     .catch((error) => {
       if (error.response) {
+        setIsLoading(false);
         if (error.response.status === 404) {
           setEmail('');
           setPassword('');
           setFormError(true);
           setFormSuccess(false);
-          setIsLoading(false);
           setResponseMessage(error.response.data.msg);
         }
 
@@ -60,7 +61,6 @@ export default function loginSubmit(
           setPassword('');
           setFormError(true);
           setFormSuccess(false);
-          setIsLoading(false);
           setResponseMessage(error.response.data.msg);
         }
 
@@ -70,7 +70,6 @@ export default function loginSubmit(
           setPassword('');
           setFormError(false);
           setFormSuccess(false);
-          setIsLoading(false);
           setResponseMessage(error.response.data.msg);
         }
 
@@ -90,7 +89,6 @@ export default function loginSubmit(
           setResponseMessage(str)
           setFormError(true);
           setFormSuccess(false);
-          setIsLoading(false);
         }
       }
     });
