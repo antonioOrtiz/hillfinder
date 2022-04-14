@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-key */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import moment from 'moment';
 
@@ -23,7 +22,7 @@ import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
 import getProfile from '../../clientApi/GetProfile'
 import updateProfileSubmit from '../../clientApi/UpdateProfileSubmit'
 
-import { useUser } from '../../lib/hooks'
+import { useToggle, useUser } from '../../lib/hooks'
 
 function FormComponent({
   formType,
@@ -32,33 +31,38 @@ function FormComponent({
 
   const { userdispatch } = userDispatch();
 
-  const interestedActivitiesRef = useRef();
-  const notInterestedActivitiesRef = useRef();
-
   const [current_location, setCurrentLocation] = useState('');
   const [current_destination, setCurrentDestination] = useState('');
   const [disableButton, setDisableButton] = useState(false);
+
   const [email, setEmail] = useState('');
   const [emailFeedback, setEmailFeedback] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [emailDup, setEmailDup] = useState(false);
   const [error, setError] = useState(false);
+
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState(false);
+  const [form, setFormType] = useState('')
+
   const [interestedActivities, setInterestedActivities] = useState([]);
   const [interestedActivitiesError, setInterestedActivitiesError] = useState(false);
   const [interestedActivitiesFeedback, setInterestedActivitiesFeedback] = useState('');
+  const [interestedActivitiesInput, setInterestedActivitiesInput] = useState('')
+
+  const [isProfileInEditMode, toggle] = useToggle(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [memberSince, setMemberSince] = useState('');
   const [mounted, setMounted] = useState(false);
+
   const [password, setPassword] = useState('');
   const [passwordFeedback, setPasswordFeedback] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [password_confirmation, setPasswordConfirmation] = useState('');
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
   const [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
-  const [preventSubmit, setPreventSubmit] = useState(false)
+
   const [profileDataFromApi, setProfileDataFromApi] = useState([]);
   const [profileDisplayName, setProfileDisplayName] = useState('')
   const [profileDisplayNameFeedback, setProfileDisplayNameFeedback] = useState('');
@@ -66,11 +70,11 @@ function FormComponent({
   const [profileEmail, setProfileEmail] = useState('')
   const [profileLoaded, setProfileLoaded] = useState(true);
   const [profileUserAvatar, setProfileUserAvatar] = useState('')
+
   const [token, setToken] = useState(null)
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
-  const [interestedActivitiesInput, setInterestedActivitiesInput] = useState('')
 
 
   const { userstate } = userState();
@@ -80,28 +84,30 @@ function FormComponent({
   const { user, mutate } = useUser(!isLoggedIn ? false : true);
 
   useEffect(() => {
-    setIsLoading(() => false)
-  }, [])
-
-  useEffect(() => {
     if (!mounted) setMounted(true)
     return () => setMounted(false)
   }, [])
 
   useEffect(() => {
-    if (preventSubmit) {
-      setPreventSubmit(() => true)
+    const { pathname } = router
+    if (formSuccess) {
+      setIsLoading(true)
+      Forms[form][1]()
+      if (pathname === '/login') {
+        var id = setTimeout(() => {
+          router.push('/profile')
+        }, 3000)
+      }
     }
     return () => {
-      setPreventSubmit(() => false)
+      if (typeof id === 'number') {
+        clearTimeout(id)
+      }
     }
-  }, [emailError, passwordError])
+  }, [formSuccess])
 
 
   useEffect(() => {
-    notInterestedActivitiesRef.current = "notInterestedActivitiesRef"
-    interestedActivitiesRef.current = "interestedActivitiesRef"
-
     if (user !== undefined && profileLoaded) {
       const fetchProfile = async () => {
 
@@ -147,8 +153,20 @@ function FormComponent({
 
     if (value === '') setDisableButton(() => true)
 
+    if (name === 'current_location') {
+      setCurrentLocation(value);
+    }
+
+    if (name === 'current_destination') {
+      setCurrentDestination(value);
+    }
+
     if (name === 'email') {
       setEmail(value);
+    }
+
+    if (name === 'interestedActivitiesInput') {
+      setInterestedActivitiesInput(value);
     }
 
     if (name === 'password') {
@@ -159,31 +177,58 @@ function FormComponent({
       setPasswordConfirmation(value);
     }
 
-    if (name === 'current_location') {
-      setCurrentLocation(value);
+    if (name === 'profileDisplayName') {
+      setProfileDisplayName(value);
     }
 
-    if (name === 'current_destination') {
-      setCurrentDestination(value);
-    }
-
-    if (name === 'interestedActivities') {
-      setInterestedActivitiesInput(value);
+    if (name === 'profileEmail') {
+      setProfileEmail(value);
     }
   }
+
+  function handleCancelSaveProfileForUseCallback() {
+    setProfileDisplayName(profileDataFromApi['Display name'])
+    setProfileEmail(profileDataFromApi['email'])
+    setFormError(false)
+    setEmailError(false)
+    setProfileDisplayNameError(false)
+    toggle()
+  }
+
+  function handleKeyUpForUseCallback(e) {
+    if (e.keyCode === 188) {
+      const newArr = [...interestedActivities];
+      newArr.push(e.target.value.slice(0, -1));
+      setInterestedActivities(newArr)
+      setInterestedActivitiesInput('')
+    }
+  }
+
+  const handleKeyUp = useCallback((e) => {
+    e.persist();
+    handleKeyUpForUseCallback(e);
+  }, [])
+
+  // const handleChange = useCallback((e) => {
+  //   e.persist();
+  //   const { name, value } = e.target;
+  //   handleChangeForUseCallBack(name, value);
+  // }, [email, formType, password, password_confirmation, handleChangeForUseCallBack, setIsLoading]);
 
   const handleChange = useCallback((e) => {
     e.persist();
     const { name, value } = e.target;
     handleChangeForUseCallBack(name, value);
-  }, [email, formType, password, password_confirmation, handleChangeForUseCallBack, setIsLoading]);
+  }, []);
 
-  function handleSubmitForUseCallBack(e, form) {
+  function handleSubmitForUseCallBack(e, formType) {
+
+
     e.preventDefault();
     setDisableButton(true);
 
     validateInputs(
-      form,
+      formType,
       email,
       interestedActivities,
       password,
@@ -204,7 +249,12 @@ function FormComponent({
       setProfileDisplayNameFeedback,
       setProfileDisplayNameError
     );
-    return preventSubmit ? false : Forms[form][1]()
+
+    if (e.target.computedName === 'SAVE') {
+      toggle()
+    }
+
+    setFormType(formType)
   }
 
   const handleSubmit = useCallback((e, form) => {
@@ -217,25 +267,24 @@ function FormComponent({
         suppressHydrationWarning
         accountNotVerified={accountNotVerified}
         disableButton={disableButton}
+        email={email}
+        emailDup={emailDup}
+        emailError={emailError}
+        emailFeedback={emailFeedback}
         formError={formError}
         formType={formType}
         formSuccess={formSuccess}
-        email={email}
-        emailError={emailError}
-        emailFeedback={emailFeedback}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
         id={id}
         isLoading={isLoading}
-        isLoggedIn={isLoggedIn}
         mounted={mounted}
         password={password}
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
         responseMessage={responseMessage}
-        setIsLoading={setIsLoading}
+        tokenExpired={tokenExpired}
         userdispatch={userdispatch}
-
       />,
       () => loginSubmit(
         email,
@@ -247,7 +296,6 @@ function FormComponent({
         setIsLoading,
         setResponseMessage,
         userdispatch,
-        router,
         user,
         mutate
       )
@@ -272,6 +320,7 @@ function FormComponent({
         passwordError={passwordError}
         passwordFeedback={passwordFeedback}
         responseMessage={responseMessage}
+        setIsLoading={setIsLoading}
       />,
       () => registerSubmit(
         email,
@@ -283,7 +332,6 @@ function FormComponent({
         setFormError,
         setFormSuccess,
         setIsLoading,
-        router
       )
     ],
     UpdatePassword: [
@@ -313,6 +361,7 @@ function FormComponent({
     ForgotPassword: [
       <ForgotPasswordForm
         suppressHydrationWarning
+        disableButton={disableButton}
         email={email}
         emailError={emailError}
         emailFeedback={emailFeedback}
@@ -322,19 +371,10 @@ function FormComponent({
         handleChange={handleChange}
         handleSubmit={handleSubmit}
         isLoading={isLoading}
-        password={password}
-        passwordError={passwordError}
-        passwordFeedback={passwordFeedback}
         responseMessage={responseMessage}
-        tokenExpired={tokenExpired}
       />,
       () => forgotPasswordSubmit(
-        email,
-        setEmail,
-        setResponseMessage,
-        setFormError,
-        setFormSuccess,
-        setIsLoading,
+        email, setEmail, setResponseMessage, setFormError, setFormSuccess, setIsLoading
       )
     ],
     Confirmation: [
@@ -348,23 +388,28 @@ function FormComponent({
     ],
     Profile: [
       <ProfileForm
-        disableButton={disableButton}
         suppressHydrationWarning
-        mounted={mounted}
-        notInterestedActivitiesRef={notInterestedActivitiesRef}
+        disableButton={disableButton}
+        emailFeedback={emailFeedback}
         emailError={emailError}
         emailFeedback={emailFeedback}
+        formError={formError}
         formType={formType}
         formSuccess={formSuccess}
-        formError={formError}
         handleChange={handleChange}
+        handleKeyUp={handleKeyUp}
         handleSubmit={handleSubmit}
+
+        handleCancelSaveProfileForUseCallback={handleCancelSaveProfileForUseCallback}
         interestedActivities={interestedActivities}
         interestedActivitiesInput={interestedActivitiesInput}
         interestedActivitiesError={interestedActivitiesError}
         interestedActivitiesFeedback={interestedActivitiesFeedback}
+
         isLoading={isLoading}
+        isProfileInEditMode={isProfileInEditMode}
         memberSince={memberSince}
+        mounted={mounted}
         profileEmail={profileEmail}
         profileDataFromApi={profileDataFromApi}
         profileDisplayName={profileDisplayName}
@@ -385,6 +430,7 @@ function FormComponent({
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
         setProfileUserAvatar={setProfileUserAvatar}
+        toggle={toggle}
 
       />,
       () => (updateProfileSubmit(
