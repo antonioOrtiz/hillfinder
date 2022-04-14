@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic'
 
 import { useToggle } from '../../../lib/hooks'
@@ -15,102 +15,48 @@ const Message = dynamic(
 import { InterestedActivitiesComponent, UserNameComponent as ProfileEmailComponent, ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent } from '../FormElements'
 
 export default function ProfileForm({
-  handleSubmit,
+  disableButton,
   emailError,
   emailFeedback,
-  disableButton,
-  formType,
   formError,
+  formType,
   formSuccess,
   handleChange,
+  handleKeyUp,
+  handleSubmit,
+  handleCancelSaveProfileForUseCallback,
   interestedActivities,
   interestedActivitiesInput,
   interestedActivitiesError,
   interestedActivitiesFeedback,
+  isLoading,
+  isProfileInEditMode,
   memberSince,
   mounted,
-  notInterestedActivitiesRef,
+  profileEmail,
   profileDataFromApi,
   profileDisplayName,
   profileDisplayNameError,
   profileDisplayNameFeedback,
   profileUserAvatar,
   responseMessage,
-  profileEmail,
   setFormError,
   setDisableButton,
   setEmailError,
   setFormSuccess,
   setIsLoading = () => { },
   setInterestedActivities,
-  setInterestedActivitiesInput,
   setInterestedActivitiesError,
   setInterestedActivitiesFeedback,
+  setInterestedActivitiesInput,
   setProfileDisplayName,
   setProfileDisplayNameError,
-  setProfileEmail
+  setProfileEmail,
+  setProfileUserAvatar,
+  toggle
 }) {
 
-  const profileEditSaveButtonRef = useRef(null)
-  const [isProfileInEditMode, toggle] = useToggle(true);
-  const saveChangesEditProfileButton = `mb-5 mr-2.5 w-40 self-center inline-block text-textColor  btn btn-primary ${disableButton ? "opacity-40 cursor-not-allowed border-none bdisabled" : "  btn-outline "}`
-
-  useEffect(() => {
-    if (formSuccess) {
-      setTimeout(() => {
-        setFormSuccess(false);
-        setDisableButton(false)
-        toggle()
-      }, 5000);
-    }
-  }, [formSuccess])
-
-
-  function handleEditProfileOrSave(e) {
-    if (formError) return false
-    if (e.target.computedName === 'SAVE CHANGES') {
-      handleSubmit(e, formType)
-    } else {
-      toggle()
-    }
-  }
-
-  function handleCancelSaveProfile() {
-    setProfileDisplayName(profileDataFromApi['Display name'])
-    setProfileEmail(profileDataFromApi['email'])
-    setFormError(false)
-    setEmailError(false)
-    setProfileDisplayNameError(false)
-    toggle()
-  }
-
-  function handleClick(e, id) {
-    e.target.previousElementSibling?.focus()
-    if (e.target.nextElementSibling?.nodeName === 'INPUT') {
-      e.target.nextElementSibling?.focus()
-    }
-  }
-
-  function handleKeyUp(e) {
-    if (e.keyCode === 188) {
-      const newArr = [...interestedActivities];
-      newArr.push(e.target.value.slice(0, -1));
-      setInterestedActivities(newArr)
-      setInterestedActivitiesInput('')
-    }
-  }
-
-  function handleProfileDataFromApiHandleChange(e) {
-    setFormError(false)
-    setEmailError(false)
-    setProfileDisplayNameError(false)
-    setDisableButton(false)
-    if (e.target.name === 'profileDisplayName') {
-      setProfileDisplayName(e.target.value)
-    } else {
-      setProfileEmail(e.target.value)
-    }
-  }
+  const ProfileButton = `mb-5 mr-2.5 w-40 self-center inline-block text-textColor btn btn-primary`
 
   return (
     mounted && <div className="px-4 gap-3 grid">
@@ -129,57 +75,78 @@ export default function ProfileForm({
 
       <div className="card-body card glass p-0">
 
-        {console.log("profileUserAvatar ", profileUserAvatar)}
-        <UserAvatarComponent isProfileInEditMode={isProfileInEditMode} profileUserAvatar={profileUserAvatar} />
+        <UserAvatarComponent
+          isProfileInEditMode={isProfileInEditMode}
+          profileUserAvatar={profileUserAvatar}
+        />
 
-        <div className="text-center">
-          <button ref={profileEditSaveButtonRef}
-            className={saveChangesEditProfileButton}
-            onClick={handleEditProfileOrSave}
-            type={!isProfileInEditMode ? 'submit' : 'button'}
 
-          >
-            {isProfileInEditMode ? 'Edit Profile' : 'Save changes'}
-          </button>
-          {isProfileInEditMode
-            ? null
-            : <button
-              className="mb-5 ml-2.5 w-40 self-center inline-block text-textColor btn btn-outline btn-primary"
-              onClick={handleCancelSaveProfile}
-              type="button">
-              Cancel
-            </button>}
-        </div>
         <div className="px-8">
+
           <p className=" mb-5 text-center	 text-textColor"> Member Since: < br /> {memberSince} </p>
-          <form onSubmit={e => handleSubmit(e, formType)}>
+
+          <form
+            noValidate
+            onSubmit={e => {
+              handleSubmit(e, formType)
+            }}
+          >
+            <div className="text-center">
+              {isProfileInEditMode ?
+                <button
+                  className={ProfileButton}
+                  type="submit"
+                  disabled={disableButton}
+                >
+                  Save
+                </button> : null}
+
+              {isProfileInEditMode
+                ?
+                <button
+                  className={ProfileButton}
+                  type="button"
+                  onClick={handleCancelSaveProfileForUseCallback}
+                >
+                  Cancel
+                </button>
+                :
+                <button
+                  className={ProfileButton}
+                  type='button'
+                  onClick={toggle}
+
+                >
+                  Edit Profile
+                </button>}
+            </div>
+
             <ProfileDisplayNameComponent
               classNames={`${isProfileInEditMode
-                ? " text-green-900 border-green-900"
-                : ` focus:border-borderColorInEditMode`}
+                ? `focus:border-borderColorInEditMode`
+                : ` text-green-900 border-green-900  `}
                 w-full inline-block align-bottom bg-transparent text-white
-                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none
+                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none text-white
              `}
               errorType={profileDisplayNameError}
-              handleProfileDataFromApiHandleChange={handleProfileDataFromApiHandleChange}
-              isProfileInEditMode={isProfileInEditMode}
+              handleChange={handleChange}
+              isProfileInEditMode={!isProfileInEditMode}
               label="Display Name:"
               name="profileDisplayName"
               messageContent={profileDisplayNameFeedback}
               value={profileDisplayName}
-              notInterestedActivitiesRef={notInterestedActivitiesRef}
             />
 
             <ProfileEmailComponent
-              changeHandler={handleProfileDataFromApiHandleChange}
               classNames={`${isProfileInEditMode
-                ? " text-green-900 border-green-900"
-                : `text-white focus:border-borderColorInEditMode`}
+                ? `focus:border-borderColorInEditMode`
+                : ` text-green-900 border-green-900  `}
                 w-full inline-block align-bottom bg-transparent
-                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none
+                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none text-white
              `}
               errorType={emailError}
-              isProfileInEditMode={isProfileInEditMode}
+              handleChange={handleChange}
+              isProfileInEditMode={!isProfileInEditMode}
               label="Email:"
               name="profileEmail"
               messageContent={emailFeedback}
@@ -189,15 +156,21 @@ export default function ProfileForm({
             />
 
             <InterestedActivitiesComponent
+              classNames={`${isProfileInEditMode
+                ? `focus:border-borderColorInEditMode`
+                : ` text-green-900 border-green-900  `}
+                w-full inline-block align-bottom bg-transparent
+                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none text-white
+             `}
               handleChange={handleChange}
-              handleClick={handleClick}
               handleKeyUp={handleKeyUp}
               interestedActivities={interestedActivities}
               interestedActivitiesInput={interestedActivitiesInput}
-              isProfileInEditMode={isProfileInEditMode}
+              isProfileInEditMode={!isProfileInEditMode}
+              label="INTERESTED ACTIVITIES:"
+
+
             />
-
-
           </form>
         </div>
       </div></div>
