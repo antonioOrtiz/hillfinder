@@ -4,6 +4,7 @@ import { Loader } from '../Loader/index'
 
 import { RiImageEditLine } from 'react-icons/ri';
 
+import { useRouter } from 'next/router'
 
 const Message = dynamic(
   () => import('../Message/index'),
@@ -24,6 +25,9 @@ export function FormResponse({
   responseMessage,
   tokenExpired
 }) {
+
+
+
   if (formType === 'Profile') {
     if (formSuccess) {
       <Message state="SuccessAlert"
@@ -35,17 +39,18 @@ export function FormResponse({
       />
     }
   }
-  if (formError && responseMessage) {
+  else if (formError && responseMessage) {
+
     return (
       <Message state="Error"
         content={responseMessage}
       />
     )
   } else if (emailDup) {
-    return (<
-      Message state="Warning"
-      content={responseMessage}
-    />
+    return (
+      <Message state="Warning"
+        content={responseMessage}
+      />
     )
   } else if (accountNotVerified && !formError && responseMessage) {
     return (
@@ -66,46 +71,53 @@ export function FormResponse({
         content={responseMessage}
       />
     )
-  } else return errorType
-    ? <Message
-      state="Error"
-      header="Error"
-      content={responseMessage}
-    /> : null;
+  } else {
+    return errorType
+      ? <Message
+        state="Error"
+        header="Error"
+        content={responseMessage}
+      /> : null;
+  }
 }
 export function UserNameComponent({
-  changeHandler,
   classNames,
+  email,
   errorType,
+  handleChange,
+  isProfileInEditMode,
   label,
   messageContent,
   name,
   placeholder,
+
   wrapperClassForProfileComponent,
-  value,
 }) {
+
+  const router = useRouter();
+
+  const { pathname } = router
+
   return (
     <div
       className={
-        `${wrapperClassForProfileComponent ? "relative" : null} "w-full mb-3"`}
+        `${wrapperClassForProfileComponent ? "relative" : null} "w-full my-3"`}
     >
       <label
-        className={
-          `${wrapperClassForProfileComponent
-            ? "inline-block align-bottom mb-1"
-            : "block uppercase text-black-700 text-xs font-bold mb-2"}`}
+        className={"block uppercase text-black-700 text-xs font-bold mb-2"}
         htmlFor="grid-password">
         {label}
       </label>
       <input type="email"
-        name={name}
         className={classNames}
+        disabled={pathname === '/profile' ? isProfileInEditMode : false}
+        name={name}
+        onChange={handleChange}
         placeholder={placeholder}
         style={
           { transition: "all .15s ease" }
         }
-        value={value}
-        onChange={changeHandler}
+        value={email}
       />
       {errorType ? <Message
         state="Error"
@@ -118,12 +130,11 @@ export function UserNameComponent({
 export function ProfileInputComponent({
   classNames,
   errorType,
-  handleProfileDataFromApiHandleChange,
+  handleChange,
   isProfileInEditMode,
   label,
   messageContent,
   name,
-  notInterestedActivitiesRef,
   value,
 }) {
   return (
@@ -136,8 +147,7 @@ export function ProfileInputComponent({
         disabled={isProfileInEditMode}
         name={name}
         placeholder="Display Name, e.g. skaterBoi"
-        ref={notInterestedActivitiesRef}
-        onChange={(e) => handleProfileDataFromApiHandleChange(e)}
+        onChange={handleChange}
         type="text"
         value={value}
       />
@@ -149,9 +159,20 @@ export function ProfileInputComponent({
     </div >
   );
 }
-export function PasswordComponent({ label, name, value, placeholder, errorType, messageContent, changeHandler }) {
+export function PasswordComponent({
+  classNames,
+  errorType,
+  label,
+  name,
+  handleChange,
+  messageContent,
+  placeholder,
+  value,
+}) {
+
   const [inputType, setInputType] = useState('password');
   const [passwordLabel, setpasswordLabel] = useState('show');
+
   const handleChangePasswordToggle = () => {
     if (inputType === 'password') {
       setpasswordLabel('hide');
@@ -161,11 +182,12 @@ export function PasswordComponent({ label, name, value, placeholder, errorType, 
       setInputType('password');
     }
   }
+
   return (
-    <div className="relative w-full mb-3">
+    <div className="relative w-full my-3 ">
       <div className="absolute top-8 right-0 flex items-center px-2">
         <input className="hidden js-password-toggle" type="checkbox" />
-        <label className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-green-900 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
+        <label className="bg-gray-300 hover:bg-gray-400 rounded mt-0 px-2 py-1 text-sm text-green-900 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
       </div>
       <label
         className="block uppercase text-black-700 text-xs font-bold mb-2"
@@ -177,10 +199,10 @@ export function PasswordComponent({ label, name, value, placeholder, errorType, 
         name={name}
         type={inputType}
         value={value}
-        className="border-0 px-3 py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+        className={classNames}
         placeholder={placeholder}
         style={{ transition: "all .15s ease" }}
-        onChange={changeHandler}
+        onChange={handleChange}
         autoComplete="on"
       />
       {errorType ? <Message
@@ -193,38 +215,35 @@ export function PasswordComponent({ label, name, value, placeholder, errorType, 
 }
 
 export function InterestedActivitiesComponent({
+  classNames,
   handleChange,
   handleClick,
   handleKeyUp,
   interestedActivities,
   interestedActivitiesInput,
   isProfileInEditMode,
+  label,
 }) {
 
   return (
     <ul className="list-none mt-0 mb-10">
 
-      <li className="text-green-900 font-semibold mt-5 mb-2 w-full"
-        onClick={handleClick}> INTERESTED ACTIVITIES: <br /><span className="font-normal">
+      <li className="text-black-900 font-semibold mt-5 mb-2 w-full"
+        onClick={handleClick}> {label} <br /><span className="font-normal">
           {interestedActivities.join(', ')}</span>
       </li>
 
-      <label forhtml="Interested activities" className="inline-block align-bottom mb-1"> <span className="text-green-900 text-sm mb-3">Accept comma separated input:</span></label>
+      <label forhtml="Interested activities" className="inline-block align-bottom mb-1"> <span className=" text-sm mb-3">Accept comma separated input:</span></label>
 
       <input
-        name="interestedActivities"
-        type="text"
+        className={classNames}
         disabled={isProfileInEditMode}
-        value={interestedActivitiesInput}
+        name="interestedActivitiesInput"
+        type="text"
         placeholder={'e.g. Running, skating etc.'}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
         onKeyUp={handleKeyUp}
-        className={`${isProfileInEditMode
-          ? " text-green-900 border-green-900"
-          : "text-white focus:border-borderColorInEditMode"}
-                      w-full inline-block align-bottom bg-transparent text-sm
-                      border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none
-                      `}
+        value={interestedActivitiesInput}
       />
     </ul>
   )
