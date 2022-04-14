@@ -57,8 +57,8 @@ export default function RegisterForm({
       >
         {console.log("emailError ", emailError)}
         <UserNameComponent
-          changeHandler={handleChange}
-          classNames={`border-0 px-3 py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
+          handleChange={handleChange}
+          classNames={`border-0 px-3 mt- py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
           errorType={emailError}
           label="Email"
           name="email"
@@ -68,13 +68,14 @@ export default function RegisterForm({
         />
 
         <PasswordComponent
-          label="Password"
-          name="password"
-          value={password}
-          placeholder={'Password'}
+          classNames={`border-0 px-3 mt- py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
           errorType={passwordError}
+          label="Password"
+          handleChange={handleChange}
           messageContent={passwordFeedback}
-          changeHandler={handleChange}
+          name="password"
+          placeholder={'Password'}
+          value={password}
         />
 
         <div className="text-center mt-6">
@@ -83,7 +84,6 @@ export default function RegisterForm({
             type="submit"
             style={{ transition: "all .15s ease" }}
             disabled={disableButton}
-            onClick={() => setIsLoading(true)}
           >
             Register
           </button>
