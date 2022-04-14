@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default function updatePasswordSubmit(
-  password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, router, token) {
+  password, password_confirmation, setPassword, setPasswordConfirmation, setFormError, setFormSuccess, setIsLoading, setResponseCodeSuccess, setResponseMessage, setDisableButton, token) {
 
   if (password === password_confirmation) {
     axios.post(`/api/update-password/${token}`, {
