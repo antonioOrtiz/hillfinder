@@ -18,6 +18,7 @@ export default function forgotPasswordSubmit(email, setEmail, setResponseMessage
     })
     .catch((error) => {
       if (error.response) {
+
         if (error.response.status === 404) {
           setResponseMessage(error.response.data.msg);
           setFormError(true);
