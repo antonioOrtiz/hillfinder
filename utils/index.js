@@ -1,5 +1,5 @@
 
-import { indicative, validate } from 'indicative/validator'
+import { indicative, validate, validateAll } from 'indicative/validator'
 
 import crypto from 'crypto';
 
@@ -76,68 +76,64 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 }
 
 export function validateInputs(
-  form,
+  formType,
   email,
   interestedActivities,
   password,
   password_confirmation,
   profileDisplayName,
   profileEmail,
-  setEmailError = () => { },
+  setEmailError,
   setEmailFeedback,
   setDisableButton,
   setFormSuccess,
-  setFormError = () => { },
+  setFormError,
   setInterestedActivitiesError,
   setInterestedActivitiesFeedback,
   setPasswordConfirmationError,
   setPasswordConfirmationFeedback,
-  setPasswordError = () => { },
-  setPasswordFeedback = () => { },
+  setPasswordError,
+  setPasswordFeedback,
   setProfileDisplayNameFeedback,
-  setProfileDisplayNameError,
+  setProfileDisplayNameError
 
 ) {
-
-  function getFormValidation(form) {
+  function getFormValidation(formType) {
     function isUpdateProfile() {
       const rules = {
+        profileDisplayName: 'required|alpha|min:2|max:15',
         profileEmail: 'required|email',
-        profileDisplayName: 'required|min:2|max:15',
-        interestedActivities: 'array',
-        'interestedActivities.*': 'alpha|max:30'
+        // 'interestedActivities.*': 'alpha|min:2|max:15',
       };
 
       const data = {
         profileDisplayName,
         profileEmail,
-        interestedActivities
+        interestedActivities,
       }
 
-      const sanitizationRules = {
-        interestedActivities: 'strip_links'
-      }
+      console.log("data ", data);
 
       const messages = {
-        'profileDisplayName.alpha': 'Username contains unallowed characters.',
-        'interestedActivities.*.alpha': 'Interested activities contains unallowed characters.',
-        required: 'Make sure to enter the field value.',
-        email: 'Enter valid email address.',
-        min: 'The value is too small. Minimum seven characters.',
-        max: 'The value is too big. Minimum eleven characters.',
+        // 'interestedActivities.*.min': 'The value is too small. Minimum two characters.',
+        // 'interestedActivities.*.max': 'The value is too small. Maximum fifteen characters.',
+
+        'required': 'Make sure to enter the field value.',
+        'alpha': 'Contains unallowed characters',
+        'email': 'Enter valid email address.',
+        'min': 'The value is too small. Minimum two characters.',
+        'max': 'The value is too big. Maximum eleven characters.',
       }
-      const sanitizedData = indicative.sanitize(data, sanitizationRules)
 
-
-      validate(sanitizedData, rules, messages)
+      validateAll(data, rules, messages)
         .then(success => {
-          if (success.email) {
+          if (success.profileEmail) {
             setEmailError(false);
           }
-
-          if (success.displayName) {
+          if (success.profileDisplayName) {
             setProfileDisplayNameError(false);
           }
+
 
           if (success.interestedActivities) {
             setInterestedActivitiesError(false);
@@ -146,30 +142,34 @@ export function validateInputs(
           if (success.email && success.displayName && success.interestedActivitie) {
             setFormError(false);
             setFormSuccess(true);
+            setDisableButton(true);
           }
-
         })
         .catch(errors => {
+
+          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
+
+            console.log("error ", error);
             if (error.field === 'profileDisplayName') {
-              setProfileDisplayNameError(true);
               setProfileDisplayNameFeedback(error.message);
-              setFormSuccess(false);
+              setProfileDisplayNameError(true);
               setFormError(true)
+              setFormSuccess(false);
             }
 
             if (error.field === 'profileEmail') {
-              setEmailError(true);
               setEmailFeedback(error.message);
-              setFormSuccess(false);
+              setEmailError(true);
               setFormError(true)
+              setFormSuccess(false);
             }
 
-            if (error.field === 'interestedActivities') {
-              setInterestedActivitiesError(true);
+            if (error.field === 'interestedActivities.0') {
               setInterestedActivitiesFeedback(error.message);
-              setFormSuccess(false);
+              setInterestedActivitiesError(true);
               setFormError(true)
+              setFormSuccess(false);
             }
           })
         });
@@ -193,31 +193,36 @@ export function validateInputs(
         max: 'The value is too big. Minimum eleven characters.',
       }
 
-      validate(data, rules, messages)
+      validateAll(data, rules, messages)
         .then(success => {
           if (success.email) {
             setEmailError(false);
-            setFormError(false)
           }
 
           if (success.password) {
             setPasswordError(false);
           }
           if (success.email && success.password) {
+            setFormError(false)
+            setFormSuccess(true)
             setDisableButton(true);
+
           }
         })
         .catch(errors => {
+          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
-              setEmailError(true);
               setEmailFeedback(error.message);
+              setEmailError(true);
+              setFormError(true)
               setFormSuccess(false);
             }
 
             if (error.field === 'password') {
-              setPasswordError(true);
               setPasswordFeedback(error.message);
+              setPasswordError(true);
+              setFormError(true)
               setFormSuccess(false);
             }
           })
@@ -238,21 +243,24 @@ export function validateInputs(
         email: 'Enter valid email address.',
       };
 
-      validate(data, rules, messages)
+      validateAll(data, rules, messages)
         .then(success => {
-
+          success
           if (success.email) {
             setEmailError(false);
-            setDisableButton(false);
+            setFormError(false);
+            setFormSuccess(true);
+            setDisableButton(true);
           }
         })
         .catch(errors => {
-          errors.map((error) => {
+          console.log("error 257 ", errors);
+          Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
-              setEmailError(true);
               setEmailFeedback(error.message);
-              setFormSuccess(false);
+              setEmailError(true);
               setFormError(true)
+              setFormSuccess(false);
             }
           })
         });
@@ -277,7 +285,7 @@ export function validateInputs(
         max: 'The password is too long. Maximum 11 characters.',
       };
 
-      validate(data, schema, messages)
+      validateAll(data, schema, messages)
         .then(success => {
           if (success.password) {
             setPasswordError(false);
@@ -318,11 +326,12 @@ export function validateInputs(
     };
 
     try {
-      Forms[form]();
+
+      Forms[formType]();
     } catch (error) { console.log('Error', error) }
   }
 
-  return getFormValidation(form);
+  return getFormValidation(formType);
 }
 
 export function isJson(item) {
