@@ -106,19 +106,23 @@ function FormComponent({
     }
   }, [formSuccess])
 
+  useEffect(() => {
+    setToken(router.query.token)
+  }, [router.query.token])
+
 
   useEffect(() => {
     if (user !== undefined && profileLoaded) {
       const fetchProfile = async () => {
 
         const { data } = await getProfile();
-        const { email } = data[0]._user
+
+        const email = data[0]._user.email
         const obj = data[0];
         const { __v, _user, _id, memberSince, ...profile } = obj;
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
         const { displayName, userAvatar } = profile
 
-        console.log("userAvatar ", userAvatar);
         setProfileDataFromApi(profile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
@@ -129,7 +133,6 @@ function FormComponent({
       fetchProfile()
     }
   }, [])
-
 
   function handleChangeForUseCallBack(name, value) {
     setEmailError(false);
@@ -371,6 +374,7 @@ function FormComponent({
         handleChange={handleChange}
         handleSubmit={handleSubmit}
         isLoading={isLoading}
+        mounted={mounted}
         responseMessage={responseMessage}
       />,
       () => forgotPasswordSubmit(
@@ -392,7 +396,6 @@ function FormComponent({
         disableButton={disableButton}
         emailFeedback={emailFeedback}
         emailError={emailError}
-        emailFeedback={emailFeedback}
         formError={formError}
         formType={formType}
         formSuccess={formSuccess}
