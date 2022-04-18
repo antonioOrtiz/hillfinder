@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic'
 import React, { useEffect, useState } from 'react';
 import { Loader } from '../Loader/index'
 
+var Tokenizer = require('react-typeahead').Tokenizer;
+
 import { RiImageEditLine } from 'react-icons/ri';
 
 import { useRouter } from 'next/router'
@@ -26,7 +28,8 @@ export function FormResponse({
   tokenExpired
 }) {
 
-
+  console.log("formSuccess ", formSuccess);
+  console.log("responseMessage ", responseMessage);
 
   if (formType === 'Profile') {
     if (formSuccess) {
@@ -40,7 +43,6 @@ export function FormResponse({
     }
   }
   else if (formError && responseMessage) {
-
     return (
       <Message state="Error"
         content={responseMessage}
@@ -80,9 +82,9 @@ export function FormResponse({
       /> : null;
   }
 }
+
 export function UserNameComponent({
   classNames,
-  email,
   errorType,
   handleChange,
   isProfileInEditMode,
@@ -90,7 +92,7 @@ export function UserNameComponent({
   messageContent,
   name,
   placeholder,
-
+  value,
   wrapperClassForProfileComponent,
 }) {
 
@@ -104,9 +106,9 @@ export function UserNameComponent({
         `${wrapperClassForProfileComponent ? "relative" : null} "w-full my-3"`}
     >
       <label
-        className={"block uppercase text-black-700 text-xs font-bold mb-2"}
+        className={"text-profileColor inline-block align-bottom mb-1"}
         htmlFor="grid-password">
-        {label}
+        {label}:
       </label>
       <input type="email"
         className={classNames}
@@ -117,7 +119,7 @@ export function UserNameComponent({
         style={
           { transition: "all .15s ease" }
         }
-        value={email}
+        value={value}
       />
       {errorType ? <Message
         state="Error"
@@ -127,6 +129,7 @@ export function UserNameComponent({
     </div >
   )
 }
+
 export function ProfileInputComponent({
   classNames,
   errorType,
@@ -139,7 +142,7 @@ export function ProfileInputComponent({
 }) {
   return (
     <div className="relative w-full mb-3" >
-      <label htmlFor={name} className="inline-block align-bottom mb-1">
+      <label htmlFor={name} className={"text-profileColor inline-block align-bottom mb-1"}>
         {label}
       </label>
       <input
@@ -159,6 +162,7 @@ export function ProfileInputComponent({
     </div >
   );
 }
+
 export function PasswordComponent({
   classNames,
   errorType,
@@ -190,10 +194,10 @@ export function PasswordComponent({
         <label className="bg-gray-300 hover:bg-gray-400 rounded mt-0 px-2 py-1 text-sm text-green-900 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
       </div>
       <label
-        className="block uppercase text-black-700 text-xs font-bold mb-2"
+        className="inline-block align-bottom mb-1"
         htmlFor="grid-password"
       >
-        {label}
+        {label}:
       </label>
       <input
         name={name}
@@ -226,26 +230,36 @@ export function InterestedActivitiesComponent({
 }) {
 
   return (
-    <ul className="list-none mt-0 mb-10">
+    <div className="relative w-full my-3 ">
+      <label forhtml="Interested activities" className={"text-profileColor inline-block align-bottom mb-1"}> <span className="inline-block align-bottom mb-1"> {label}</span></label>
 
-      <li className="text-black-900 font-semibold mt-5 mb-2 w-full"
-        onClick={handleClick}> {label} <br /><span className="font-normal">
-          {interestedActivities.join(', ')}</span>
-      </li>
-
-      <label forhtml="Interested activities" className="inline-block align-bottom mb-1"> <span className=" text-sm mb-3">Accept comma separated input:</span></label>
-
-      <input
-        className={classNames}
+      <Tokenizer
+        customClasses={{
+          input: " border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input	 focus:outline-none focus:ring w-full",
+          results: "border-dashed border-2 p-1 rounded-md border-input mt-1",
+          token: "btn-primary inline-block p-1 my-1 rounded-md"
+        }}
         disabled={isProfileInEditMode}
-        name="interestedActivitiesInput"
-        type="text"
-        placeholder={'e.g. Running, skating etc.'}
-        onChange={handleChange}
-        onKeyUp={handleKeyUp}
-        value={interestedActivitiesInput}
+        options={[
+          'Cycling',
+          'Jogging',
+          'Hiking',
+          'Mountain biking',
+          'Running',
+          'Skate boarding',
+          'Skiing',
+          'Sledding',
+          'Snowboarding',
+          'Rollerblading',
+          'Tailrunning',
+          'Walking'
+        ]}
+        onTokenAdd={function (token) {
+          console.log('token added: ', token);
+        }}
+        placeholder="e.g. Running, skating"
       />
-    </ul>
+    </div>
   )
 
 }
@@ -300,3 +314,12 @@ export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) 
     </form>
   )
 }
+
+export const FormWrapper = ({ children }) => (
+  <div className="grid place-items-center h-screen">
+    <div className=" shadow-lg rounded-lg bg-gray-300 w-11/12 max-w-sm h-{297} bg-opacity-50 px-4 py-5">
+      {children}
+    </div>
+  </div>
+)
+
