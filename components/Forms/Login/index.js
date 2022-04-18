@@ -3,8 +3,9 @@ import Link from "next/link";
 
 import {
   FormResponse,
-  UserNameComponent,
+  FormWrapper,
   PasswordComponent,
+  UserNameComponent,
 } from '../FormElements';
 
 export default function LoginForm({
@@ -30,13 +31,12 @@ export default function LoginForm({
   userdispatch
 }) {
 
-  console.log("handleChange ", handleChange);
   useEffect(() => {
     userdispatch({ type: 'resetUserAccountIsVerified' })
   }, [id]);
 
   return (
-    mounted && <>
+    mounted && <FormWrapper>
       <div className="my-3 h-max" >
         <h6 className="text-green-900 text-sm text-center font-bold">
           {
@@ -117,6 +117,6 @@ export default function LoginForm({
         </div>
         : null
       }
-    </>
+    </FormWrapper>
   );
 }
