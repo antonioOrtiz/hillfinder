@@ -88,15 +88,11 @@ export default function Layout({ children, showFooter = false }) {
               mobile={false} uidispatch={uidispatch} isLoggedIn={isLoggedIn} />
           </div>
         </div>
-        <div className={`${styles['bg-logo']}`} >
-          {route !== ('/profile' || '/')
-            ? <div className="grid place-items-center h-screen">
-              <div className=" shadow-lg rounded-lg bg-gray-300 w-96 h-{297} bg-opacity-50 px-4 pb-5 pt-2">
-                {children}
-              </div>
-            </div>
-            : <div className="grid place-items-center h-screen">{children}</div>}
-        </div>
+        {route != '/'
+          ? <div className={`${styles['bg-logo']}`} >
+            {children}
+          </div>
+          : <><div>{children}</div> <Footer /> </>}
         {showFooter ? <Footer /> : null}
       </div>
 
