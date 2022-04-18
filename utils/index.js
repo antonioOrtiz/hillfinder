@@ -202,6 +202,7 @@ export function validateInputs(
           if (success.password) {
             setPasswordError(false);
           }
+
           if (success.email && success.password) {
             setFormError(false)
             setFormSuccess(true)
@@ -269,13 +270,14 @@ export function validateInputs(
     }
 
     function isUpdatePassword() {
-      const data = {
-        password,
-        password_confirmation
-      };
 
       const schema = {
         password: 'required|min:4|max:11|string|confirmed',
+      };
+
+      const data = {
+        password,
+        password_confirmation
       };
 
       const messages = {
@@ -290,28 +292,31 @@ export function validateInputs(
           if (success.password) {
             setPasswordError(false);
           }
+
           if (success.password_confirmation) {
             setPasswordConfirmationError(false);
           }
 
           if (success.password === success.password_confirmation) {
-            setPasswordError(false);
-            setPasswordConfirmationError(false);
             setFormError(false)
+            setFormSuccess(true)
+            setDisableButton(true);
           }
         })
         .catch(errors => {
-          errors.map((error) => {
+          Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'password') {
-              setPasswordError(true);
               setPasswordFeedback(error.message);
-              setFormError(true)
+              setPasswordError(true);
+              setFormError(true);
+              setFormSuccess(false);
             }
 
             if (error.field === 'password_confirmation') {
-              setPasswordConfirmationError(true);
               setPasswordConfirmationFeedback(error.message);
+              setPasswordConfirmationError(true);
               setFormError(true)
+              setFormSuccess(false);
             }
           })
         });
