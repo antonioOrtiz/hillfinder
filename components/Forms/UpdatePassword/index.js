@@ -4,16 +4,17 @@ import { useRouter } from 'next/router'
 
 import {
   FormResponse,
+  FormWrapper,
   PasswordComponent,
 } from '../FormElements';
 
 export default function UpdatePasswordForm({
   disableButton,
-  handleSubmit,
   formType,
   formSuccess,
   formError,
   handleChange,
+  handleSubmit,
   isLoading,
   mounted,
   password,
@@ -35,38 +36,38 @@ export default function UpdatePasswordForm({
   }, [formSuccess])
 
   return (
-    mounted && <div className="container px-4 max-w-md ">
-      <div className="relative flex flex-col min-w-0 break-words shadow-lg rounded-lg bg-gray-300  bg-opacity-50 flex-auto px-4 py-5 pt-0">
+    mounted && <FormWrapper>
+      <div className="my-3 h-max" >
+        <h6 className="text-green-900 text-sm text-center font-bold">
+          Update password
+        </h6>
 
-        <div className="my-3">
-          <h6 className="text-green-900 text-sm text-center font-bold">
-            {{ Login: 'Login', Register: 'Register', UpdatePassword: 'Update password' }[formType]}
-          </h6>
-        </div>
         <hr className="mt-6 border-b-1 border-gray-500" />
 
         <form onSubmit={e => handleSubmit(e, formType)}>
 
           <PasswordComponent
-            label="Password"
-            name="password"
-            value={password}
-            placeholder={'Password'}
+            classNames={`border-0 px-3 mt- py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
             errorType={passwordError}
+            label="Password"
+            handleChange={handleChange}
             messageContent={passwordFeedback}
-            changeHandler={handleChange}
+            name="password"
+            placeholder={'Password'}
+            value={password}
           />
 
           <PasswordComponent
-            label="Confirm Password"
-            name="password_confirmation"
-            value={password_confirmation}
-            placeholder={'Confirm new password'}
+            classNames={`border-0 px-3 mt- py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
             errorType={passwordConfirmationError}
-            messageContent={passwordConfirmationFeedback}
-            changeHandler={handleChange}
-          />
+            label="Confirm Password"
 
+            handleChange={handleChange}
+            messageContent={passwordConfirmationFeedback}
+            name="password_confirmation"
+            placeholder={'Confirm new password'}
+            value={password_confirmation}
+          />
 
           <div className="text-center mt-6">
             <button
@@ -75,31 +76,32 @@ export default function UpdatePasswordForm({
               style={{ transition: "all .15s ease" }}
               disabled={disableButton}
             >
-              {{ UpdatePassword: 'Update password' }[formType]}
+              Update Password
             </button>
           </div>
 
           {isLoading ? <div className="mt-4 flex justify-center items-center">
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
-          </div> : null}
-
-          <FormResponse
+          </div> : <FormResponse
             tokenExpired={tokenExpired}
             formSuccess={formSuccess}
             formError={formError}
-            content={responseMessage} />
+            responseMessage={responseMessage} />}
         </form>
 
-      </div>
-      <div className="flex flex-wrap mt-6">
-        <div className="w-1/2">
-          <Link href="/forgot-password">
-            <a className="text-white">
-              <small>Reset password?</small>
-            </a>
-          </Link>
+
+        <div className="flex flex-wrap mt-6">
+          <div className="w-1/2">
+            <Link href="/forgot-password">
+              <a className="text-white">
+                <small>Reset password?</small>
+              </a>
+            </Link>
+          </div>
         </div>
+
       </div>
-    </div>
+    </FormWrapper>
+
   );
 }
