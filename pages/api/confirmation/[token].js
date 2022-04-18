@@ -19,8 +19,6 @@ handler
 
     const { token } = req.query
 
-
-    console.log("API token ", token);
     try {
       Token.findOne({ token }, (err, token) => {
         if (token === null) {
@@ -49,6 +47,7 @@ handler
                 }
               });
               return res.status(200).send({
+                token,
                 msg: 'The account has been verified. Please log in!'
               });
             }

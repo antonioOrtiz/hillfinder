@@ -26,15 +26,13 @@ handler
     emailValidator(req, res, next, 'password');
   }, async (req, res) => {
 
-    const {
-      query: { token },
-    } = req;
+    const { token } = req.query
 
     try {
       Token.findOne({ token }, (err, innerToken) => {
         if (innerToken === null) {
           return res.status(401).send({
-            msg: 'We were unable to find a valid token. Your token my have expired.'
+            msg: 'We were unable to find a valid token. Your token may have expired.'
           });
         }
         if (innerToken) {
