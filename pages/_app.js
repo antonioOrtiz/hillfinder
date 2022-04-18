@@ -16,7 +16,7 @@ import { UIProvider, uiState } from '../components/Context/UIContext'
 
 import { UserProvider, userState } from '../components/Context/UserContext'
 
-import { PageLoader } from '../components/Loader/index'
+import { Loader } from '../components/Loader/index'
 
 import { getLocalStorage } from '../utils'
 
@@ -29,16 +29,17 @@ const Layout = dynamic(() => import('../components/Layout'))
 function MyApp({ Component, pageProps }) {
 
 
-  const { isLoggedIn } = getLocalStorage('user') || {}
+  async function isLoggedIn() {
+    const { isLoggedIn } = await getLocalStorage('user') || {};
 
-  const { user, isLoading } = useUser(isLoggedIn);
+    return isLoggedIn
+  }
+
+  const isLoggedInTrue = isLoggedIn();
+
+  const { user, isLoading } = useUser(isLoggedInTrue);
   const router = useRouter()
 
-  useEffect(() => {
-    if (router.pathname !== '/confirmation/[token]') {
-      router.replace(router.pathname, undefined, { shallow: true })
-    }
-  }, [user])
 
   function AuthLogin() {
     useEffect(() => {
@@ -63,7 +64,7 @@ function MyApp({ Component, pageProps }) {
           />
           <Layout>
             {isLoading
-              ? <PageLoader />
+              ? <Loader />
               : pageProps.auth && !user
                 ? (
                   <AuthLogin />
