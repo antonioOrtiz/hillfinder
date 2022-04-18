@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/router'
 
+
 import {
   FormResponse,
+  FormWrapper,
   PasswordComponent,
-  UserNameComponent
+  UserNameComponent,
 } from '../FormElements';
 
 export default function RegisterForm({
@@ -38,8 +40,7 @@ export default function RegisterForm({
   }, [formSuccess])
 
   return (
-    mounted && <>
-
+    mounted && <FormWrapper>
       <div className="my-3">
         <h6 className="text-green-900 text-sm text-center font-bold">
           {
@@ -118,6 +119,6 @@ export default function RegisterForm({
           </div>
         </div>
         : null}
-    </>
+    </FormWrapper>
   );
 }
