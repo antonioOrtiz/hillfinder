@@ -3,6 +3,12 @@ import { useRouter } from 'next/router'
 import axios from 'axios';
 import Message from '../../../components/Message/index'
 
+
+import {
+  FormWrapper,
+} from '../FormElements';
+
+
 export default function Confirmation({
   error,
   responseMessage,
@@ -59,9 +65,15 @@ export default function Confirmation({
 
 
   if (error) {
-    return showApi && <Message state="Error" content={responseMessage} />
+    return showApi && <FormWrapper>
+      <Message state="Error" content={responseMessage} />
+    </FormWrapper>
+
   }
   if (error === false) {
-    return showApi && <Message state="Success" header={responseMessage} />
+    return showApi && <FormWrapper >
+      <Message state="Success" header={responseMessage} />
+    </FormWrapper>
+
   }
 }
