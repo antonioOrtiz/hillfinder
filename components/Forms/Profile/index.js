@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic'
 
 import { Loader } from '../../Loader'
@@ -13,57 +13,43 @@ const Message = dynamic(
 import { InterestedActivitiesComponent, UserNameComponent as ProfileEmailComponent, ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent } from '../FormElements'
 
 export default function ProfileForm({
-  disableButton,
   emailError,
   emailFeedback,
   formError,
   formType,
   formSuccess,
   handleChange,
-  handleKeyUp,
   handleSubmit,
   handleCancelSaveProfileForUseCallback,
-  interestedActivities,
-  interestedActivitiesInput,
-  interestedActivitiesError,
-  interestedActivitiesFeedback,
-  isLoading,
   isProfileInEditMode,
   memberSince,
   mounted,
   profileEmail,
-  profileDataFromApi,
   profileDisplayName,
   profileDisplayNameError,
   profileDisplayNameFeedback,
   profileUserAvatar,
   responseMessage,
-  setFormError,
-  setDisableButton,
-  setEmailError,
-  setFormSuccess,
-  setIsLoading = () => { },
   setInterestedActivities,
-  setInterestedActivitiesError,
-  setInterestedActivitiesFeedback,
-  setInterestedActivitiesInput,
-  setProfileDisplayName,
-  setProfileDisplayNameError,
-  setProfileEmail,
-  setProfileUserAvatar,
   toggle
 }) {
+  const SaveButton = useRef(null)
 
   const ProfileButton = `mb-5 mr-2.5 w-40 self-center inline-block text-textColor btn btn-primary`
 
 
+  useEffect(() => {
+    if (formError) {
+      SaveButton.current.classList.add('cursor-not-allowed', 'opacity-50')
+    }
+    return () => SaveButton.current.classList.remove('cursor-not-allowed', 'opacity-50')
+  }, [formError])
 
-  console.log("profileEmail ", profileEmail);
 
   return (
-    mounted && <div className="grid place-items-center h-screen">
-      <div className="card-body glass card p-5">
-        <div className="p-8 bg-slate-50 rounded-md shadow-inner drop-shadow-lg">
+    mounted && <div className="grid h-screen place-items-center">
+      <div className="p-5 card-body glass card">
+        <div className="p-8 rounded-md shadow-inner bg-slate-50 drop-shadow-lg">
           {formSuccess
             ? <Message
               state="Success"
@@ -80,7 +66,7 @@ export default function ProfileForm({
             isProfileInEditMode={isProfileInEditMode}
             profileUserAvatar={profileUserAvatar}
           />
-          <p className=" mb-5 text-center	 text-profileColor"> Member Since: <br /> {memberSince} </p>
+          <p className="mb-5 text-center text-profileColor"> Member since: <br /> {memberSince} </p>
 
           <form
             noValidate
@@ -91,9 +77,9 @@ export default function ProfileForm({
             <div className="text-center">
               {isProfileInEditMode ?
                 <button
+                  ref={SaveButton}
                   className={ProfileButton}
                   type="submit"
-                  disabled={disableButton}
                 >
                   Save
                 </button> : null}
@@ -119,7 +105,7 @@ export default function ProfileForm({
             </div>
 
             <ProfileDisplayNameComponent
-              classNames={`${isProfileInEditMode ? "text-profileColor" : null} border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input	 focus:outline-none focus:ring w-full
+              classNames={`${isProfileInEditMode ? "text-profileColor" : null} border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input focus:outline-none focus:ring w-full
                `}
               errorType={profileDisplayNameError}
               handleChange={handleChange}
@@ -151,9 +137,8 @@ export default function ProfileForm({
                w-full inline-block align-bottom bg-transparent
                border-b-2 placeholder-gray-700 placeholder-opacity-50 outline-none text-white
             `}
-              handleKeyUp={handleKeyUp}
-              interestedActivities={interestedActivities}
-              interestedActivitiesInput={interestedActivitiesInput}
+              setInterestedActivities={setInterestedActivities}
+
               isProfileInEditMode={!isProfileInEditMode}
               label="Interested activities:"
 
