@@ -38,13 +38,13 @@ export default function LoginForm({
   return (
     mounted && <FormWrapper>
       <div className="my-3 h-max" >
-        <h6 className="text-green-900 text-sm text-center font-bold">
+        <h6 className="text-sm font-bold text-center text-green-900">
           {
             { Login: 'Login', Register: 'Register' }[formType]
           }
         </h6>
       </div>
-      <hr className="mb-4 border-b-1 border-gray-500" />
+      <hr className="mb-4 border-gray-500 border-b-1" />
 
       <form
         noValidate
@@ -74,9 +74,9 @@ export default function LoginForm({
           value={password}
         />
 
-        <div className="text-center mt-6">
+        <div className="mt-6 text-center">
           <button
-            className="btn btn-primary w-full"
+            className="w-full btn btn-primary"
             type="submit"
             style={{ transition: "all .15s ease" }}
             disabled={disableButton}
@@ -85,8 +85,8 @@ export default function LoginForm({
           </button>
         </div>
 
-        {isLoading ? <div className="mt-4 flex justify-center items-center">
-          <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+        {isLoading ? <div className="flex items-center justify-center mt-4">
+          <div className="w-32 h-32 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader" />
         </div> : null}
         <FormResponse
           accountNotVerified={accountNotVerified}
