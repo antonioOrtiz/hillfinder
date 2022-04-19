@@ -88,8 +88,6 @@ export function validateInputs(
   setDisableButton,
   setFormSuccess,
   setFormError,
-  setInterestedActivitiesError,
-  setInterestedActivitiesFeedback,
   setPasswordConfirmationError,
   setPasswordConfirmationFeedback,
   setPasswordError,
@@ -109,14 +107,10 @@ export function validateInputs(
       const data = {
         profileDisplayName,
         profileEmail,
-        interestedActivities,
       }
 
-      console.log("data ", data);
 
       const messages = {
-        // 'interestedActivities.*.min': 'The value is too small. Minimum two characters.',
-        // 'interestedActivities.*.max': 'The value is too small. Maximum fifteen characters.',
 
         'required': 'Make sure to enter the field value.',
         'alpha': 'Contains unallowed characters',
@@ -134,11 +128,6 @@ export function validateInputs(
             setProfileDisplayNameError(false);
           }
 
-
-          if (success.interestedActivities) {
-            setInterestedActivitiesError(false);
-          }
-
           if (success.email && success.displayName && success.interestedActivitie) {
             setFormError(false);
             setFormSuccess(true);
@@ -146,8 +135,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-
-          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
 
             console.log("error ", error);
@@ -161,13 +148,6 @@ export function validateInputs(
             if (error.field === 'profileEmail') {
               setEmailFeedback(error.message);
               setEmailError(true);
-              setFormError(true)
-              setFormSuccess(false);
-            }
-
-            if (error.field === 'interestedActivities.0') {
-              setInterestedActivitiesFeedback(error.message);
-              setInterestedActivitiesError(true);
               setFormError(true)
               setFormSuccess(false);
             }
