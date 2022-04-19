@@ -24,13 +24,13 @@ export default function ForgotPasswordForm({
 
   return (
     mounted && <FormWrapper>
-      <div className="my-3 h-max"><h6 className="text-green-900 text-sm text-center font-bold">Forgot Password</h6>
-        <p className="my-3 text-white text-sm"> Not a problem. Just enter your email address below. If it's registered
+      <div className="my-3 h-max"><h6 className="text-sm font-bold text-center text-green-900">Forgot Password</h6>
+        <p className="my-3 text-sm text-white"> Not a problem. Just enter your email address below. If it's registered
           with Hillfinder, we'll send you a link to reset your password.</p>
       </div>
 
 
-      <hr className="mb-4 border-b-1 border-gray-500" />
+      <hr className="mb-4 border-gray-500 border-b-1" />
       <form
         noValidate
         onSubmit={e => handleSubmit(e, formType)}
@@ -46,9 +46,9 @@ export default function ForgotPasswordForm({
           value={email}
         />
 
-        <div className="text-center mt-6">
+        <div className="mt-6 text-center">
           <button
-            className="btn btn-primary w-full"
+            className="w-full btn btn-primary"
             type="submit"
             style={{ transition: "all .15s ease" }}
             disabled={disableButton}
@@ -58,15 +58,15 @@ export default function ForgotPasswordForm({
         </div>
 
 
-        {isLoading ? <div className="mt-4 flex justify-center items-center">
-          <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32" />
+        {isLoading ? <div className="flex items-center justify-center mt-4">
+          <div className="w-32 h-32 ease-linear border-8 border-t-8 border-gray-200 rounded-full loader" />
         </div> : <FormResponse
           formSuccess={formSuccess}
           formError={formError}
           responseMessage={responseMessage} />}
       </form>
 
-      <div className="w-1/2 text-left mt-6">
+      <div className="w-1/2 mt-6 text-left">
         <Link href="/registration">
           <a className="text-white">
             <small>Create new account</small>
