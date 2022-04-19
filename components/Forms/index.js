@@ -46,9 +46,6 @@ function FormComponent({
   const [form, setFormType] = useState('')
 
   const [interestedActivities, setInterestedActivities] = useState([]);
-  const [interestedActivitiesError, setInterestedActivitiesError] = useState(false);
-  const [interestedActivitiesFeedback, setInterestedActivitiesFeedback] = useState('');
-  const [interestedActivitiesInput, setInterestedActivitiesInput] = useState('')
 
   const [isProfileInEditMode, toggle] = useToggle(false);
 
@@ -78,7 +75,6 @@ function FormComponent({
 
 
   const { userstate } = userState();
-
   const { id, accountNotVerified, isLoggedIn } = userstate;
 
   const { user, mutate } = useUser(!isLoggedIn ? false : true);
@@ -109,7 +105,6 @@ function FormComponent({
   useEffect(() => {
     setToken(router.query.token)
   }, [router.query.token])
-
 
   useEffect(() => {
     if (user !== undefined && profileLoaded) {
@@ -144,12 +139,8 @@ function FormComponent({
     setPasswordConfirmationError(false);
     setPasswordConfirmationFeedback('')
 
-
     setProfileDisplayNameError(false)
     setResponseMessage('');
-
-    setInterestedActivitiesError(false)
-    setInterestedActivitiesFeedback('')
 
     userdispatch({ type: 'resetUserAccountIsVerified', })
     setEmailDup(false);
@@ -166,10 +157,6 @@ function FormComponent({
 
     if (name === 'email') {
       setEmail(value);
-    }
-
-    if (name === 'interestedActivitiesInput') {
-      setInterestedActivitiesInput(value);
     }
 
     if (name === 'password') {
@@ -198,26 +185,6 @@ function FormComponent({
     toggle()
   }
 
-  function handleKeyUpForUseCallback(e) {
-    if (e.keyCode === 188) {
-      const newArr = [...interestedActivities];
-      newArr.push(e.target.value.slice(0, -1));
-      setInterestedActivities(newArr)
-      setInterestedActivitiesInput('')
-    }
-  }
-
-  const handleKeyUp = useCallback((e) => {
-    e.persist();
-    handleKeyUpForUseCallback(e);
-  }, [])
-
-  // const handleChange = useCallback((e) => {
-  //   e.persist();
-  //   const { name, value } = e.target;
-  //   handleChangeForUseCallBack(name, value);
-  // }, [email, formType, password, password_confirmation, handleChangeForUseCallBack, setIsLoading]);
-
   const handleChange = useCallback((e) => {
     e.persist();
     const { name, value } = e.target;
@@ -225,7 +192,6 @@ function FormComponent({
   }, []);
 
   function handleSubmitForUseCallBack(e, formType) {
-
 
     e.preventDefault();
     setDisableButton(true);
@@ -243,8 +209,6 @@ function FormComponent({
       setDisableButton,
       setFormSuccess,
       setFormError,
-      setInterestedActivitiesError,
-      setInterestedActivitiesFeedback,
       setPasswordConfirmationError,
       setPasswordConfirmationFeedback,
       setPasswordError,
@@ -400,21 +364,13 @@ function FormComponent({
         formType={formType}
         formSuccess={formSuccess}
         handleChange={handleChange}
-        handleKeyUp={handleKeyUp}
         handleSubmit={handleSubmit}
-
         handleCancelSaveProfileForUseCallback={handleCancelSaveProfileForUseCallback}
-        interestedActivities={interestedActivities}
-        interestedActivitiesInput={interestedActivitiesInput}
-        interestedActivitiesError={interestedActivitiesError}
-        interestedActivitiesFeedback={interestedActivitiesFeedback}
-
         isLoading={isLoading}
         isProfileInEditMode={isProfileInEditMode}
         memberSince={memberSince}
         mounted={mounted}
         profileEmail={profileEmail}
-        profileDataFromApi={profileDataFromApi}
         profileDisplayName={profileDisplayName}
         profileDisplayNameError={profileDisplayNameError}
         profileDisplayNameFeedback={profileDisplayNameFeedback}
@@ -426,9 +382,6 @@ function FormComponent({
         setFormSuccess={setFormSuccess}
         setIsLoading={setIsLoading}
         setInterestedActivities={setInterestedActivities}
-        setInterestedActivitiesError={setInterestedActivitiesError}
-        setInterestedActivitiesFeedback={setInterestedActivitiesFeedback}
-        setInterestedActivitiesInput={setInterestedActivitiesInput}
         setProfileDisplayName={setProfileDisplayName}
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
