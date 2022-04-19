@@ -189,12 +189,12 @@ export function PasswordComponent({
 
   return (
     <div className="relative w-full my-3 ">
-      <div className="absolute top-8 right-0 flex items-center px-2">
+      <div className="absolute right-0 flex items-center px-2 top-8">
         <input className="hidden js-password-toggle" type="checkbox" />
-        <label className="bg-gray-300 hover:bg-gray-400 rounded mt-0 px-2 py-1 text-sm text-green-900 font-mono cursor-pointer js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
+        <label className="px-2 py-1 mt-0 font-mono text-sm text-green-900 bg-gray-300 rounded cursor-pointer hover:bg-gray-400 js-password-label" onClick={handleChangePasswordToggle}>{passwordLabel}</label>
       </div>
       <label
-        className="inline-block align-bottom mb-1"
+        className="inline-block mb-1 align-bottom"
         htmlFor="grid-password"
       >
         {label}:
@@ -219,25 +219,20 @@ export function PasswordComponent({
 }
 
 export function InterestedActivitiesComponent({
-  classNames,
-  handleChange,
-  handleClick,
-  handleKeyUp,
-  interestedActivities,
-  interestedActivitiesInput,
+  setInterestedActivities,
   isProfileInEditMode,
   label,
 }) {
 
   return (
     <div className="relative w-full my-3 ">
-      <label forhtml="Interested activities" className={"text-profileColor inline-block align-bottom mb-1"}> <span className="inline-block align-bottom mb-1"> {label}</span></label>
+      <label forhtml="Interested activities" className={"text-profileColor inline-block align-bottom mb-1"}> <span className="inline-block mb-1 align-bottom"> {label}</span></label>
 
       <Tokenizer
         customClasses={{
-          input: " border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input	 focus:outline-none focus:ring w-full",
-          results: "border-dashed border-2 p-1 rounded-md border-input mt-1",
-          token: "btn-primary inline-block p-1 my-1 rounded-md"
+          input: "border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input focus:outline-none focus:ring w-full",
+          results: "border-dashed border-2 p-1 rounded-md border-input mt-2",
+          token: "bg-primary text-white inline-block py-0.5 pl-2  pr-1 my-1 mx-1 rounded-md"
         }}
         disabled={isProfileInEditMode}
         options={[
@@ -251,11 +246,12 @@ export function InterestedActivitiesComponent({
           'Sledding',
           'Snowboarding',
           'Rollerblading',
-          'Tailrunning',
+          'Trailrunning',
           'Walking'
         ]}
         onTokenAdd={function (token) {
           console.log('token added: ', token);
+          setInterestedActivities(prev => [...prev, token])
         }}
         placeholder="e.g. Running, skating"
       />
@@ -292,10 +288,10 @@ export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) 
 
     <form onSubmit={handleOnSubmit}
     >
-      <div className="py-5 relative avatar online flex items-end justify-center items-center		">
-        <hr className="absolute mt-10 w-full divider glass h-px"></hr>
-        <div className="z-50 border-2 border-editModeTextColor rounded-full w-24 h-24 shadow-md">
-          <label className="cursor-pointer mt-6">
+      <div className="relative flex items-center justify-center py-5 avatar online ">
+        <hr className="absolute w-full h-px mt-10 divider glass"></hr>
+        <div className="z-50 w-24 h-24 border-2 rounded-full shadow-md border-editModeTextColor">
+          <label className="mt-6 cursor-pointer">
             <input
               name="file"
               type="file"
@@ -316,7 +312,7 @@ export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) 
 }
 
 export const FormWrapper = ({ children }) => (
-  <div className="grid place-items-center h-screen">
+  <div className="grid h-screen place-items-center">
     <div className=" shadow-lg rounded-lg bg-gray-300 w-11/12 max-w-sm h-{297} bg-opacity-50 px-4 py-5">
       {children}
     </div>
