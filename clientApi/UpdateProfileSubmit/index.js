@@ -27,6 +27,9 @@ export default function updateProfileSubmit(
         setFormSuccess(true);
         setIsLoading(false);
         setResponseMessage(response.data.msg);
+        setTimeout(() => {
+          setFormSuccess(false);
+        }, 5000)
       }
     })
     .catch((error) => {
