@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Loader } from '../Loader/index'
 
 var Tokenizer = require('react-typeahead').Tokenizer;
@@ -27,9 +27,6 @@ export function FormResponse({
   responseMessage,
   tokenExpired
 }) {
-
-  console.log("formSuccess ", formSuccess);
-  console.log("responseMessage ", responseMessage);
 
   if (formType === 'Profile') {
     if (formSuccess) {
@@ -105,9 +102,7 @@ export function UserNameComponent({
       className={
         `${wrapperClassForProfileComponent ? "relative" : null} "w-full my-3"`}
     >
-      <label
-        className={"text-profileColor inline-block align-bottom mb-1"}
-        htmlFor="grid-password">
+      <label htmlFor={name} className={"inline-block align-bottom mb-1"}>
         {label}:
       </label>
       <input type="email"
@@ -140,9 +135,11 @@ export function ProfileInputComponent({
   name,
   value,
 }) {
+
+  console.log("name ", name);
   return (
     <div className="relative w-full mb-3" >
-      <label htmlFor={name} className={"text-profileColor inline-block align-bottom mb-1"}>
+      <label htmlFor={name} className={"inline-block align-bottom mb-1"}>
         {label}
       </label>
       <input
@@ -230,7 +227,8 @@ export function InterestedActivitiesComponent({
 
       <Tokenizer
         customClasses={{
-          input: "border-0 px-3 mt-1 py-3 placeholder-gray-600  rounded text-sm shadow shadow-input focus:outline-none focus:ring w-full",
+          input: `${!isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"} " px-3 mt-1 py-3  rounded text-sm text-black shadow shadow-input focus:outline-none focus:ring w-full block border-2"
+           `,
           results: "border-dashed border-2 p-1 rounded-md border-input mt-2",
           token: "bg-primary text-white inline-block py-0.5 pl-2  pr-1 my-1 mx-1 rounded-md"
         }}
@@ -311,11 +309,28 @@ export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) 
   )
 }
 
-export const FormWrapper = ({ children }) => (
-  <div className="grid h-screen place-items-center">
-    <div className=" shadow-lg rounded-lg bg-gray-300 w-11/12 max-w-sm h-{297} bg-opacity-50 px-4 py-5">
-      {children}
+export const FormWrapper = ({ children }) => {
+  const [onProfilePage, setOnProfilePage] = useState(false);
+  const { pathname } = useRouter();
+
+  useEffect(() => {
+    if (pathname === '/profile') {
+      setOnProfilePage(true)
+    }
+    return () => setOnProfilePage(false)
+  }, [])
+
+  return (
+    <div className="grid h-full grid-cols-1 py-5 auto-cols-max place-items-center justify-items-center">
+      {onProfilePage
+        ? <div className="shadow-lg rounded-md bg-gray-300 w-11/12 sm:max-w-md h-{297} bg-opacity-50 px-4 py-5">
+          {children}
+        </div>
+        : <div className="shadow-lg rounded-md bg-gray-300 w-full max-w-sm h-{297} bg-opacity-50 px-4 py-5">
+          {children}
+        </div>
+      }
     </div>
-  </div>
-)
+  )
+}
 
