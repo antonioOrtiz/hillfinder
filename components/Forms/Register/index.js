@@ -55,7 +55,6 @@ export default function RegisterForm({
           handleSubmit(e, formType)
         }}
       >
-        {console.log("emailError ", emailError)}
         <UserNameComponent
           handleChange={handleChange}
           classNames={`border-0 px-3 mt- py-3 placeholder-gray-400 text-black-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full`}
