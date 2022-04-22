@@ -28,7 +28,6 @@ export default function RegisterForm({
   passwordError,
   passwordFeedback,
   responseMessage,
-  setIsLoading = () => { }
 }) {
 
   const router = useRouter();
