@@ -107,14 +107,14 @@ export function UserNameComponent({
       </label>
       <input type="email"
         className={classNames}
-        disabled={pathname === '/profile' ? isProfileInEditMode : false}
+        disabled={pathname === '/profile' ? !isProfileInEditMode : false}
         name={name}
         onChange={handleChange}
         placeholder={placeholder}
         style={
           { transition: "all .15s ease" }
         }
-        value={value}
+        value={value || ""}
       />
       {errorType ? <Message
         state="Error"
@@ -136,7 +136,6 @@ export function ProfileInputComponent({
   value,
 }) {
 
-  console.log("name ", name);
   return (
     <div className="relative w-full mb-3" >
       <label htmlFor={name} className={"inline-block align-bottom mb-1"}>
@@ -144,12 +143,12 @@ export function ProfileInputComponent({
       </label>
       <input
         className={classNames}
-        disabled={isProfileInEditMode}
+        disabled={!isProfileInEditMode}
         name={name}
         placeholder="Display Name, e.g. skaterBoi"
         onChange={handleChange}
         type="text"
-        value={value}
+        value={value || ""}
       />
       {errorType ? <Message
         state="Error"
@@ -216,41 +215,77 @@ export function PasswordComponent({
 }
 
 export function InterestedActivitiesComponent({
-  setInterestedActivities,
+  interestedActivities,
   isProfileInEditMode,
   label,
+  setInterestedActivities,
+
 }) {
 
+  const input = `${isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"} " px-3 mt-1 py-3  rounded text-sm text-black shadow shadow-input focus:outline-none focus:ring w-full block border-2"`
+  const token = `${isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"}  rounded-md bg-primary text-white inline-block py-0.5 pl-2 pr-1 my-1 mx-1 `
+  const results = "border-dashed border-2 p-1 rounded-md border-input mt-2"
+
+  const [search, setSearch] = useState([
+    'Cycling',
+    'Jogging',
+    'Hiking',
+    'Mountain biking',
+    'Running',
+    'Skate boarding',
+    'Skiing',
+    'Sledding',
+    'Snowboarding',
+    'Rollerblading',
+    'Trailrunning',
+    'Walking'
+  ])
+
+  const TokenParent = useRef(null)
+
+  useEffect(() => {
+    function getUserInterestedActivities() {
+      setSearch(prev => prev.filter(item => !interestedActivities[0]?.includes(item)))
+    }
+    getUserInterestedActivities()
+  }, [])
+
+
+  useEffect(() => {
+    var arr = []
+    document.querySelectorAll('.typeahead-token > a').forEach(element => {
+      arr.push(element)
+    })
+
+    for (let i = 0; i < arr.length; i++) {
+      console.log('arr[i]', arr[i])
+      arr[i].addEventListener('click', function (e) {
+        console.log('e', e)
+        return false
+      }, false)
+    }
+
+  }, [isProfileInEditMode])
+
+
+
+  console.log("isProfileInEditMode ", isProfileInEditMode);
+
   return (
-    <div className="relative w-full my-3 ">
+    <div ref={TokenParent} className="relative w-full my-3 ">
       <label forhtml="Interested activities" className={"text-profileColor inline-block align-bottom mb-1"}> <span className="inline-block mb-1 align-bottom"> {label}</span></label>
 
       <Tokenizer
         customClasses={{
-          input: `${!isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"} " px-3 mt-1 py-3  rounded text-sm text-black shadow shadow-input focus:outline-none focus:ring w-full block border-2"
-           `,
-          results: "border-dashed border-2 p-1 rounded-md border-input mt-2",
-          token: "bg-primary text-white inline-block py-0.5 pl-2  pr-1 my-1 mx-1 rounded-md"
+          input: input,
+          results: results,
+          token: token
         }}
-        disabled={isProfileInEditMode}
-        options={[
-          'Cycling',
-          'Jogging',
-          'Hiking',
-          'Mountain biking',
-          'Running',
-          'Skate boarding',
-          'Skiing',
-          'Sledding',
-          'Snowboarding',
-          'Rollerblading',
-          'Trailrunning',
-          'Walking'
-        ]}
-        onTokenAdd={function (token) {
-          console.log('token added: ', token);
-          setInterestedActivities(prev => [...prev, token])
-        }}
+        defaultSelected={interestedActivities}
+
+        disabled={!isProfileInEditMode}
+        options={search}
+        onTokenAdd={(token) => setInterestedActivities(prev => [...prev, token])}
         placeholder="e.g. Running, skating"
       />
     </div>
@@ -298,7 +333,7 @@ export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) 
               src={imageSrc} />
           </label>
         </div>
-        {isProfileInEditMode ? null : <button
+        {!isProfileInEditMode ? null : <button
           type="submit"
           className="absolute z-50 top-5 left-60 "
         >
