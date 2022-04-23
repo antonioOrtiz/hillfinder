@@ -1,8 +1,6 @@
 /* eslint-disable react/jsx-key */
 import React, { useCallback, useEffect, useState } from 'react';
 
-import moment from 'moment';
-
 import { validateInputs } from '../../utils/index';
 import { useRouter } from 'next/router'
 
@@ -19,7 +17,6 @@ import loginSubmit from '../../clientApi/LoginSubmit'
 import registerSubmit from '../../clientApi/RegisterSubmit'
 import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
 import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
-import getProfile from '../../clientApi/GetProfile'
 import updateProfileSubmit from '../../clientApi/UpdateProfileSubmit'
 
 import { useToggle, useUser } from '../../lib/hooks'
@@ -60,12 +57,10 @@ function FormComponent({
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
   const [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
 
-  const [profileDataFromApi, setProfileDataFromApi] = useState([]);
   const [profileDisplayName, setProfileDisplayName] = useState('')
   const [profileDisplayNameFeedback, setProfileDisplayNameFeedback] = useState('');
   const [profileDisplayNameError, setProfileDisplayNameError] = useState(false);
   const [profileEmail, setProfileEmail] = useState('')
-  const [profileLoaded, setProfileLoaded] = useState(true);
   const [profileUserAvatar, setProfileUserAvatar] = useState('')
 
   const [token, setToken] = useState(null)
@@ -105,29 +100,6 @@ function FormComponent({
   useEffect(() => {
     setToken(router.query.token)
   }, [router.query.token])
-
-  useEffect(() => {
-    if (user !== undefined && profileLoaded) {
-      const fetchProfile = async () => {
-
-        const { data } = await getProfile();
-
-        const email = data[0]._user.email
-        const obj = data[0];
-        const { __v, _user, _id, memberSince, ...profile } = obj;
-        const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
-        const { displayName, userAvatar } = profile
-
-        setProfileDataFromApi(profile)
-        setMemberSince(fomatted_date)
-        setProfileDisplayName(displayName)
-        setProfileEmail(email)
-        setInterestedActivities(profile.interestedActivities)
-        setProfileUserAvatar(userAvatar)
-      }
-      fetchProfile()
-    }
-  }, [])
 
   function handleChangeForUseCallBack(name, value) {
     setEmailError(false);
@@ -176,15 +148,6 @@ function FormComponent({
     }
   }
 
-  function handleCancelSaveProfileForUseCallback() {
-    setProfileDisplayName(profileDataFromApi['Display name'])
-    setProfileEmail(profileDataFromApi['email'])
-    setFormError(false)
-    setEmailError(false)
-    setProfileDisplayNameError(false)
-    toggle()
-  }
-
   const handleChange = useCallback((e) => {
     e.persist();
     const { name, value } = e.target;
@@ -227,6 +190,7 @@ function FormComponent({
   const handleSubmit = useCallback((e, form) => {
     handleSubmitForUseCallBack(e, form);
   }, [email, password, password_confirmation, interestedActivities, handleSubmitForUseCallBack]);
+
 
   const Forms = {
     Login: [
@@ -365,9 +329,11 @@ function FormComponent({
         formSuccess={formSuccess}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
-        handleCancelSaveProfileForUseCallback={handleCancelSaveProfileForUseCallback}
+
+        interestedActivities={interestedActivities}
         isLoading={isLoading}
         isProfileInEditMode={isProfileInEditMode}
+
         memberSince={memberSince}
         mounted={mounted}
         profileEmail={profileEmail}
