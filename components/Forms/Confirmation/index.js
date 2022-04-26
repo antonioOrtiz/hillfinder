@@ -30,7 +30,6 @@ export default function Confirmation({
         .get(`/api/confirmation/${token}`)
         .then(response => {
 
-          console.log("response ", response);
           if (response.status === 200) {
             isSubscribed ? setResponseMessage(response.data.msg) : null;
           }
