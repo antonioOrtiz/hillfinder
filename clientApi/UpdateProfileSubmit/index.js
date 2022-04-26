@@ -9,8 +9,6 @@ export default function updateProfileSubmit(
     interestedActivities
   };
 
-  console.log('data', data)
-
   axios
     .put(`/api/profile/update`,
       data, // request body as string
@@ -41,6 +39,5 @@ export default function updateProfileSubmit(
           setResponseMessage(error.response.data.msg);
         }
       }
-
     });
 }
