@@ -31,15 +31,12 @@ export default function Confirmation({
         .catch((error) => {
           if (error.response.status === 404) {
             dispatch({ type: 'resetUserAccountIsVerified' })
-
             setError(true);
             isSubscribed ? setResponseMessage(error.response.data.msg) : null;
-
           }
 
           if (error.response.status === 400) {
             dispatch({ type: 'userAccountIsVerified' })
-
             setError(true);
             isSubscribed ? setResponseMessage(error.response.data.msg) : null;
 
@@ -47,13 +44,11 @@ export default function Confirmation({
         });
     }
 
-
     return () => {
       isSubscribed = false;
       setShowApi(prev => !prev);
     };
   }, [token]);
-
 
 
   if (error) {
