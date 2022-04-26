@@ -1,5 +1,5 @@
 
-import { indicative, validate, validateAll } from 'indicative/validator'
+import { validateAll, extend } from 'indicative/validator'
 
 import crypto from 'crypto';
 
@@ -47,7 +47,6 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
   });
 
-
   function outputTokenInEmail(typeOfEmail) {
     if (typeOfEmail !== 'change of password') return `/${token.token}`;
     return '';
@@ -78,45 +77,67 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 export function validateInputs(
   formType,
   email,
-  interestedActivities,
+  interestedActivitiesInput,
   password,
   password_confirmation,
   profileDisplayName,
   profileEmail,
+  search,
   setEmailError,
   setEmailFeedback,
   setDisableButton,
   setFormSuccess,
   setFormError,
+  setInterestedActivitiesError,
+  setInterestedActivitiesFeedback,
   setPasswordConfirmationError,
   setPasswordConfirmationFeedback,
   setPasswordError,
   setPasswordFeedback,
   setProfileDisplayNameFeedback,
   setProfileDisplayNameError
-
 ) {
+
   function getFormValidation(formType) {
     function isUpdateProfile() {
+      extend('inputNotInSearch', {
+        async: true,
+
+        compile(args) {
+          return args
+        },
+        async validate(data, field, args, config) {
+
+          function IsEmptyOrWhiteSpace(str) {
+            return (str.match(/^\s*$/) || []).length > 0;
+          }
+
+          if ((search.indexOf(data.original.interestedActivitiesInput) !== -1) == false && IsEmptyOrWhiteSpace(data.original.interestedActivitiesInput) === false) {
+            return false
+          }
+          return true
+        }
+      })
+
       const rules = {
         profileDisplayName: 'required|alpha|min:2|max:15',
         profileEmail: 'required|email',
-        // 'interestedActivities.*': 'alpha|min:2|max:15',
+        interestedActivitiesInput: 'inputNotInSearch'
       };
 
       const data = {
         profileDisplayName,
         profileEmail,
+        interestedActivitiesInput
       }
 
-
       const messages = {
-
+        'alpha': 'No special characters allowed. e.g. "$, !, *"',
         'required': 'Make sure to enter the field value.',
-        'alpha': 'Contains unallowed characters',
         'email': 'Enter valid email address.',
         'min': 'The value is too small. Minimum two characters.',
         'max': 'The value is too big. Maximum eleven characters.',
+        'inputNotInSearch': 'This value does not appear in our list.'
       }
 
       validateAll(data, rules, messages)
@@ -128,16 +149,17 @@ export function validateInputs(
             setProfileDisplayNameError(false);
           }
 
-          if (success.email && success.displayName && success.interestedActivitie) {
+          if (success.isInterestedActivitiesInput) {
+            setInterestedActivitiesError(false)
+          }
+
+          if (success.profileDisplayName && success.profileEmail && success.isInterestedActivitiesInput) {
             setFormError(false);
             setFormSuccess(true);
-            setDisableButton(true);
           }
         })
         .catch(errors => {
           Array.isArray(errors) && errors.map((error) => {
-
-            console.log("error ", error);
             if (error.field === 'profileDisplayName') {
               setProfileDisplayNameFeedback(error.message);
               setProfileDisplayNameError(true);
@@ -148,6 +170,13 @@ export function validateInputs(
             if (error.field === 'profileEmail') {
               setEmailFeedback(error.message);
               setEmailError(true);
+              setFormError(true)
+              setFormSuccess(false);
+            }
+
+            if (error.field === 'interestedActivitiesInput') {
+              setInterestedActivitiesFeedback(error.message);
+              setInterestedActivitiesError(true);
               setFormError(true)
               setFormSuccess(false);
             }
@@ -191,7 +220,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -211,12 +239,12 @@ export function validateInputs(
     }
 
     function isForgotPassword() {
-      const data = {
-        email
-      };
-
       const rules = {
         email: 'required|email',
+      };
+
+      const data = {
+        email
       };
 
       const messages = {
@@ -235,7 +263,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          console.log("error 257 ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -245,13 +272,11 @@ export function validateInputs(
             }
           })
         });
-
-
     }
 
     function isUpdatePassword() {
 
-      const schema = {
+      const rules = {
         password: 'required|min:4|max:11|string|confirmed',
       };
 
@@ -267,7 +292,7 @@ export function validateInputs(
         max: 'The password is too long. Maximum 11 characters.',
       };
 
-      validateAll(data, schema, messages)
+      validateAll(data, rules, messages)
         .then(success => {
           if (success.password) {
             setPasswordError(false);
