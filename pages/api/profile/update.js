@@ -20,20 +20,19 @@ handler
   },
     async (req, res, next) => {
       await connectDB()
-      console.log("      req.body; ", req.body);
       const {
-        userAvatar,
+        profileUserAvatar,
         profileDisplayName,
         profileEmail,
         interestedActivities } = req.body;
 
       const update = {
-        userAvatar,
-        email: profileEmail,
-        "displayName": profileDisplayName,
-        $push: {
-          "interestedActivities": interestedActivities,
-        },
+        $set: {
+          userAvatar: profileUserAvatar,
+          email: profileEmail,
+          "displayName": profileDisplayName,
+          interestedActivities: interestedActivities
+        }
       }
 
       const filter = { id: req.user.id };
@@ -50,7 +49,6 @@ handler
             msg: `You have updated your profile!`
           });
         }
-
       } catch (error) {
         errorHandler(error, res)
       }
