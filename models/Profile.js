@@ -12,7 +12,9 @@ const profile = new Schema({
     type: String,
     default: ''
   },
-  'interestedActivities': ['Ping-pong'],
+  'interestedActivities': [{
+    type: String
+  }],
   'memberSince': { type: Date, default: Date.now },
   'userAvatar': {
     type: String,
