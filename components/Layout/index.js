@@ -88,12 +88,11 @@ export default function Layout({ children, showFooter = false }) {
               mobile={false} uidispatch={uidispatch} isLoggedIn={isLoggedIn} />
           </div>
         </div>
-        {route != '/'
-          ? <div className={`${styles['bg-logo']}`} >
-            {children}
-          </div>
-          : <><div>{children}</div> <Footer /> </>}
-        {showFooter ? <Footer /> : null}
+
+        <div className={`${styles['bg-logo']}`} >
+          {children}
+        </div>
+
       </div>
 
       <div className="drawer-side">
