@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic'
 import moment from 'moment';
 import getProfile from '../../../clientApi/GetProfile'
@@ -20,7 +20,11 @@ const Message = dynamic(
   }
 )
 
-import { InterestedActivitiesComponent, UserNameComponent as ProfileEmailComponent, ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent } from '../FormElements'
+import {
+  InterestedActivitiesComponent,
+  UserNameComponent as ProfileEmailComponent,
+  ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent
+} from '../FormElements'
 
 export default function ProfileForm({
   emailError,
@@ -31,6 +35,9 @@ export default function ProfileForm({
   handleChange,
   handleSubmit,
   interestedActivities,
+  interestedActivitiesInput,
+  interestedActivitiesError,
+  interestedActivitiesFeedback,
   isProfileInEditMode,
   mounted,
   profileEmail,
@@ -39,17 +46,23 @@ export default function ProfileForm({
   profileDisplayNameFeedback,
   profileUserAvatar,
   responseMessage,
+  search,
   setEmailError,
   setFormError,
   setInterestedActivities,
+  setInterestedActivitiesInput,
+  setInterestedActivitiesError = () => { },
   setProfileDisplayName,
   setProfileDisplayNameError,
   setProfileEmail,
   setProfileUserAvatar,
+  setResponseMessage,
+  setSearch,
   toggle
 }) {
   const [memberSince, setMemberSince] = useState('');
-  const [profileDataFromApi, setProfileDataFromApi] = useState([]);
+  const [profileDataFromApi, setProfileDataFromApi] = useState({});
+  const [profileDataFromApiHasNotChanged, setProfileHasNotChanged] = useState(false)
 
   const { userstate } = userState();
   const { isLoggedIn } = userstate;
@@ -67,7 +80,16 @@ export default function ProfileForm({
         const fomatted_date = moment(memberSince).format('MM/DD/YYYY');
         const { displayName, userAvatar } = profile
 
-        setProfileDataFromApi({ ...profile, email })
+        let updatedProfile = { ...profile, email }
+
+        updatedProfile = new Proxy(updatedProfile, {
+          set() {
+            Object.defineProperty(updatedProfile, "_isDirty", { value: true }); // Flag
+            return Reflect.set(...arguments); // Forward trapped args to ob
+          }
+        })
+
+        setProfileDataFromApi(updatedProfile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
         setProfileEmail(email)
@@ -77,10 +99,6 @@ export default function ProfileForm({
       fetchProfile()
     }
   }, [])
-
-
-  useEffect(() => console.log("profileDataFromApi ", profileDataFromApi), [profileDataFromApi])
-
 
   const ProfileButton = `mb-5 mr-2.5 self-center inline-block text-textColor btn btn-primary`
   const SaveButton = `${formError || formSuccess ? "'cursor-not-allowed', 'opacity-50'" : null} mb-5 mr-2.5 self-center inline-block text-textColor btn btn-primary`
@@ -95,8 +113,11 @@ export default function ProfileForm({
     setProfileDisplayName(profileDataFromApi.displayName)
     setProfileEmail(profileDataFromApi.email)
     setFormError(false)
+    setProfileHasNotChanged(false)
     setEmailError(false)
     setProfileDisplayNameError(false)
+    setInterestedActivitiesError(false)
+
     toggle()
   }
 
@@ -104,27 +125,46 @@ export default function ProfileForm({
     mounted &&
     <FormWrapper>
       <div className="p-4 rounded-md shadow-inner bg-slate-50 drop-shadow-lg">
+
+        {profileDataFromApiHasNotChanged
+          ? <Message
+            state="Warning"
+            header="Please note:"
+            content={responseMessage}
+          /> : null}
+
+
         {formSuccess
           ? <Message
             state="Success"
             header="Success"
             content={responseMessage}
           /> : null}
+
         {formError
           ? <Message
             state="Error"
             header="Error"
             content={'Your update ran into a problem, see below for details.'}
           /> : null}
+
         <UserAvatarComponent
           isProfileInEditMode={isProfileInEditMode}
           profileUserAvatar={profileUserAvatar}
+          setProfileUserAvatar={setProfileUserAvatar}
         />
         <p className="mb-5 text-center text-profileColor"> Member since: <br /> {memberSince} </p>
 
         <form
           noValidate
           onSubmit={e => {
+
+            console.log("profileDataFromApi.hasOwnProperty('_isDirty') === false ", profileDataFromApi.hasOwnProperty('_isDirty') === false);
+            if (profileDataFromApi.hasOwnProperty('_isDirty') === false) {
+              setFormError(false)
+              setProfileHasNotChanged(true)
+              setResponseMessage('Your profile information has not changed.')
+            }
             handleSubmit(e, formType)
           }}
         >
@@ -176,6 +216,7 @@ export default function ProfileForm({
             isProfileInEditMode={isProfileInEditMode}
             label="Email"
             name="profileEmail"
+
             messageContent={emailFeedback}
             placeholder="E-mail address, e.g.joe@schmoe.com"
             value={profileEmail}
@@ -183,10 +224,19 @@ export default function ProfileForm({
           />
 
           <InterestedActivitiesComponent
+            errorType={interestedActivitiesError}
+            handleChange={handleChange}
             interestedActivities={interestedActivities}
-            setInterestedActivities={setInterestedActivities}
             isProfileInEditMode={isProfileInEditMode}
             label="Interested activities:"
+            messageContent={interestedActivitiesFeedback}
+            mounted={mounted}
+            search={search}
+            setSearch={setSearch}
+            setInterestedActivities={setInterestedActivities}
+            setInterestedActivitiesError={setInterestedActivitiesError}
+            setInterestedActivitiesInput={setInterestedActivitiesInput}
+            value={interestedActivitiesInput}
           />
         </form>
       </div>
