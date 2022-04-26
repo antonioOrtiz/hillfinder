@@ -42,12 +42,14 @@ function FormComponent({
   const [formError, setFormError] = useState(false);
   const [form, setFormType] = useState('')
 
-  const [interestedActivities, setInterestedActivities] = useState([]);
+  const [interestedActivitiesInput, setInterestedActivitiesInput] = useState('')
 
+  const [interestedActivities, setInterestedActivities] = useState([]);
+  const [interestedActivitiesError, setInterestedActivitiesError] = useState(false)
+  const [interestedActivitiesFeedback, setInterestedActivitiesFeedback] = useState('')
   const [isProfileInEditMode, toggle] = useToggle(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [memberSince, setMemberSince] = useState('');
   const [mounted, setMounted] = useState(false);
 
   const [password, setPassword] = useState('');
@@ -67,7 +69,20 @@ function FormComponent({
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
-
+  const [search, setSearch] = useState([
+    'Cycling',
+    'Jogging',
+    'Hiking',
+    'Mountain biking',
+    'Running',
+    'Skate boarding',
+    'Skiing',
+    'Sledding',
+    'Snowboarding',
+    'Rollerblading',
+    'Trailrunning',
+    'Walking'
+  ])
 
   const { userstate } = userState();
   const { id, accountNotVerified, isLoggedIn } = userstate;
@@ -131,6 +146,12 @@ function FormComponent({
       setEmail(value);
     }
 
+    if (name === 'interested_activities') {
+
+      console.log("value 153", value);
+      setInterestedActivitiesInput(value);
+    }
+
     if (name === 'password') {
       setPassword(value);
     }
@@ -163,15 +184,19 @@ function FormComponent({
       formType,
       email,
       interestedActivities,
+      interestedActivitiesInput,
       password,
       password_confirmation,
       profileDisplayName,
       profileEmail,
+      search,
       setEmailError,
       setEmailFeedback,
       setDisableButton,
       setFormSuccess,
       setFormError,
+      setInterestedActivitiesError,
+      setInterestedActivitiesFeedback,
       setPasswordConfirmationError,
       setPasswordConfirmationFeedback,
       setPasswordError,
@@ -190,7 +215,6 @@ function FormComponent({
   const handleSubmit = useCallback((e, form) => {
     handleSubmitForUseCallBack(e, form);
   }, [email, password, password_confirmation, interestedActivities, handleSubmitForUseCallBack]);
-
 
   const Forms = {
     Login: [
@@ -321,37 +345,46 @@ function FormComponent({
     Profile: [
       <ProfileForm
         suppressHydrationWarning
-        disableButton={disableButton}
-        emailFeedback={emailFeedback}
         emailError={emailError}
+        emailFeedback={emailFeedback}
+
         formError={formError}
         formType={formType}
         formSuccess={formSuccess}
+
         handleChange={handleChange}
         handleSubmit={handleSubmit}
-
         interestedActivities={interestedActivities}
+        interestedActivitiesError={interestedActivitiesError}
+        interestedActivitiesFeedback={interestedActivitiesFeedback}
+        interestedActivitiesInput={interestedActivitiesInput}
+
         isLoading={isLoading}
         isProfileInEditMode={isProfileInEditMode}
 
-        memberSince={memberSince}
         mounted={mounted}
+
         profileEmail={profileEmail}
         profileDisplayName={profileDisplayName}
         profileDisplayNameError={profileDisplayNameError}
         profileDisplayNameFeedback={profileDisplayNameFeedback}
         profileUserAvatar={profileUserAvatar}
+
         responseMessage={responseMessage}
-        setDisableButton={setDisableButton}
+        search={search}
+
         setEmailError={setEmailError}
         setFormError={setFormError}
         setFormSuccess={setFormSuccess}
         setIsLoading={setIsLoading}
         setInterestedActivities={setInterestedActivities}
+        setInterestedActivitiesInput={setInterestedActivitiesInput}
         setProfileDisplayName={setProfileDisplayName}
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
         setProfileUserAvatar={setProfileUserAvatar}
+        setResponseMessage={setResponseMessage}
+        setSearch={setSearch}
         toggle={toggle}
 
       />,
