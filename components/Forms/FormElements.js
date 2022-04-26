@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader } from '../Loader/index'
+import Image from 'next/image'
 
 var Tokenizer = require('react-typeahead').Tokenizer;
 
@@ -114,7 +115,7 @@ export function UserNameComponent({
         style={
           { transition: "all .15s ease" }
         }
-        value={value || ""}
+        value={value}
       />
       {errorType ? <Message
         state="Error"
@@ -148,7 +149,7 @@ export function ProfileInputComponent({
         placeholder="Display Name, e.g. skaterBoi"
         onChange={handleChange}
         type="text"
-        value={value || ""}
+        value={value}
       />
       {errorType ? <Message
         state="Error"
@@ -215,33 +216,21 @@ export function PasswordComponent({
 }
 
 export function InterestedActivitiesComponent({
+  errorType,
+  handleChange,
   interestedActivities,
   isProfileInEditMode,
   label,
+  messageContent,
+  search,
+  setSearch,
   setInterestedActivities,
-
+  value
 }) {
 
   const input = `${isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"} " px-3 mt-1 py-3  rounded text-sm text-black shadow shadow-input focus:outline-none focus:ring w-full block border-2"`
-  const token = `${isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed"}  rounded-md bg-primary text-white inline-block py-0.5 pl-2 pr-1 my-1 mx-1 `
+  const token = `${isProfileInEditMode ? "bg-white" : "opacity-50 cursor-not-allowed pointer-events-none"}  rounded-md bg-primary text-white inline-block py-0.5 pl-2 pr-1 my-1 mx-1 `
   const results = "border-dashed border-2 p-1 rounded-md border-input mt-2"
-
-  const [search, setSearch] = useState([
-    'Cycling',
-    'Jogging',
-    'Hiking',
-    'Mountain biking',
-    'Running',
-    'Skate boarding',
-    'Skiing',
-    'Sledding',
-    'Snowboarding',
-    'Rollerblading',
-    'Trailrunning',
-    'Walking'
-  ])
-
-  const TokenParent = useRef(null)
 
   useEffect(() => {
     function getUserInterestedActivities() {
@@ -250,29 +239,8 @@ export function InterestedActivitiesComponent({
     getUserInterestedActivities()
   }, [])
 
-
-  useEffect(() => {
-    var arr = []
-    document.querySelectorAll('.typeahead-token > a').forEach(element => {
-      arr.push(element)
-    })
-
-    for (let i = 0; i < arr.length; i++) {
-      console.log('arr[i]', arr[i])
-      arr[i].addEventListener('click', function (e) {
-        console.log('e', e)
-        return false
-      }, false)
-    }
-
-  }, [isProfileInEditMode])
-
-
-
-  console.log("isProfileInEditMode ", isProfileInEditMode);
-
   return (
-    <div ref={TokenParent} className="relative w-full my-3 ">
+    <div className="relative w-full my-3 ">
       <label forhtml="Interested activities" className={"text-profileColor inline-block align-bottom mb-1"}> <span className="inline-block mb-1 align-bottom"> {label}</span></label>
 
       <Tokenizer
@@ -282,63 +250,84 @@ export function InterestedActivitiesComponent({
           token: token
         }}
         defaultSelected={interestedActivities}
-
         disabled={!isProfileInEditMode}
+        onBlur={(e) => handleChange(e)}
+        inputProps={
+          {
+            name: "interested_activities"
+          }
+        }
         options={search}
-        onTokenAdd={(token) => setInterestedActivities(prev => [...prev, token])}
+        onTokenAdd={(token) => {
+          return setInterestedActivities(prev => [...prev, token])
+        }}
+        onTokenRemove={(token) => {
+          return setInterestedActivities(prev => prev.filter(a => a !== token))
+        }}
         placeholder="e.g. Running, skating"
+        value={value}
+
       />
+
+      {errorType ? <Message
+        state="Error"
+        header="Error"
+        content={messageContent}
+      /> : null}
     </div>
   )
-
 }
 
-export function UserAvatarComponent({ isProfileInEditMode, profileUserAvatar }) {
-
-  const [imageSrc, setImageSrc] = useState('');
+export function UserAvatarComponent({
+  isProfileInEditMode,
+  profileUserAvatar,
+  setProfileUserAvatar
+}) {
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (imageSrc === '') {
-      setImageSrc(profileUserAvatar)
+    if (profileUserAvatar) {
+      setLoading(false)
     }
   }, [profileUserAvatar])
 
-  async function handleOnSubmit(e) {
-    e.preventDefault()
-    const form = e.currentTarget;
-    const fileInput = Array.from(form.elements).find(({ name }) => name === 'file')
-    const formData = new FormData();
-    for (const file of fileInput.files) {
-      formData.append('file', file)
-      formData.append('upload_preset', 'user_avatar')
-    }
-
-    const { data } = await saveAvatar(formData)
-    setImageSrc(data.secure_url)
+  async function handleUpload(e) {
+    const files = e.target.files;
+    const formData = new FormData()
+    formData.append('file', files[0])
+    formData.append('upload_preset', 'profile_avatar')
+    setLoading(true)
+    const { data } = await saveAvatar(formData);
+    setProfileUserAvatar(data.secure_url)
   }
 
   return (
+    <form>
+      <div className="relative flex items-center justify-center py-5 online ">
+        <hr className="absolute w-full h-px mt-6 divider"></hr>
+        <div className="avatar">
+          {!isProfileInEditMode ? null : <div className="absolute z-50 left-[5.25rem] top-[5rem]">
+            <label htmlFor="FileInput" className="mt-6">
+              <RiImageEditLine
+                className="rounded-md border-dashed border-emerald-700  hover:shadow-editModeTextColor glass bg-slate-100"
+                style={{ 'color': '#386F22', 'fontSize': '2em', 'cursor': 'pointer' }} />
+            </label>
+            <input id="FileInput" type="file" name="file" className="hidden" multiple onChange={handleUpload} />
+          </div>}
+          {loading
+            ? <Loader />
+            : <div className="z-40 border-2 rounded-full shadow-md w-28 h-28 border-editModeTextColor">
+              <Image
+                alt="Avatar"
+                src={profileUserAvatar}
+                width={108}
+                height={108}
+                blurDataURL={profileUserAvatar}
+                placeholder="blur" // Optional blur-up while loading
+              />
+            </div>}
 
-    <form onSubmit={handleOnSubmit}
-    >
-      <div className="relative flex items-center justify-center py-5 avatar online ">
-        <hr className="absolute w-full h-px mt-10 divider glass"></hr>
-        <div className="z-50 w-24 h-24 border-2 rounded-full shadow-md border-editModeTextColor">
-          <label className="mt-6 cursor-pointer">
-            <input
-              name="file"
-              type="file"
-              className="hidden"
-            /> <img className=""
-              src={imageSrc} />
-          </label>
         </div>
-        {!isProfileInEditMode ? null : <button
-          type="submit"
-          className="absolute z-50 top-5 left-60 "
-        >
-          <RiImageEditLine className="glass border-profileColor " style={{ 'color': '#bbf7d0', border: 'black', 'fontSize': '1.5em', 'cursor': 'pointer' }} />
-        </button>}
       </div>
     </form>
   )
