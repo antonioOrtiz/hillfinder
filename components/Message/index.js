@@ -22,10 +22,10 @@ export default function Message({ state, content }) {
       {{
         Warning:
           <div
-            className="animate-fade-in-down my-4 py-2 p-3 text-orangeDark bg-orangeLight border border-orangeDark-300 rounded relative"
+            className="animate-fade-in-down my-4 py-2 p-3 text-orangeDark bg-orangeLight border border-orange-500 rounded relative"
             role="alert"
           >
-            <strong className="font-bold">Warning:</strong>
+            <strong className="font-bold">Please note:</strong>
             <span className="block sm">{content}</span>
           </div>,
         Success:
