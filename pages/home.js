@@ -1,16 +1,19 @@
+import Image from 'next/image'
+import hilfinderBackgroundImg from '../public/home-page-bg/hillfinder-hero-1x.jpg'
+
+
+
 export default function Home() {
   return (
-    <div className="p-10">
-      <img src="https://picsum.photos/id/1005/600/600" className="max-w-sm rounded-lg shadow-2xl" />
-      <div>
-        <h1 className="mb-5 text-5xl text-white font-bold">
-          Hello there
-        </h1>
-        <p className="mb-5 text-white">
-          Provident cupiditate voluptatem et in.Quaerat fugiat ut assumenda excepturi exercitationem quasi.In deleniti eaque aut repudiandae et a id nisi.
-        </p>
-        <button className="btn btn-primary ">Get Started</button>
-      </div>
+    <div className="flex items-center justify-center pt-10">
+      <Image
+        alt="Hillfinder hero"
+        src={hilfinderBackgroundImg}
+        width={960}
+        height={540}
+        // blurDataURL="data:..." automatically provided
+        placeholder="blur" // Optional blur-up while loading
+      />
     </div>
-  )
+  );
 }
