@@ -1,11 +1,16 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   mode: 'jit',
   purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}', './utils/**/*.{js,ts,jsx,tsx}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    screens: {
+      'xs': '320px',
+      ...defaultTheme.screens,
+    },
     extend: {
       colors: {
-
         orangeLight: '#ffe0b2',
         input: '#8eba75',
         isDisabled: '#b7bab9',
