@@ -29,6 +29,9 @@ module.exports = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['www.fillmurray.com', 'res.cloudinary.com'],
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
