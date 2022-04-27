@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { validateInputs } from '../../utils/index';
+import { validateInputs } from 'utils/index';
 import { useRouter } from 'next/router'
 
 import { userState, userDispatch } from '../Context/UserContext'
@@ -13,13 +13,13 @@ import ForgotPasswordForm from './ForgotPassword'
 import ProfileForm from './Profile'
 import Confirmation from './Confirmation';
 
-import loginSubmit from '../../clientApi/LoginSubmit'
-import registerSubmit from '../../clientApi/RegisterSubmit'
-import updatePasswordSubmit from '../../clientApi/UpdatePasswordSubmit'
-import forgotPasswordSubmit from '../../clientApi/ForgotPasswordSubmit'
-import updateProfileSubmit from '../../clientApi/UpdateProfileSubmit'
+import loginSubmit from 'clientApi/LoginSubmit'
+import registerSubmit from 'clientApi/RegisterSubmit'
+import updatePasswordSubmit from 'clientApi/UpdatePasswordSubmit'
+import forgotPasswordSubmit from 'clientApi/ForgotPasswordSubmit'
+import updateProfileSubmit from 'clientApi/UpdateProfileSubmit'
 
-import { useToggle, useUser } from '../../lib/hooks'
+import { useToggle, useUser } from 'lib/hooks'
 
 function FormComponent({
   formType,
@@ -59,11 +59,16 @@ function FormComponent({
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
   const [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
 
+  const [profileDataFromApi, setProfileDataFromApi] = useState({});
+
+  const [profileDataFromApiHasNotChanged, setProfileHasNotChanged] = useState(false)
   const [profileDisplayName, setProfileDisplayName] = useState('')
   const [profileDisplayNameFeedback, setProfileDisplayNameFeedback] = useState('');
   const [profileDisplayNameError, setProfileDisplayNameError] = useState(false);
   const [profileEmail, setProfileEmail] = useState('')
   const [profileUserAvatar, setProfileUserAvatar] = useState('')
+
+
 
   const [token, setToken] = useState(null)
   const [tokenExpired, setTokenExpired] = useState(false);
@@ -125,6 +130,7 @@ function FormComponent({
     setPasswordFeedback('')
     setPasswordConfirmationError(false);
     setPasswordConfirmationFeedback('')
+    setProfileHasNotChanged(false)
 
     setProfileDisplayNameError(false)
     setResponseMessage('');
@@ -167,6 +173,10 @@ function FormComponent({
     if (name === 'profileEmail') {
       setProfileEmail(value);
     }
+
+    setProfileDataFromApi(prev => ({ ...prev, ...{ profileDisplayName, profileEmail, interestedActivities } }))
+
+
   }
 
   const handleChange = useCallback((e) => {
@@ -363,11 +373,12 @@ function FormComponent({
         isProfileInEditMode={isProfileInEditMode}
 
         mounted={mounted}
-
         profileEmail={profileEmail}
+        profileDataFromApi={profileDataFromApi}
         profileDisplayName={profileDisplayName}
         profileDisplayNameError={profileDisplayNameError}
         profileDisplayNameFeedback={profileDisplayNameFeedback}
+        profileDataFromApiHasNotChanged={profileDataFromApiHasNotChanged}
         profileUserAvatar={profileUserAvatar}
 
         responseMessage={responseMessage}
@@ -379,9 +390,11 @@ function FormComponent({
         setIsLoading={setIsLoading}
         setInterestedActivities={setInterestedActivities}
         setInterestedActivitiesInput={setInterestedActivitiesInput}
+        setProfileDataFromApi={setProfileDataFromApi}
         setProfileDisplayName={setProfileDisplayName}
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
+        setProfileHasNotChanged={setProfileHasNotChanged}
         setProfileUserAvatar={setProfileUserAvatar}
         setResponseMessage={setResponseMessage}
         setSearch={setSearch}
