@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-const Form = dynamic(() => import('../components/Forms'));
+const Form = dynamic(() => import('components/Forms'));
 
 export default function Profile() {
   return (
