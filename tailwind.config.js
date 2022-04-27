@@ -11,17 +11,20 @@ module.exports = {
     },
     extend: {
       colors: {
+        avatarEdit: '#dbf7e6',
         orangeLight: '#ffe0b2',
         input: '#8eba75',
         isDisabled: '#b7bab9',
         profileColor: '#162c0d',
         editModeTextColor: '#88f24a',
+
         borderColorInEditMode: '#88f24a',
         DEFAULT: '#f57c00',
         orangeDark: '#e65100',
         textButton: '#bbf7d0',
         textColor: '#f0fff0',
         successAlert: '#bbf7d0',
+
         succesAlertBorder: '#4ade80'
       },
       keyframes: {
