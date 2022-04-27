@@ -1,7 +1,5 @@
 import Image from 'next/image'
-import hilfinderBackgroundImg from '../public/home-page-bg/hillfinder-hero-1x.jpg'
-
-
+import hilfinderBackgroundImg from 'public/home-page-bg/hillfinder-hero-1x.jpg'
 
 export default function Home() {
   return (
