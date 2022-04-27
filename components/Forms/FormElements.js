@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader } from '../Loader/index'
 import Image from 'next/image'
 
@@ -16,7 +16,7 @@ const Message = dynamic(
   }
 )
 
-import saveAvatar from '../../clientApi/SaveAvatar';
+import saveAvatar from 'clientApi/SaveAvatar';
 
 export function FormResponse({
   accountNotVerified,
@@ -206,6 +206,11 @@ export function PasswordComponent({
         onChange={handleChange}
         autoComplete="on"
       />
+
+
+      {console.log("errorType ", errorType)}
+      {console.log("messageContent ", messageContent)}
+
       {errorType ? <Message
         state="Error"
         header="Error"
@@ -309,7 +314,7 @@ export function UserAvatarComponent({
           {!isProfileInEditMode ? null : <div className="absolute z-50 left-[5.25rem] top-[5rem]">
             <label htmlFor="FileInput" className="mt-6">
               <RiImageEditLine
-                className="rounded-md border-dashed border-emerald-700  hover:shadow-editModeTextColor glass bg-slate-100"
+                className="rounded-md border-dashed hover:border-dashed border-emerald-700  hover:bg-avatarEdit glass bg-slate-100"
                 style={{ 'color': '#386F22', 'fontSize': '2em', 'cursor': 'pointer' }} />
             </label>
             <input id="FileInput" type="file" name="file" className="hidden" multiple onChange={handleUpload} />
