@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "clientApi/*": ["clientApi/*"],
+            "components/*": ["components/*"],
+            "lib/*": ["lib/*"],
+            "middleware/*": ["middleware/*"],
+            "models/*": ["models/*"],
+            "pages/*": ["pages/*"],
+            "styles/*": ["styles/*"],
+            "utils/*": ["utils/*"]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
