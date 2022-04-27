@@ -1,8 +1,8 @@
 import nextConnect from 'next-connect'
 
-import passport from '../lib/passport'
-import session from '../lib/session'
-import connectDB from '../lib/mongodb'
+import passport from 'lib/passport'
+import session from 'lib/session'
+import connectDB from 'lib/mongodb'
 
 const auth = nextConnect()
   .use(
