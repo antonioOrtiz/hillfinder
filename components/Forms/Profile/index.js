@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic'
 import moment from 'moment';
-import getProfile from '../../../clientApi/GetProfile'
+import getProfile from 'clientApi/GetProfile'
+import ObservableSlim from 'observable-slim'
 
 import { Loader } from '../../Loader'
 
-import { useUser } from '../../../lib/hooks'
+import { useUser } from 'lib/hooks'
 
 import { userState } from '../../Context/UserContext'
 
@@ -41,9 +42,11 @@ export default function ProfileForm({
   isProfileInEditMode,
   mounted,
   profileEmail,
+  profileDataFromApi,
   profileDisplayName,
   profileDisplayNameError,
   profileDisplayNameFeedback,
+  profileDataFromApiHasNotChanged,
   profileUserAvatar,
   responseMessage,
   search,
@@ -55,18 +58,24 @@ export default function ProfileForm({
   setProfileDisplayName,
   setProfileDisplayNameError,
   setProfileEmail,
+  setProfileDataFromApi,
+  setProfileHasNotChanged,
   setProfileUserAvatar,
   setResponseMessage,
   setSearch,
   toggle
 }) {
+
   const [memberSince, setMemberSince] = useState('');
-  const [profileDataFromApi, setProfileDataFromApi] = useState({});
-  const [profileDataFromApiHasNotChanged, setProfileHasNotChanged] = useState(false)
 
   const { userstate } = userState();
   const { isLoggedIn } = userstate;
-  const { user } = useUser(!isLoggedIn ? false : true);
+  const { user } = useUser(!isLoggedIn ? false : true)
+
+  useEffect(() => {
+    console.log("formSuccess ", formSuccess)
+  }, [formSuccess])
+
 
   useEffect(() => {
     if (user !== undefined) {
@@ -81,6 +90,7 @@ export default function ProfileForm({
         const { displayName, userAvatar } = profile
 
         let updatedProfile = { ...profile, email }
+
 
         updatedProfile = new Proxy(updatedProfile, {
           set() {
@@ -121,6 +131,26 @@ export default function ProfileForm({
     toggle()
   }
 
+  useEffect(() => {
+
+    console.log("profileDataFromApi ", profileDataFromApi);
+    const dataMod = profileDataFromApi.hasOwnProperty("_isDirty");
+    console.log("JSON.stringify(profileDataFromApi, null, 2) ", JSON.stringify(dataMod, null, 2));
+  }, [profileDataFromApi])
+
+  function handleProfileSubmit(e) {
+    if (profileDataFromApi.hasOwnProperty('_isDirty') === true) {
+
+      handleSubmit(e, formType)
+    } else {
+      e.preventDefault()
+      e.stopPropagation();
+      setFormError(false)
+      setProfileHasNotChanged(true)
+      setResponseMessage('Your profile information has not changed. Either update your profile or select cancel below.')
+    }
+  }
+
   return (
     mounted &&
     <FormWrapper>
@@ -132,7 +162,6 @@ export default function ProfileForm({
             header="Please note:"
             content={responseMessage}
           /> : null}
-
 
         {formSuccess
           ? <Message
@@ -157,22 +186,12 @@ export default function ProfileForm({
 
         <form
           noValidate
-          onSubmit={e => {
-
-            console.log("profileDataFromApi.hasOwnProperty('_isDirty') === false ", profileDataFromApi.hasOwnProperty('_isDirty') === false);
-            if (profileDataFromApi.hasOwnProperty('_isDirty') === false) {
-              setFormError(false)
-              setProfileHasNotChanged(true)
-              setResponseMessage('Your profile information has not changed.')
-            }
-            handleSubmit(e, formType)
-          }}
         >
           <div className="text-center">
             {isProfileInEditMode ?
               <button
                 className={SaveButton + ' w-2/5'}
-                type="submit"
+                onClick={handleProfileSubmit}
               >
                 Save
               </button> : null}
