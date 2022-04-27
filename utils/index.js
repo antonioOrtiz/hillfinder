@@ -3,7 +3,7 @@ import { validateAll, extend } from 'indicative/validator'
 
 import crypto from 'crypto';
 
-import Token from '../models/Token'
+import Token from 'models/Token'
 
 const formData = require('form-data');
 
@@ -47,6 +47,7 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
   });
 
+
   function outputTokenInEmail(typeOfEmail) {
     if (typeOfEmail !== 'change of password') return `/${token.token}`;
     return '';
@@ -77,6 +78,7 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 export function validateInputs(
   formType,
   email,
+  interestedActivities,
   interestedActivitiesInput,
   password,
   password_confirmation,
@@ -96,9 +98,12 @@ export function validateInputs(
   setPasswordFeedback,
   setProfileDisplayNameFeedback,
   setProfileDisplayNameError
-) {
 
+) {
   function getFormValidation(formType) {
+    function IsEmptyOrWhiteSpace(str) {
+      return (str.match(/^\s*$/) || []).length > 0;
+    }
     function isUpdateProfile() {
       extend('inputNotInSearch', {
         async: true,
@@ -107,11 +112,6 @@ export function validateInputs(
           return args
         },
         async validate(data, field, args, config) {
-
-          function IsEmptyOrWhiteSpace(str) {
-            return (str.match(/^\s*$/) || []).length > 0;
-          }
-
           if ((search.indexOf(data.original.interestedActivitiesInput) !== -1) == false && IsEmptyOrWhiteSpace(data.original.interestedActivitiesInput) === false) {
             return false
           }
@@ -149,16 +149,19 @@ export function validateInputs(
             setProfileDisplayNameError(false);
           }
 
-          if (success.isInterestedActivitiesInput) {
+          if (success.interestedActivitiesInput) {
             setInterestedActivitiesError(false)
           }
 
-          if (success.profileDisplayName && success.profileEmail && success.isInterestedActivitiesInput) {
+          if (success.profileDisplayName && success.profileEmail && IsEmptyOrWhiteSpace(success.interestedActivitiesInput)) {
             setFormError(false);
             setFormSuccess(true);
           }
         })
         .catch(errors => {
+
+
+          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'profileDisplayName') {
               setProfileDisplayNameFeedback(error.message);
@@ -220,6 +223,7 @@ export function validateInputs(
           }
         })
         .catch(errors => {
+          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -239,12 +243,12 @@ export function validateInputs(
     }
 
     function isForgotPassword() {
-      const rules = {
-        email: 'required|email',
-      };
-
       const data = {
         email
+      };
+
+      const rules = {
+        email: 'required|email',
       };
 
       const messages = {
@@ -263,6 +267,7 @@ export function validateInputs(
           }
         })
         .catch(errors => {
+          console.log("error 257 ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -272,11 +277,13 @@ export function validateInputs(
             }
           })
         });
+
+
     }
 
     function isUpdatePassword() {
 
-      const rules = {
+      const schema = {
         password: 'required|min:4|max:11|string|confirmed',
       };
 
@@ -292,7 +299,7 @@ export function validateInputs(
         max: 'The password is too long. Maximum 11 characters.',
       };
 
-      validateAll(data, rules, messages)
+      validateAll(data, schema, messages)
         .then(success => {
           if (success.password) {
             setPasswordError(false);
@@ -358,4 +365,9 @@ export function isJson(item) {
   }
 
   return false;
+}
+
+export async function isLoggedIn() {
+  const { isLoggedIn } = await getLocalStorage('user') || {};
+  return isLoggedIn
 }
