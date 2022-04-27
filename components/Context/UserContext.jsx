@@ -1,6 +1,6 @@
 /* eslint-disable object-shorthand */
 import React, { useState, useEffect, useContext, useReducer } from 'react';
-import { setLocalStorage, getLocalStorage } from '../../utils/index'
+import { setLocalStorage, getLocalStorage } from 'utils/index'
 
 const initialState = {
   avatar: '/uploads/profile-avatars/placeholder.jpg',
