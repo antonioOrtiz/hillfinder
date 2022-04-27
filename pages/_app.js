@@ -10,36 +10,28 @@ import 'leaflet/dist/leaflet.css'
 import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css'
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 
-import '../styles/styles.scss'
+import 'styles/styles.scss'
 
-import { UIProvider, uiState } from '../components/Context/UIContext'
+import { UIProvider, uiState } from 'components/Context/UIContext'
 
-import { UserProvider, userState } from '../components/Context/UserContext'
+import { UserProvider, userState } from 'components/Context/UserContext'
 
-import { Loader } from '../components/Loader/index'
+import { Loader } from 'components/Loader/index'
 
-import { getLocalStorage } from '../utils'
+import { isLoggedIn } from 'utils/index'
 
-import { useUser } from '../lib/hooks'
+import { useUser } from 'lib/hooks'
 
 import Index from './index'
 
-const Layout = dynamic(() => import('../components/Layout'))
+const Layout = dynamic(() => import('components/Layout'))
 
 function MyApp({ Component, pageProps }) {
-
-
-  async function isLoggedIn() {
-    const { isLoggedIn } = await getLocalStorage('user') || {};
-
-    return isLoggedIn
-  }
-
   const isLoggedInTrue = isLoggedIn();
 
   const { user, isLoading } = useUser(isLoggedInTrue);
-  const router = useRouter()
 
+  const router = useRouter()
 
   function AuthLogin() {
     useEffect(() => {
