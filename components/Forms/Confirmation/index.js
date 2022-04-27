@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import Message from '../../../components/Message/index'
+import Message from 'components/Message/index'
 
 
 import {
