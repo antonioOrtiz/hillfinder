@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 
 import styles from './Layout.module.scss';
 
-import { useUser } from '../../lib/hooks'
-import { userState, userDispatch } from '../Context/UserContext'
-import { uiState, uiDispatch } from '../Context/UIContext'
+import { useUser } from 'lib/hooks'
+import { userState, userDispatch } from 'components/Context/UserContext'
+import { uiState, uiDispatch } from 'components/Context/UIContext'
 import Modal from '../Modal'
 import Nav from './Nav'
 
