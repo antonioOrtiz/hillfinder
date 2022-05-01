@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic'
 import moment from 'moment';
+import isEqual from 'lodash.isequal';
+
 import getProfile from 'clientApi/GetProfile'
-import ObservableSlim from 'observable-slim'
 
 import { Loader } from '../../Loader'
 
@@ -10,18 +11,11 @@ import { useUser } from 'lib/hooks'
 
 import { userState } from '../../Context/UserContext'
 
-import {
-  FormWrapper
-} from '../FormElements';
-
-const Message = dynamic(
-  () => import('../../Message'),
-  {
-    loading: () => <Loader />
-  }
-)
+import { IsEmptyOrWhiteSpace } from 'utils/index'
 
 import {
+  FormResponse,
+  FormWrapper,
   InterestedActivitiesComponent,
   UserNameComponent as ProfileEmailComponent,
   ProfileInputComponent as ProfileDisplayNameComponent, UserAvatarComponent
@@ -30,52 +24,56 @@ import {
 export default function ProfileForm({
   emailError,
   emailFeedback,
+
   formError,
   formType,
   formSuccess,
+
   handleChange,
   handleSubmit,
   interestedActivities,
-  interestedActivitiesInput,
   interestedActivitiesError,
   interestedActivitiesFeedback,
+  interestedActivitiesInput,
+
   isProfileInEditMode,
+
   mounted,
   profileEmail,
-  profileDataFromApi,
   profileDisplayName,
   profileDisplayNameError,
   profileDisplayNameFeedback,
-  profileDataFromApiHasNotChanged,
+  isProfileDataFromApiUnchanged,
+  proxyProfile,
   profileUserAvatar,
+
   responseMessage,
+  resetProfile,
   search,
+
   setEmailError,
   setFormError,
+  setFormSuccess,
   setInterestedActivities,
+  setInterestedActivitiesError,
   setInterestedActivitiesInput,
-  setInterestedActivitiesError = () => { },
   setProfileDisplayName,
   setProfileDisplayNameError,
   setProfileEmail,
-  setProfileDataFromApi,
-  setProfileHasNotChanged,
+  setIsProfileDataFromApiUnchanged,
+  setProxyProfile,
   setProfileUserAvatar,
   setResponseMessage,
   setSearch,
-  toggle
+  toggle,
 }) {
 
   const [memberSince, setMemberSince] = useState('');
+  const [profileDataFromApi, setProfileDataFromApi] = useState({});
 
   const { userstate } = userState();
   const { isLoggedIn } = userstate;
   const { user } = useUser(!isLoggedIn ? false : true)
-
-  useEffect(() => {
-    console.log("formSuccess ", formSuccess)
-  }, [formSuccess])
-
 
   useEffect(() => {
     if (user !== undefined) {
@@ -90,15 +88,7 @@ export default function ProfileForm({
         const { displayName, userAvatar } = profile
 
         let updatedProfile = { ...profile, email }
-
-
-        updatedProfile = new Proxy(updatedProfile, {
-          set() {
-            Object.defineProperty(updatedProfile, "_isDirty", { value: true }); // Flag
-            return Reflect.set(...arguments); // Forward trapped args to ob
-          }
-        })
-
+        setProxyProfile(updatedProfile)
         setProfileDataFromApi(updatedProfile)
         setMemberSince(fomatted_date)
         setProfileDisplayName(displayName)
@@ -108,46 +98,32 @@ export default function ProfileForm({
       }
       fetchProfile()
     }
-  }, [])
+  }, [resetProfile])
 
   const ProfileButton = `mb-5 mr-2.5 self-center inline-block text-textColor btn btn-primary`
   const SaveButton = `${formError || formSuccess ? "'cursor-not-allowed', 'opacity-50'" : null} mb-5 mr-2.5 self-center inline-block text-textColor btn btn-primary`
-
-  useEffect(() => {
-    if (formSuccess && formError === false) {
-      toggle()
-    }
-  }, [formError, formSuccess])
 
   function handleCancelSaveProfileForUseCallback() {
     setProfileDisplayName(profileDataFromApi.displayName)
     setProfileEmail(profileDataFromApi.email)
     setFormError(false)
-    setProfileHasNotChanged(false)
+    setIsProfileDataFromApiUnchanged(null)
     setEmailError(false)
     setProfileDisplayNameError(false)
     setInterestedActivitiesError(false)
-
     toggle()
   }
 
-  useEffect(() => {
-
-    console.log("profileDataFromApi ", profileDataFromApi);
-    const dataMod = profileDataFromApi.hasOwnProperty("_isDirty");
-    console.log("JSON.stringify(profileDataFromApi, null, 2) ", JSON.stringify(dataMod, null, 2));
-  }, [profileDataFromApi])
-
   function handleProfileSubmit(e) {
-    if (profileDataFromApi.hasOwnProperty('_isDirty') === true) {
-
-      handleSubmit(e, formType)
-    } else {
+    if (isEqual(profileDataFromApi, proxyProfile) && IsEmptyOrWhiteSpace(interestedActivitiesInput)) {
       e.preventDefault()
       e.stopPropagation();
       setFormError(false)
-      setProfileHasNotChanged(true)
+      setFormSuccess(false)
+      setIsProfileDataFromApiUnchanged(true)
       setResponseMessage('Your profile information has not changed. Either update your profile or select cancel below.')
+    } else {
+      handleSubmit(e, formType)
     }
   }
 
@@ -155,27 +131,13 @@ export default function ProfileForm({
     mounted &&
     <FormWrapper>
       <div className="p-4 rounded-md shadow-inner bg-slate-50 drop-shadow-lg">
-
-        {profileDataFromApiHasNotChanged
-          ? <Message
-            state="Warning"
-            header="Please note:"
-            content={responseMessage}
-          /> : null}
-
-        {formSuccess
-          ? <Message
-            state="Success"
-            header="Success"
-            content={responseMessage}
-          /> : null}
-
-        {formError
-          ? <Message
-            state="Error"
-            header="Error"
-            content={'Your update ran into a problem, see below for details.'}
-          /> : null}
+        <FormResponse
+          formType={formType}
+          formError={formError}
+          formSuccess={formSuccess}
+          isProfileDataFromApiUnchanged={isProfileDataFromApiUnchanged}
+          responseMessage={responseMessage}
+        />
 
         <UserAvatarComponent
           isProfileInEditMode={isProfileInEditMode}
@@ -251,10 +213,13 @@ export default function ProfileForm({
             messageContent={interestedActivitiesFeedback}
             mounted={mounted}
             search={search}
+            setFormError={setFormError}
             setSearch={setSearch}
             setInterestedActivities={setInterestedActivities}
             setInterestedActivitiesError={setInterestedActivitiesError}
+            setIsProfileDataFromApiUnchanged={setIsProfileDataFromApiUnchanged}
             setInterestedActivitiesInput={setInterestedActivitiesInput}
+            setProxyProfile={setProxyProfile}
             value={interestedActivitiesInput}
           />
         </form>
