@@ -88,18 +88,6 @@ export default function UpdatePasswordForm({
             formError={formError}
             responseMessage={responseMessage} />}
         </form>
-
-
-        <div className="flex flex-wrap mt-6">
-          <div className="w-1/2">
-            <Link href="/forgot-password">
-              <a className="text-white">
-                <small>Reset password?</small>
-              </a>
-            </Link>
-          </div>
-        </div>
-
       </div>
     </FormWrapper>
 
