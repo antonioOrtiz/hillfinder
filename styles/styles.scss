@@ -71,3 +71,13 @@ input:-webkit-autofill:active {
     font-size: 16px;
     border-width: 2px;
 }
+
+
+/* map styles */
+
+.leaflet-container {
+    height: 100vh;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 0.28571429rem;
+}
