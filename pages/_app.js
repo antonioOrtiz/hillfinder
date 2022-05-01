@@ -16,7 +16,7 @@ import { UIProvider, uiState } from 'components/Context/UIContext'
 
 import { UserProvider, userState } from 'components/Context/UserContext'
 
-import { Loader } from 'components/Loader/index'
+import { PageLoader } from 'components/Loader/index'
 
 import { isLoggedIn } from 'utils/index'
 
@@ -56,7 +56,7 @@ function MyApp({ Component, pageProps }) {
           />
           <Layout>
             {isLoading
-              ? <Loader />
+              ? <PageLoader />
               : pageProps.auth && !user
                 ? (
                   <AuthLogin />
