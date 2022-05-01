@@ -59,17 +59,14 @@ function FormComponent({
   const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
   const [passwordConfirmationFeedback, setPasswordConfirmationFeedback] = useState('');
 
-  const [profileDataFromApi, setProfileDataFromApi] = useState({});
-
-  const [profileDataFromApiHasNotChanged, setProfileHasNotChanged] = useState(false)
+  const [isProfileDataFromApiUnchanged, setIsProfileDataFromApiUnchanged] = useState(null)
   const [profileDisplayName, setProfileDisplayName] = useState('')
   const [profileDisplayNameFeedback, setProfileDisplayNameFeedback] = useState('');
   const [profileDisplayNameError, setProfileDisplayNameError] = useState(false);
   const [profileEmail, setProfileEmail] = useState('')
   const [profileUserAvatar, setProfileUserAvatar] = useState('')
-
-
-
+  const [proxyProfile, setProxyProfile] = useState({})
+  const [resetProfile, setResetProfile] = useState({})
   const [token, setToken] = useState(null)
   const [tokenExpired, setTokenExpired] = useState(false);
   const [responseCodeSuccess, setResponseCodeSuccess] = useState(false);
@@ -80,11 +77,11 @@ function FormComponent({
     'Hiking',
     'Mountain biking',
     'Running',
+    'Rollerblading',
     'Skate boarding',
     'Skiing',
     'Sledding',
     'Snowboarding',
-    'Rollerblading',
     'Trailrunning',
     'Walking'
   ])
@@ -93,6 +90,18 @@ function FormComponent({
   const { id, accountNotVerified, isLoggedIn } = userstate;
 
   const { user, mutate } = useUser(!isLoggedIn ? false : true);
+
+  useEffect(() => {
+    setProxyProfile(prev => ({ ...prev, ...{ displayName: profileDisplayName, userAvatar: profileUserAvatar, email: profileEmail } }))
+  }, [profileDisplayName, profileUserAvatar, profileEmail])
+
+  useEffect(() => {
+
+    const s = [...search].filter(item => !interestedActivities.includes(item))
+
+    setSearch(s)
+
+  }, [interestedActivities.length])
 
   useEffect(() => {
     if (!mounted) setMounted(true)
@@ -122,6 +131,8 @@ function FormComponent({
   }, [router.query.token])
 
   function handleChangeForUseCallBack(name, value) {
+
+    console.log("name, value 131 ", name, value);
     setEmailError(false);
     setDisableButton(false);
     setFormError(false);
@@ -130,7 +141,8 @@ function FormComponent({
     setPasswordFeedback('')
     setPasswordConfirmationError(false);
     setPasswordConfirmationFeedback('')
-    setProfileHasNotChanged(false)
+    setIsProfileDataFromApiUnchanged(false)
+
 
     setProfileDisplayNameError(false)
     setResponseMessage('');
@@ -152,9 +164,7 @@ function FormComponent({
       setEmail(value);
     }
 
-    if (name === 'interested_activities') {
-
-      console.log("value 153", value);
+    if (name === 'interestedActivitiesInput') {
       setInterestedActivitiesInput(value);
     }
 
@@ -173,8 +183,6 @@ function FormComponent({
     if (name === 'profileEmail') {
       setProfileEmail(value);
     }
-
-    setProfileDataFromApi(prev => ({ ...prev, ...{ profileDisplayName, profileEmail, interestedActivities } }))
 
 
   }
@@ -215,9 +223,6 @@ function FormComponent({
       setProfileDisplayNameError
     );
 
-    if (e.target.computedName === 'SAVE') {
-      toggle()
-    }
 
     setFormType(formType)
   }
@@ -374,14 +379,15 @@ function FormComponent({
 
         mounted={mounted}
         profileEmail={profileEmail}
-        profileDataFromApi={profileDataFromApi}
         profileDisplayName={profileDisplayName}
         profileDisplayNameError={profileDisplayNameError}
         profileDisplayNameFeedback={profileDisplayNameFeedback}
-        profileDataFromApiHasNotChanged={profileDataFromApiHasNotChanged}
+        isProfileDataFromApiUnchanged={isProfileDataFromApiUnchanged}
+        proxyProfile={proxyProfile}
         profileUserAvatar={profileUserAvatar}
 
         responseMessage={responseMessage}
+        resetProfile={resetProfile}
         search={search}
 
         setEmailError={setEmailError}
@@ -389,12 +395,13 @@ function FormComponent({
         setFormSuccess={setFormSuccess}
         setIsLoading={setIsLoading}
         setInterestedActivities={setInterestedActivities}
+        setInterestedActivitiesError={setInterestedActivitiesError}
         setInterestedActivitiesInput={setInterestedActivitiesInput}
-        setProfileDataFromApi={setProfileDataFromApi}
         setProfileDisplayName={setProfileDisplayName}
         setProfileDisplayNameError={setProfileDisplayNameError}
         setProfileEmail={setProfileEmail}
-        setProfileHasNotChanged={setProfileHasNotChanged}
+        setIsProfileDataFromApiUnchanged={setIsProfileDataFromApiUnchanged}
+        setProxyProfile={setProxyProfile}
         setProfileUserAvatar={setProfileUserAvatar}
         setResponseMessage={setResponseMessage}
         setSearch={setSearch}
@@ -402,7 +409,7 @@ function FormComponent({
 
       />,
       () => (updateProfileSubmit(
-        interestedActivities, profileDisplayName, profileEmail, profileUserAvatar, setFormError, setFormSuccess, setIsLoading, setResponseMessage)
+        interestedActivities, profileDisplayName, profileEmail, profileUserAvatar, setResetProfile, setFormError, setFormSuccess, setIsLoading, setResponseMessage, toggle)
       )
     ],
   };
