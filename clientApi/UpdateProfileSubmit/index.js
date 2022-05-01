@@ -1,7 +1,17 @@
 import axios from 'axios';
 
 export default function updateProfileSubmit(
-  interestedActivities, profileDisplayName, profileEmail, profileUserAvatar, setFormError, setFormSuccess, setIsLoading, setResponseMessage) {
+  interestedActivities,
+  profileDisplayName,
+  profileEmail,
+  profileUserAvatar,
+  setResetProfile,
+  setFormError,
+  setFormSuccess,
+  setIsLoading,
+  setResponseMessage,
+  toggle
+) {
   const data = {
     profileUserAvatar,
     profileDisplayName,
@@ -24,9 +34,11 @@ export default function updateProfileSubmit(
         setFormError(false);
         setFormSuccess(true);
         setIsLoading(false);
+        setResetProfile({})
         setResponseMessage(response.data.msg);
         setTimeout(() => {
           setFormSuccess(false);
+          toggle()
         }, 5000)
       }
     })
