@@ -47,7 +47,6 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
     }
   });
 
-
   function outputTokenInEmail(typeOfEmail) {
     if (typeOfEmail !== 'change of password') return `/${token.token}`;
     return '';
@@ -73,6 +72,10 @@ export function nodeMailerFunc(user, subjectField, textField, emailType, res) {
 
   sendMail(process.env.EMAIL_ADDRESS, user.email, subjectField, `${textField}${outputTokenInEmail(emailType)}`);
 
+}
+
+export function IsEmptyOrWhiteSpace(str) {
+  return (str.match(/^\s*$/) || []).length > 0;
 }
 
 export function validateInputs(
@@ -101,9 +104,7 @@ export function validateInputs(
 
 ) {
   function getFormValidation(formType) {
-    function IsEmptyOrWhiteSpace(str) {
-      return (str.match(/^\s*$/) || []).length > 0;
-    }
+
     function isUpdateProfile() {
       extend('inputNotInSearch', {
         async: true,
@@ -119,17 +120,20 @@ export function validateInputs(
         }
       })
 
-      const rules = {
-        profileDisplayName: 'required|alpha|min:2|max:15',
-        profileEmail: 'required|email',
-        interestedActivitiesInput: 'inputNotInSearch'
-      };
+
+      console.log('124 interestedActivitiesInput', interestedActivitiesInput)
 
       const data = {
         profileDisplayName,
         profileEmail,
         interestedActivitiesInput
       }
+
+      const rules = {
+        profileDisplayName: 'required|alpha|min:2|max:15',
+        profileEmail: 'required|email',
+        interestedActivitiesInput: 'inputNotInSearch'
+      };
 
       const messages = {
         'alpha': 'No special characters allowed. e.g. "$, !, *"',
@@ -159,9 +163,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-
-
-          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'profileDisplayName') {
               setProfileDisplayNameFeedback(error.message);
@@ -223,7 +224,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          console.log("errors ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -267,7 +267,6 @@ export function validateInputs(
           }
         })
         .catch(errors => {
-          console.log("error 257 ", errors);
           Array.isArray(errors) && errors.map((error) => {
             if (error.field === 'email') {
               setEmailFeedback(error.message);
@@ -277,12 +276,9 @@ export function validateInputs(
             }
           })
         });
-
-
     }
 
     function isUpdatePassword() {
-
       const schema = {
         password: 'required|min:4|max:11|string|confirmed',
       };
@@ -343,7 +339,6 @@ export function validateInputs(
     };
 
     try {
-
       Forms[formType]();
     } catch (error) { console.log('Error', error) }
   }
@@ -363,7 +358,6 @@ export function isJson(item) {
   if (typeof item === 'object' && item !== null) {
     return true;
   }
-
   return false;
 }
 
