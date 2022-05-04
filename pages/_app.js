@@ -7,7 +7,9 @@ import { CloudinaryContext } from 'cloudinary-react'
 
 import 'tailwindcss/tailwind.css'
 import 'leaflet/dist/leaflet.css'
-import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css'
+
+import 'node_modules/leaflet-geosearch/dist/geosearch.css';
+import 'node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.css'
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 
 import 'styles/styles.scss'
