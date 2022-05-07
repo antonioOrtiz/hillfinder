@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 
 import { PageLoader } from 'components/Loader/index'
+import Map from 'components/Map/index'
 
-
-const Map = dynamic(() => import('components/Map'), { loading: () => <PageLoader />, ssr: false });
+// const Map = dynamic(() => import('components/Map/index'), { loading: () => <PageLoader />, ssr: false });
 
 export default function Dashboard() {
   return (
