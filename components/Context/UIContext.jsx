@@ -5,7 +5,6 @@ const initialState = { avatarModalActive: false, showFooter: false, showModal: f
 
 
 const UiStateContext = React.createContext();
-const UiContextDispatch = React.createContext();
 
 function UIProvider({ children }) {
   function uiReducer(state, action) {

@@ -21,7 +21,6 @@ const initialState = {
 };
 
 const UserStateContext = React.createContext();
-const UserContextDispatch = React.createContext();
 
 function UserProvider({ children }) {
   function userReducer(state, { type, payload }) {
