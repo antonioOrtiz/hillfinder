@@ -75,9 +75,8 @@ input:-webkit-autofill:active {
 
 /* map styles */
 
-.leaflet-container {
-    height: 100vh;
+.mapboxgl-map {
+    height: 100%;
     width: 100%;
     margin: 0 auto;
-    border-radius: 0.28571429rem;
 }
