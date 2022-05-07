@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { validateInputs } from 'utils/index';
 import { useRouter } from 'next/router'
 
-import { userState, userDispatch } from '../Context/UserContext'
+import { userState } from 'components/Context/UserContext'
 
 import LoginForm from './Login'
 import RegisterForm from './Register'
@@ -25,9 +25,6 @@ function FormComponent({
   formType,
 }) {
   const router = useRouter();
-
-  const { userdispatch } = userDispatch();
-
   const [current_location, setCurrentLocation] = useState('');
   const [current_destination, setCurrentDestination] = useState('');
   const [disableButton, setDisableButton] = useState(false);
@@ -86,8 +83,9 @@ function FormComponent({
     'Walking'
   ])
 
-  const { userstate } = userState();
-  const { id, accountNotVerified, isLoggedIn } = userstate;
+  const { dispatch: userdispatch, state } = userState();
+
+  const { id, accountNotVerified, isLoggedIn } = state;
 
   const { user, mutate } = useUser(!isLoggedIn ? false : true);
 

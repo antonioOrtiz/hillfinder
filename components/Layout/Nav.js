@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-function LogOutAnchor({ route, name, isMobile, uidispatch, handleClickOnInput }) {
+function LogOutAnchor({ route, name, isMobile, uiDispatch, handleClickOnInput }) {
   if (route === '/logout' && isMobile) {
     return (<li>
       <Link
@@ -9,7 +9,7 @@ function LogOutAnchor({ route, name, isMobile, uidispatch, handleClickOnInput })
         href='#'
       ><a
         role="button"
-        onClick={() => { uidispatch({ type: 'showModal' }); handleClickOnInput() }}
+        onClick={() => { uiDispatch({ type: 'showModal' }); handleClickOnInput() }}
       >{name}</a>
       </Link>
     </li>)
@@ -34,7 +34,7 @@ function LogOutAnchor({ route, name, isMobile, uidispatch, handleClickOnInput })
       >
         <a
           role="button"
-          onClick={() => uidispatch({ type: 'showModal' })}
+          onClick={() => uiDispatch({ type: 'showModal' })}
         >{name}</a></Link></li>)
   }
   else if (route != '/logout' && !isMobile) {
@@ -48,7 +48,7 @@ function LogOutAnchor({ route, name, isMobile, uidispatch, handleClickOnInput })
   }
 }
 
-export default function Nav({ mobile = true, uidispatch, isLoggedIn, handleClickOnInput }) {
+export default function Nav({ mobile = true, uiDispatch, isLoggedIn, handleClickOnInput }) {
   const nav = [
     { id: 1, route: '/', name: 'Home' },
     { id: 2, route: '/profile', name: 'Profile' },
@@ -67,10 +67,10 @@ export default function Nav({ mobile = true, uidispatch, isLoggedIn, handleClick
           {
             isLoggedIn ?
               ((route === '/login') || route === '/registration') ? null :
-                <LogOutAnchor key={id} uidispatch={uidispatch} handleClickOnInput={handleClickOnInput} route={route} name={name} isMobile={mobile} />
+                <LogOutAnchor key={id} uiDispatch={uiDispatch} handleClickOnInput={handleClickOnInput} route={route} name={name} isMobile={mobile} />
               :
               ((route === '/profile') || route === '/dashboard' || route === '/logout') ? null :
-                <LogOutAnchor key={id} uidispatch={uidispatch} handleClickOnInput={handleClickOnInput} route={route} name={name} isMobile={mobile} />
+                <LogOutAnchor key={id} uiDispatch={uiDispatch} handleClickOnInput={handleClickOnInput} route={route} name={name} isMobile={mobile} />
           }
         </>)
       }

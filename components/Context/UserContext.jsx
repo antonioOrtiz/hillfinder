@@ -188,11 +188,11 @@ function UserProvider({ children }) {
     setLocalStorage('user', state);
   }, [state]);
 
+  const value = { state, dispatch }
+
   return (
-    <UserStateContext.Provider value={{ userstate: state }}>
-      <UserContextDispatch.Provider value={{ userdispatch: dispatch }}>
-        {children}
-      </UserContextDispatch.Provider>
+    <UserStateContext.Provider value={value}>
+      {children}
     </UserStateContext.Provider>
   );
 }
@@ -205,13 +205,4 @@ function userState() {
   return context;
 }
 
-function userDispatch() {
-  const context = useContext(UserContextDispatch);
-  if (context === undefined) {
-    throw new Error('userDispatch must be used within a UserProvider');
-  }
-  return context;
-}
-export default UserContextDispatch;
-
-export { UserProvider, userState, userDispatch };
+export { UserProvider, userState };

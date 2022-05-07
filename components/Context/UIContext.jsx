@@ -7,7 +7,6 @@ const initialState = { avatarModalActive: false, showFooter: false, showModal: f
 const UiStateContext = React.createContext();
 const UiContextDispatch = React.createContext();
 
-
 function UIProvider({ children }) {
   function uiReducer(state, action) {
     switch (action.type) {
@@ -40,12 +39,11 @@ function UIProvider({ children }) {
 
   const [state, dispatch] = useReducer(uiReducer, initialState);
 
+  const value = { state, dispatch }
 
   return (
-    <UiStateContext.Provider value={{ uistate: state }}>
-      <UiContextDispatch.Provider value={{ uidispatch: dispatch }}>
-        {children}
-      </UiContextDispatch.Provider>
+    <UiStateContext.Provider value={value}>
+      {children}
     </UiStateContext.Provider>
   );
 }
@@ -58,14 +56,5 @@ function uiState() {
   return context;
 }
 
-function uiDispatch() {
-  const context = useContext(UiContextDispatch);
-  if (context === undefined) {
-    throw new Error('uiDispatch must be used within a UserProvider');
-  }
-  return context;
-}
 
-export default UiContextDispatch;
-
-export { UIProvider, uiState, uiDispatch };
+export { UIProvider, uiState };

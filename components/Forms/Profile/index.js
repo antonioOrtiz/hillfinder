@@ -9,7 +9,7 @@ import { Loader } from '../../Loader'
 
 import { useUser } from 'lib/hooks'
 
-import { userState } from '../../Context/UserContext'
+import { userState } from 'components/Context/UserContext'
 
 import { IsEmptyOrWhiteSpace } from 'utils/index'
 
@@ -71,8 +71,8 @@ export default function ProfileForm({
   const [memberSince, setMemberSince] = useState('');
   const [profileDataFromApi, setProfileDataFromApi] = useState({});
 
-  const { userstate } = userState();
-  const { isLoggedIn } = userstate;
+  const { state } = userState();
+  const { isLoggedIn } = state;
   const { user } = useUser(!isLoggedIn ? false : true)
 
   useEffect(() => {
