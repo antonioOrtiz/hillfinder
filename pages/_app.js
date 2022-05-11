@@ -8,9 +8,8 @@ import { CloudinaryContext } from 'cloudinary-react'
 import 'tailwindcss/tailwind.css'
 import 'leaflet/dist/leaflet.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
-
-
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 
 import 'styles/styles.scss'
