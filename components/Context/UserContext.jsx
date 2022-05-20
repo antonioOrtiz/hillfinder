@@ -15,8 +15,7 @@ const initialState = {
   markers: [],
   currentMap: {},
   currentMapAccuracy: null,
-  currentMapZoom: 10,
-  currentMapCenter: [37.09024, -95.712891]
+  currentMapZoom: 17,
   // currentMapCenter: []
 };
 
