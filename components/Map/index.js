@@ -8,7 +8,7 @@ import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
 import { LocateComponent as Locate } from './LocateControl'
 import RoutingMachine from './RoutingMachine';
-
+// import RandomMarkers from  './Markers'
 // Somewhere at the root level of your app
 import 'regenerator-runtime/runtime';
 
@@ -23,9 +23,11 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, 
   const [theArray, setTheArray] = useState([]);
 
   useEffect(() => {
-    let updatedArray = [...theArray]
-    updatedArray.length = amountOfMarkersOnLoad
-    setTheArray(updatedArray)
+    let i = 0;
+    while (i < amountOfMarkersOnLoad && theArray.length < 5) {
+      setTheArray(prev => [...prev, randomMarkersInCircle(...initRadiusForCircle)])
+      i++
+    }
   }, [])
 
   function randomMarkersInCircle(originalLat, originalLng) {
@@ -52,7 +54,7 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, 
   return (
     <>
       {theArray.map((marker, index) => {
-        handleInitPointsInRoutingMachine(randomMarkersInCircle(...initRadiusForCircle))
+        {/* handleInitPointsInRoutingMachine(randomMarkersInCircle(...initRadiusForCircle)) */ }
         return <Marker key={index} position={randomMarkersInCircle(...initRadiusForCircle)
         } ></Marker>
       }
