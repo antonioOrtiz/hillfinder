@@ -19,7 +19,7 @@ const options = {
   token: process.env.MAPBOX_ACCESS_TOKEN
 }
 
-function RandomMarkers({ handleInitPointsInRoutingMachine, initialRadiusForInitCircle, amountOfMarkersOnLoad = 5 }) {
+function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, amountOfMarkersOnLoad }) {
   const [theArray, setTheArray] = useState([]);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initialRadiusForInitC
     setTheArray(updatedArray)
   }, [])
 
-  function randomMarkersInCirclee(originalLat, originalLng) {
+  function randomMarkersInCircle(originalLat, originalLng) {
     var r = 500 / 111300,
       y0 = originalLat,
       x0 = originalLng,
@@ -49,12 +49,11 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initialRadiusForInitC
     ]
   }
 
-
   return (
     <>
       {theArray.map((marker, index) => {
-        handleInitPointsInRoutingMachine(randomMarkersInCirclee(...initialRadiusForInitCircle))
-        return <Marker key={index} position={randomMarkersInCirclee(...initialRadiusForInitCircle)
+        handleInitPointsInRoutingMachine(randomMarkersInCircle(...initRadiusForCircle))
+        return <Marker key={index} position={randomMarkersInCircle(...initRadiusForCircle)
         } ></Marker>
       }
       )}
@@ -65,24 +64,18 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initialRadiusForInitC
 const MemoizedRandomMarkers = React.memo(RandomMarkers)
 
 export default function MyMap() {
-  const [initialRadiusForInitCircle, setInitialRadiusForInitCircle] = useState([])
-  const [initialRadiusForRoutingMachine, setInitialRadiusForRoutingMachine] = useState([])
+  const [initRadiusForCircle, setInitialRadiusForInitCircle] = useState([])
+  const [initRadiusForRoutingMachine, setInitRadiusForRoutingMachine] = useState([])
 
 
   function handleInitPointsInRoutingMachineForUseCallBack(initStartingPoints) {
-    setInitialRadiusForRoutingMachine(prev => [...prev, initStartingPoints])
+    setInitRadiusForRoutingMachine(prev => [...prev, initStartingPoints])
   }
 
   const handleInitPointsInRoutingMachine = useCallback((initStartingPoints) => {
     handleInitPointsInRoutingMachineForUseCallBack(initStartingPoints);
   }, []);
 
-  useEffect(() => {
-
-    console.log("initialRadiusForRoutingMachine ", initialRadiusForRoutingMachine);
-
-
-  }, [initialRadiusForRoutingMachine])
 
   return (
     <MapContainer
@@ -105,18 +98,16 @@ export default function MyMap() {
       <LeafletControlGeocoder />
       <Draw />
       <Circle
-        center={L.latLng(initialRadiusForInitCircle)}
+        center={L.latLng(initRadiusForCircle)}
         key="1"
         radius={500}
       />
       <MemoizedRandomMarkers
         handleInitPointsInRoutingMachine={handleInitPointsInRoutingMachine}
-        initialRadiusForInitCircle={initialRadiusForInitCircle}
+        initRadiusForCircle={initRadiusForCircle}
         amountOfMarkersOnLoad={5}
       />
-      <RoutingMachine
-        startingPoints={initialRadiusForRoutingMachine}
-      />
+
     </MapContainer>
   )
 }
