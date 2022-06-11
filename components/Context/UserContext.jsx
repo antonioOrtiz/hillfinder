@@ -9,6 +9,7 @@ const initialState = {
   id: null,
   isRoutingVisible: false,
   removeRoutingMachine: false,
+  initRadiusForRoutingMachine: [],
   isLengthOfMarkersLessThanTwo: true,
   isAvatarUploading: true,
   isMapLoading: true,
@@ -48,6 +49,13 @@ function UserProvider({ children }) {
         return {
           ...state,
           ...{ avatar: payload.avatar }
+        };
+      }
+
+      case 'setInitPointsInRoutingMachine': {
+        return {
+          ...state,
+          initRadiusForRoutingMachine: state.initRadiusForRoutingMachine.concat(payload.initRadiusForRoutingMachine)
         };
       }
 
