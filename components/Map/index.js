@@ -1,8 +1,9 @@
 import L from "leaflet";
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Circle, Marker } from "react-leaflet";
 import '@geoman-io/leaflet-geoman-free';
 import 'leaflet.fullscreen/Control.FullScreen.js'
+import GeometryUtil from "leaflet-geometryutil";
 
 import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
@@ -19,44 +20,60 @@ const options = {
   token: process.env.MAPBOX_ACCESS_TOKEN
 }
 
-function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, amountOfMarkersOnLoad }) {
-  const [theArray, setTheArray] = useState([]);
+function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, amountOfMarkersOnLoad, cirlcleRadius }) {
+  const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
-    let i = 0;
-    while (i < amountOfMarkersOnLoad && theArray.length < 5) {
-      setTheArray(prev => [...prev, randomMarkersInCircle(...initRadiusForCircle)])
-      i++
+    const updatedMarkers = [...markers]
+    updatedMarkers.length = amountOfMarkersOnLoad
+    setMarkers(updatedMarkers)
+  }, [markers.length])
+
+
+  function getCurrentValueForDegree(iter, times) {
+    let i = 0
+    function value() {
+      while (i < iter.length * times) {
+        const cur = Math.floor(i / times);
+        i += 1
+        return iter[cur]
+      }
     }
-  }, [])
-
-  function randomMarkersInCircle(originalLat, originalLng) {
-    var r = 500 / 111300,
-      y0 = originalLat,
-      x0 = originalLng,
-      u = Math.random(),
-      v = Math.random(),
-      w = r * Math.sqrt(u),
-      t = 2 * Math.PI * v,
-      x = w * Math.cos(t),
-      y1 = w * Math.sin(t),
-      x1 = x / Math.cos(y0);
-
-    const newY = y0 + y1;
-    const newX = x0 + x1
-
-    return [
-      newY,
-      newX
-    ]
+    return value
   }
+
+
+  function getCurrentValue(values) {
+    let index = -1;
+    let l = values.length;
+
+    function increment() {
+      ++index;
+      if (index < l) {
+        return values[index]
+      } else {
+        index = -1;
+        ++index;
+        return values[index]
+      }
+    }
+
+    return increment;
+  }
+
+  function setMarkerToCenterOfSegment(lat, lng, degree, distance) {
+    return GeometryUtil.destination(L.latLng(lat, lng), degree(), distance());
+  }
+
+  let degree = getCurrentValueForDegree([0, 315, 270, 225, 180, 135, 90], 7)
+  let distance = getCurrentValue([75, 175, 275, 375, 475])
 
   return (
     <>
-      {theArray.map((marker, index) => {
-        {/* handleInitPointsInRoutingMachine(randomMarkersInCircle(...initRadiusForCircle)) */ }
-        return <Marker key={index} position={randomMarkersInCircle(...initRadiusForCircle)
-        } ></Marker>
+      {markers.length && markers.map((marker, index) => {
+        return <Marker
+          key={index}
+          position={setMarkerToCenterOfSegment(...initRadiusForCircle, degree, distance)} />
       }
       )}
     </>
@@ -66,18 +83,26 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, 
 const MemoizedRandomMarkers = React.memo(RandomMarkers)
 
 export default function MyMap() {
+  const [cirlcleRadius, setCircleRadius] = useState(500)
+  const circleRef = useRef()
+  const amountOfMarkersOnLoad = 20
   const [initRadiusForCircle, setInitialRadiusForInitCircle] = useState([])
-  const [initRadiusForRoutingMachine, setInitRadiusForRoutingMachine] = useState([])
+  const [initStartingPointsForRoutingMachine, setInitStartingPointsForRoutingMachine] = useState([])
 
-
-  function handleInitPointsInRoutingMachineForUseCallBack(initStartingPoints) {
-    setInitRadiusForRoutingMachine(prev => [...prev, initStartingPoints])
+  function initPointsInRoutingMachine(initStartingPoints) {
+    if (initStartingPointsForRoutingMachine.length < amountOfMarkersOnLoad) {
+      setInitStartingPointsForRoutingMachine(prev => [...prev, initStartingPoints])
+    } else {
+      return false
+    }
   }
 
-  const handleInitPointsInRoutingMachine = useCallback((initStartingPoints) => {
-    handleInitPointsInRoutingMachineForUseCallBack(initStartingPoints);
-  }, []);
-
+  const handleInitPointsInRoutingMachine = useCallback(
+    (initStartingPoints) => {
+      initPointsInRoutingMachine(initStartingPoints)
+    },
+    [initStartingPointsForRoutingMachine],
+  )
 
   return (
     <MapContainer
@@ -100,15 +125,23 @@ export default function MyMap() {
       <LeafletControlGeocoder />
       <Draw />
       <Circle
+        ref={circleRef}
         center={L.latLng(initRadiusForCircle)}
         key="1"
-        radius={500}
+        radius={cirlcleRadius}
       />
       <MemoizedRandomMarkers
-        handleInitPointsInRoutingMachine={handleInitPointsInRoutingMachine}
         initRadiusForCircle={initRadiusForCircle}
-        amountOfMarkersOnLoad={5}
+        amountOfMarkersOnLoad={amountOfMarkersOnLoad}
+        circleRadius={cirlcleRadius}
       />
+      {initStartingPointsForRoutingMachine.map((sp, index) => {
+
+        console.log("sp ", sp);
+        return <RoutingMachine key={sp[0]} startingPoints={sp} />
+      })
+      }
+
 
     </MapContainer>
   )
