@@ -1,9 +1,11 @@
 import L from "leaflet";
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Circle, Marker } from "react-leaflet";
 import '@geoman-io/leaflet-geoman-free';
 import 'leaflet.fullscreen/Control.FullScreen.js'
-import GeometryUtil from "leaflet-geometryutil";
+import "leaflet-geometryutil";
+import Topography, { getTopography, configure, TopoLayer } from 'leaflet-topography';
+import 'regenerator-runtime/runtime';
 
 import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
@@ -11,24 +13,15 @@ import { LocateComponent as Locate } from './LocateControl'
 import RoutingMachine from './RoutingMachine';
 // import RandomMarkers from  './Markers'
 // Somewhere at the root level of your app
-import 'regenerator-runtime/runtime';
-
 // Where you want to use leaflet-topography
-import Topography, { getTopography, configure, TopoLayer } from 'leaflet-topography';
 
 const options = {
   token: process.env.MAPBOX_ACCESS_TOKEN
 }
 
-function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, amountOfMarkersOnLoad, cirlcleRadius }) {
-  const [markers, setMarkers] = useState([]);
-
-  useEffect(() => {
-    const updatedMarkers = [...markers]
-    updatedMarkers.length = amountOfMarkersOnLoad
-    setMarkers(updatedMarkers)
-  }, [markers.length])
-
+function RandomMarkers({ initRadiusForCircle, amountOfMarkersOnLoad }) {
+  const [markers, setMarkers] = useState(() => Array.apply(null, Array(amountOfMarkersOnLoad)).map(function () { return 0 }));
+  const [topographyData, setTopographyData] = useState([])
 
   function getCurrentValueForDegree(iter, times) {
     let i = 0
@@ -41,7 +34,6 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, 
     }
     return value
   }
-
 
   function getCurrentValue(values) {
     let index = -1;
@@ -61,19 +53,27 @@ function RandomMarkers({ handleInitPointsInRoutingMachine, initRadiusForCircle, 
     return increment;
   }
 
-  function setMarkerToCenterOfSegment(lat, lng, degree, distance) {
-    return GeometryUtil.destination(L.latLng(lat, lng), degree(), distance());
+  async function getTopographyData(latLang) {
+    const results = await Topography.getTopography(latLang, options);
   }
 
-  let degree = getCurrentValueForDegree([0, 315, 270, 225, 180, 135, 90], 7)
-  let distance = getCurrentValue([75, 175, 275, 375, 475])
+  let degree = getCurrentValueForDegree([0, 330, 300, 270, 240, 210, 180, 150, 120, 90, 60, 30], 3)
+  let distance = getCurrentValue([141, 308, 475])
+
+  function setMarkersToSegment(degree, distance) {
+    const { lat, lng } = initRadiusForCircle
+    return L.GeometryUtil.destination({ lat, lng }, degree(), distance());
+  }
 
   return (
     <>
       {markers.length && markers.map((marker, index) => {
         return <Marker
           key={index}
-          position={setMarkerToCenterOfSegment(...initRadiusForCircle, degree, distance)} />
+          position={
+            setMarkersToSegment(degree, distance)
+          }
+        />
       }
       )}
     </>
@@ -85,7 +85,7 @@ const MemoizedRandomMarkers = React.memo(RandomMarkers)
 export default function MyMap() {
   const [cirlcleRadius, setCircleRadius] = useState(500)
   const circleRef = useRef()
-  const amountOfMarkersOnLoad = 20
+  const amountOfMarkersOnLoad = 36
   const [initRadiusForCircle, setInitialRadiusForInitCircle] = useState([])
   const [initStartingPointsForRoutingMachine, setInitStartingPointsForRoutingMachine] = useState([])
 
@@ -111,7 +111,7 @@ export default function MyMap() {
       zoom={15}
       whenReady={(e) => {
         const { lat, lng } = e.target._lastCenter
-        setInitialRadiusForInitCircle([lat, lng])
+        setInitialRadiusForInitCircle({ lat, lng })
         // Topography.getTopography(e.target._lastCenter, options)
         //   .then((results) => console.log(results));
       }}>
@@ -120,7 +120,6 @@ export default function MyMap() {
           }/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_ACCESS_TOKEN}`}
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       />
-
       <Locate startDirectly />
       <LeafletControlGeocoder />
       <Draw />
@@ -133,16 +132,10 @@ export default function MyMap() {
       <MemoizedRandomMarkers
         initRadiusForCircle={initRadiusForCircle}
         amountOfMarkersOnLoad={amountOfMarkersOnLoad}
-        circleRadius={cirlcleRadius}
       />
       {initStartingPointsForRoutingMachine.map((sp, index) => {
-
-        console.log("sp ", sp);
         return <RoutingMachine key={sp[0]} startingPoints={sp} />
-      })
-      }
-
-
+      })}
     </MapContainer>
   )
 }
