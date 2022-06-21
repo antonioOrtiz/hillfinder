@@ -39,7 +39,7 @@
         "mongoose": "^6.2.10",
         "morgan": "^1.10.0",
         "next": "^12.1.4",
-        "next-auth": "^3.29.1",
+        "next-auth": "^3.29.5",
         "next-connect": "^0.10.2",
         "next-cookie": "^2.7.0",
         "next-cookies": "^2.0.3",
