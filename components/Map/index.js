@@ -1,27 +1,38 @@
 import L from "leaflet";
-import React, { useCallback, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Circle, Marker } from "react-leaflet";
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { MapContainer, TileLayer, Circle } from "react-leaflet";
 import '@geoman-io/leaflet-geoman-free';
 import 'leaflet.fullscreen/Control.FullScreen.js'
 import "leaflet-geometryutil";
-import Topography, { getTopography, configure, TopoLayer } from 'leaflet-topography';
+import { getTopography } from 'leaflet-topography';
 import 'regenerator-runtime/runtime';
+import NextNprogress from 'nextjs-progressbar'
 
 import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
 import { LocateComponent as Locate } from './LocateControl'
 import RoutingMachine from './RoutingMachine';
-// import RandomMarkers from  './Markers'
-// Somewhere at the root level of your app
-// Where you want to use leaflet-topography
 
 const options = {
   token: process.env.MAPBOX_ACCESS_TOKEN
 }
 
-function RandomMarkers({ initRadiusForCircle, amountOfMarkersOnLoad }) {
+function IntialMarkers({
+  amountOfMarkersOnLoad,
+  initRadiusForCircle
+}) {
+
   const [markers, setMarkers] = useState(() => Array.apply(null, Array(amountOfMarkersOnLoad)).map(function () { return 0 }));
   const [topographyData, setTopographyData] = useState([])
+  const [startingPointsRoutingMachine, startingPointsForRoutingMachine] = useState([])
+  const [init, setInit] = useState(true)
+
+  const handleInitPointsInRoutingMachine = useCallback(
+    (initStartingPoints) => {
+      startingPointsForRoutingMachine(initStartingPoints)
+    },
+    [startingPointsRoutingMachine],
+  )
 
   function getCurrentValueForDegree(iter, times) {
     let i = 0
@@ -54,55 +65,91 @@ function RandomMarkers({ initRadiusForCircle, amountOfMarkersOnLoad }) {
   }
 
   async function getTopographyData(latLang) {
-    const results = await Topography.getTopography(latLang, options);
+    var newObj = {}
+    newObj.topography = await getTopography(latLang, options);
+    newObj.latlng = latLang
+    setTopographyData(prev => [...prev, newObj])
   }
 
-  let degree = getCurrentValueForDegree([0, 330, 300, 270, 240, 210, 180, 150, 120, 90, 60, 30], 3)
+  let degree = getCurrentValueForDegree([
+    0,
+    345,
+    330,
+    315,
+    300,
+    285,
+    270,
+    255,
+    240,
+    225,
+    210,
+    195,
+    180,
+    165,
+    150,
+    135,
+    120,
+    105,
+    90,
+    75,
+    60,
+    45,
+    30,
+    15], 3)
+
   let distance = getCurrentValue([141, 308, 475])
+  let max = (a, f) => a.reduce((m, x) => m['topography'][f] > x['topography'][f] ? m : x);
+  let min = (a, f) => a.reduce((m, x) => m['topography'][f] < x['topography'][f] ? m : x);
 
-  function setMarkersToSegment(degree, distance) {
+  function setMarkerToSegment(degree, distance) {
     const { lat, lng } = initRadiusForCircle
-    return L.GeometryUtil.destination({ lat, lng }, degree(), distance());
+    const marker = L.GeometryUtil.destination({ lat, lng }, degree(), distance());
+    return marker
   }
+
+  useEffect(() => {
+    console.log("topographyData ", topographyData);
+  }, [topographyData.length])
+
+
+  useEffect(() => {
+    if (init) {
+      markers
+        .map(() => setMarkerToSegment(degree, distance))
+        .map(marker => getTopographyData(marker))
+      setInit(false)
+    }
+    return () => setInit(true)
+  }, [])
+
+  useEffect(() => {
+    if (topographyData.length === amountOfMarkersOnLoad) {
+      const routingInfo = []
+      const highestEl = max(topographyData, 'elevation');
+      const lowestEl = min(topographyData, 'elevation');
+
+      routingInfo.push({ highestEl, lowestEl })
+
+      handleInitPointsInRoutingMachine(routingInfo)
+    }
+  }, [topographyData.length])
 
   return (
     <>
-      {markers.length && markers.map((marker, index) => {
-        return <Marker
-          key={index}
-          position={
-            setMarkersToSegment(degree, distance)
-          }
-        />
-      }
-      )}
+
+      {startingPointsRoutingMachine.length &&
+        <RoutingMachine startingPoints={startingPointsRoutingMachine} options={options} topographyData={topographyData} />}
     </>
   );
 }
 
-const MemoizedRandomMarkers = React.memo(RandomMarkers)
+const MemoizedInitialMarkers = React.memo(IntialMarkers)
 
 export default function MyMap() {
   const [cirlcleRadius, setCircleRadius] = useState(500)
   const circleRef = useRef()
-  const amountOfMarkersOnLoad = 36
+  const amountOfMarkersOnLoad = 72
   const [initRadiusForCircle, setInitialRadiusForInitCircle] = useState([])
-  const [initStartingPointsForRoutingMachine, setInitStartingPointsForRoutingMachine] = useState([])
-
-  function initPointsInRoutingMachine(initStartingPoints) {
-    if (initStartingPointsForRoutingMachine.length < amountOfMarkersOnLoad) {
-      setInitStartingPointsForRoutingMachine(prev => [...prev, initStartingPoints])
-    } else {
-      return false
-    }
-  }
-
-  const handleInitPointsInRoutingMachine = useCallback(
-    (initStartingPoints) => {
-      initPointsInRoutingMachine(initStartingPoints)
-    },
-    [initStartingPointsForRoutingMachine],
-  )
 
   return (
     <MapContainer
@@ -129,13 +176,11 @@ export default function MyMap() {
         key="1"
         radius={cirlcleRadius}
       />
-      <MemoizedRandomMarkers
+      <MemoizedInitialMarkers
         initRadiusForCircle={initRadiusForCircle}
         amountOfMarkersOnLoad={amountOfMarkersOnLoad}
       />
-      {initStartingPointsForRoutingMachine.map((sp, index) => {
-        return <RoutingMachine key={sp[0]} startingPoints={sp} />
-      })}
+
     </MapContainer>
   )
 }
