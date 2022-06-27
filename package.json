@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "NODE_ENV=development NODE_OPTIONS='--inspect' next dev -p 8016",
+        "dev": "NODE_ENV=development next dev -p 6108",
         "build": "NODE_ENV=production next build",
         "start": "node_modules/next/dist/bin/next start -p $PORT",
         "find:unused": "next-unused",
@@ -36,6 +36,7 @@
         "leaflet-control-geocoder": "^2.4.0",
         "leaflet-geometryutil": "^0.10.1",
         "leaflet-routing-machine": "^3.2.12",
+        "leaflet-spin": "^1.1.2",
         "leaflet-topography": "^0.2.1",
         "leaflet.fullscreen": "^2.3.0",
         "leaflet.locatecontrol": "^0.76.0",
@@ -67,6 +68,7 @@
         "react-typeahead": "^2.0.0-alpha.8",
         "regenerator-runtime": "^0.13.9",
         "sass": "^1.49.11",
+        "spin.js": "^4.1.1",
         "swr": "^0.1.18",
         "tailwindcss": "^3.0.24",
         "terser-webpack-plugin": "^5.3.1",
