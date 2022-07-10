@@ -6,12 +6,12 @@ import 'leaflet.fullscreen/Control.FullScreen.js'
 import "leaflet-geometryutil";
 import { getTopography } from 'leaflet-topography';
 import 'regenerator-runtime/runtime';
-import NextNprogress from 'nextjs-progressbar'
 
 import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
 import { LocateComponent as Locate } from './LocateControl'
 import RoutingMachine from './RoutingMachine';
+import { Spinner } from "./Spinner"
 
 const options = {
   token: process.env.MAPBOX_ACCESS_TOKEN
@@ -108,11 +108,6 @@ function IntialMarkers({
   }
 
   useEffect(() => {
-    console.log("topographyData ", topographyData);
-  }, [topographyData.length])
-
-
-  useEffect(() => {
     if (init) {
       markers
         .map(() => setMarkerToSegment(degree, distance))
@@ -123,6 +118,8 @@ function IntialMarkers({
   }, [])
 
   useEffect(() => {
+
+    // console.log("topographyData ", topographyData);
     if (topographyData.length === amountOfMarkersOnLoad) {
       const routingInfo = []
       const highestEl = max(topographyData, 'elevation');
@@ -134,10 +131,15 @@ function IntialMarkers({
     }
   }, [topographyData.length])
 
+
   return (
     <>
+      <Spinner showOrHide={startingPointsRoutingMachine.length != true} />
 
-      {startingPointsRoutingMachine.length &&
+
+      {startingPointsRoutingMachine.length != true ?
+        <Spinner showOrHide={startingPointsRoutingMachine.length} />
+        :
         <RoutingMachine startingPoints={startingPointsRoutingMachine} options={options} topographyData={topographyData} />}
     </>
   );

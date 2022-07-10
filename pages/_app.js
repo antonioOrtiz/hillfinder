@@ -5,6 +5,7 @@ import React, { useEffect } from 'react'
 import NextNprogress from 'nextjs-progressbar'
 import { CloudinaryContext } from 'cloudinary-react'
 
+import 'normalize.css'
 import 'tailwindcss/tailwind.css'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
@@ -13,6 +14,9 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
 import 'styles/styles.scss'
+
+
+
 
 import { UIProvider, uiState } from 'components/Context/UIContext'
 

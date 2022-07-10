@@ -368,7 +368,7 @@ export const FormWrapper = ({ children }) => {
   }, [])
 
   return (
-    <div className="grid h-full grid-cols-1 py-5 auto-cols-max place-items-center justify-items-center">
+    <div className="grid h-full grid-cols-1 px-8 py-5 auto-cols-max place-items-center justify-items-center">
       {onProfilePage
         ? <div className="shadow-lg rounded-md bg-gray-300 w-11/12 sm:max-w-md h-{297} bg-opacity-50 px-4 py-4">
           {children}

@@ -2,7 +2,7 @@
         .bg-logo {
             height: 100vh;
             width: 100%;
-            display: inline-table;
+            // display: inline-table;
             z-index: 1;
             background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent), url('/logo/hillfinder-logo.png') center;
             background-repeat: no-repeat;
@@ -16,7 +16,7 @@
             height: 100vh;
             width: 100%;
             padding: 0;
-            display: inline-table;
+            // display: inline-table;
             z-index: 1;
             background: linear-gradient(#5dad2f, transparent), linear-gradient(to top left, #2e5a1c, transparent), linear-gradient(to top right, #214414, transparent), url('/logo/hillfinder-logo.png') center;
             background-repeat: no-repeat;
