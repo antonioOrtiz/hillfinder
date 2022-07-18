@@ -27,7 +27,6 @@ export function RoutingMachine({ startingPoints }) {
       console.log("options ", options);
       const originalCallback = options.callback;
 
-      console.log("originalCallback ", originalCallback);
       L.Routing.OSRMv1.prototype.route.call(
         waypoints,
         customCallback(originalCallback),
