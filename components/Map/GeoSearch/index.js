@@ -9,7 +9,7 @@ export default function LeafletControlGeocoder() {
   const map = useMap();
 
   useEffect(() => {
-    var geocoder = L.Control.Geocoder.nominatim();
+    var geocoder = L?.Control?.Geocoder?.nominatim();
     if (typeof URLSearchParams !== "undefined" && location.search) {
       // parse /?geocoder=nominatim from URL
       var params = new URLSearchParams(location.search);
@@ -25,7 +25,7 @@ export default function LeafletControlGeocoder() {
       query: "",
       placeholder: "Search here...",
       defaultMarkGeocode: false,
-      geocoder
+      geocoder,
     })
       .on("markgeocode", function (e) {
         var latlng = e.geocode.center;

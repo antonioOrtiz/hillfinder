@@ -1,9 +1,9 @@
 /* eslint-disable object-shorthand */
-import React, { useState, useEffect, useContext, useReducer } from 'react';
-import { setLocalStorage, getLocalStorage } from 'utils/index'
+import React, { useState, useEffect, useContext, useReducer } from "react";
+import { setLocalStorage, getLocalStorage } from "utils/index";
 
 const initialState = {
-  avatar: '/uploads/profile-avatars/placeholder.jpg',
+  avatar: "/uploads/profile-avatars/placeholder.jpg",
   accountNotVerified: null,
   isLoggedIn: false,
   id: null,
@@ -25,158 +25,158 @@ const UserStateContext = React.createContext();
 function UserProvider({ children }) {
   function userReducer(state, { type, payload }) {
     switch (type) {
-      case 'resetUserAccountIsVerified': {
-        return { ...state, ...{ accountNotVerified: null } }
+      case "resetUserAccountIsVerified": {
+        return { ...state, ...{ accountNotVerified: null } };
       }
 
-      case 'userAccountIsVerified': {
-        return { ...state, ...{ accountNotVerified: false } }
+      case "userAccountIsVerified": {
+        return { ...state, ...{ accountNotVerified: false } };
       }
 
-      case 'userAccountNotVerified': {
-        return { ...state, ...{ accountNotVerified: true } }
+      case "userAccountNotVerified": {
+        return { ...state, ...{ accountNotVerified: true } };
       }
 
-      case 'setIsLoggedIn': {
+      case "setIsLoggedIn": {
         return { ...state, ...{ isLoggedIn: payload } };
       }
 
-      case 'setUserId': {
+      case "setUserId": {
         return { ...state, ...{ id: payload.id } };
       }
 
-      case 'setAvatar': {
+      case "setAvatar": {
         return {
           ...state,
-          ...{ avatar: payload.avatar }
+          ...{ avatar: payload.avatar },
         };
       }
 
-      case 'setInitPointsInRoutingMachine': {
+      case "setInitPointsInRoutingMachine": {
         return {
           ...state,
-          initRadiusForRoutingMachine: state.initRadiusForRoutingMachine.concat(payload.initRadiusForRoutingMachine)
+          initRadiusForRoutingMachine: state.initRadiusForRoutingMachine.concat(
+            payload.initRadiusForRoutingMachine
+          ),
         };
       }
 
-      case 'setIsAvatarUploading': {
+      case "setIsAvatarUploading": {
         return {
           ...state,
-          ...{ isAvatarUploading: payload.isAvatarUploading }
+          ...{ isAvatarUploading: payload.isAvatarUploading },
         };
       }
 
-      case 'setMapZoom': {
+      case "setMapZoom": {
         return {
           ...state,
-          ...{ currentMapZoom: payload.currentMapZoom }
+          ...{ currentMapZoom: payload.currentMapZoom },
         };
       }
 
-      case 'setCurrentMapCenter': {
+      case "setCurrentMapCenter": {
         return {
           ...state,
-          ...{ currentMapCenter: payload.currentMapCenter }
+          ...{ currentMapCenter: payload.currentMapCenter },
         };
       }
 
-      case 'setCurrentMapAccuracy': {
+      case "setCurrentMapAccuracy": {
         return {
           ...state,
-          ...{ currentMapAccuracy: payload.currentMapAccuracy }
+          ...{ currentMapAccuracy: payload.currentMapAccuracy },
         };
       }
 
-      case 'setCurrentMapLocation': {
+      case "setCurrentMapLocation": {
         return {
           ...state,
           currentMapLocation: {
             ...state.currentMapLocation,
-            ...payload.currentMapLocation
-          }
+            ...payload.currentMapLocation,
+          },
         };
       }
 
-      case 'isMapLoading': {
+      case "isMapLoading": {
         return {
           ...state,
           ...{
-            isMapLoading: payload.isMapLoading
-          }
+            isMapLoading: payload.isMapLoading,
+          },
         };
       }
 
-      case 'setMap': {
+      case "setMap": {
         return {
           ...state,
-          currentMap: payload.currentMap
+          currentMap: payload.currentMap,
         };
       }
 
-      case 'setIsRoutingVisible': {
+      case "setIsRoutingVisible": {
         return {
           ...state,
-          ...{ isRoutingVisible: payload.isRoutingVisible }
+          ...{ isRoutingVisible: payload.isRoutingVisible },
         };
       }
 
-      case 'setRemoveRoutingMachine': {
-        return {
-          ...state,
-          ...{
-            removeRoutingMachine: payload.removeRoutingMachine
-          }
-        };
-      }
-
-      case 'isLengthOfMarkersLessThanTwoFalse': {
+      case "setRemoveRoutingMachine": {
         return {
           ...state,
           ...{
-            isLengthOfMarkersLessThanTwo: payload.isLengthOfMarkersLessThanTwo
-          }
+            removeRoutingMachine: payload.removeRoutingMachine,
+          },
         };
       }
 
-      case 'addMarker': {
-        return {
-          ...state,
-          markers: state.markers.concat(payload.marker)
-        };
-      }
-
-      case 'deleteUserMarkers': {
+      case "isLengthOfMarkersLessThanTwoFalse": {
         return {
           ...state,
           ...{
-            markers: state.markers.filter((el, i, a) => el != a[a.length - 1])
-          }
+            isLengthOfMarkersLessThanTwo: payload.isLengthOfMarkersLessThanTwo,
+          },
         };
       }
 
-      case 'updateMarkers': {
+      case "addMarker": {
+        return {
+          ...state,
+          markers: state.markers.concat(payload.marker),
+        };
+      }
+
+      case "deleteUserMarkers": {
+        return {
+          ...state,
+          ...{
+            markers: state.markers.filter((el, i, a) => el != a[a.length - 1]),
+          },
+        };
+      }
+
+      case "updateMarkers": {
         return {
           ...state,
 
           ...{
-            markers: state.markers.map(element => {
-
+            markers: state.markers.map((element) => {
               if (element.alt === payload.marker.alt) {
                 return { ...element, ...payload.marker };
               }
               return element;
-
-            })
-          }
+            }),
+          },
         };
       }
 
-      case 'resetUserMarkers': {
+      case "resetUserMarkers": {
         return {
           ...state,
           removeRoutingMachine: true,
           isRoutingVisible: false,
-          markers: []
+          markers: [],
         };
       }
 
@@ -186,15 +186,15 @@ function UserProvider({ children }) {
     }
   }
 
-  const [user] = useState(() => getLocalStorage('user', initialState));
+  const [user] = useState(() => getLocalStorage("user", initialState));
 
   const [state, dispatch] = useReducer(userReducer, user);
 
   useEffect(() => {
-    setLocalStorage('user', state);
+    setLocalStorage("user", state);
   }, [state]);
 
-  const value = { state, dispatch }
+  const value = { state, dispatch };
 
   return (
     <UserStateContext.Provider value={value}>
@@ -206,7 +206,7 @@ function UserProvider({ children }) {
 function userState() {
   const context = useContext(UserStateContext);
   if (context === undefined) {
-    throw new Error('userState must be used within a UserProvider');
+    throw new Error("userState must be used within a UserProvider");
   }
   return context;
 }

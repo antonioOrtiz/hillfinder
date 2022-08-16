@@ -1,13 +1,28 @@
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
 import "leaflet-routing-machine";
-import { startIcon, finishIcon } from "../Icon/";
+import * as esriLeafletGeocoder from "esri-leaflet-geocoder";
 
-export function RoutingMachine({ startingPoints }) {
+import axios from "axios";
+
+import { startIcon, finishIcon } from "../Icon/";
+import { mapState } from "components/Context/MapContext";
+
+import tt from "@tomtom-international/web-sdk-services";
+
+export function RoutingMachine({ amountOfMarkersOnLoad, startingPoints }) {
   const map = useMap();
 
+  var { state } = mapState();
+
+  var { topographyData } = state;
+  var { dispatch } = mapState();
+
+  var [reverseGeocodeData, setReverseGeoCodeData] = useState([]);
+
   const customCallback = (callback) => (context, error, routes) => {
+    if (!routes) return;
     for (const route of routes) {
       route.coordinates = [...route.coordinates, L.latLng(12.33, 49.6753)];
     }
@@ -21,20 +36,60 @@ export function RoutingMachine({ startingPoints }) {
     },
 
     route: function (waypoints, callback, context, options) {
-      console.log("waypoints ", waypoints);
-      console.log("callback ", callback);
-      console.log("context", context);
-      console.log("options ", options);
       const originalCallback = options.callback;
 
       L.Routing.OSRMv1.prototype.route.call(
+        this,
         waypoints,
         customCallback(originalCallback),
-        this,
         options
       );
     },
   });
+
+  useEffect(() => {
+    const updated = [...topographyData];
+
+    updated.map((typoObj, index) => {
+      setTimeout(async () => {
+        /*
+
+        // Also tried this
+
+         function callbackFn(response) {
+           console.log("response", response);
+         }
+         tt.services
+           .reverseGeocode({
+             key: process.env.TOM_TOM_API,
+             position: typoObj.latlng,
+           })
+           .then(callbackFn);
+           */
+        var { latitude, longitude } = typoObj.latlng;
+        var res = await axios(
+          `https://api.tomtom.com/search/2/reverseGeocode/crossStreet/${latitude},${longitude}.json?limit=1&spatialKeys=false&radius=10000&allowFreeformNewLine=false&view=Unified&key=${process.env.TOM_TOM_API}`
+        );
+        var { addresses } = res.data;
+        var { address, position } = addresses[0];
+        var [lat, lng] = position.split(",").map((p) => +p);
+
+        return { ...typoObj, ...{ latlng: { lat, lng }, address } };
+
+        // dispatch({
+        //   type: "setTopographyData",
+        //   payload: {
+        //     ...typoObj,
+        //     latlng: { lat, lng },
+        //     address,
+        //   },
+      }, 5000);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log("topographyData ", topographyData);
+  }, [topographyData.length]);
 
   useEffect(() => {
     if (!map) return;
@@ -83,7 +138,7 @@ export function RoutingMachine({ startingPoints }) {
       position: "bottomright",
 
       routeWhileDragging: true,
-      router: new router(),
+      // router: new router(),
 
       show: true,
       showAlternatives: false,
@@ -92,7 +147,7 @@ export function RoutingMachine({ startingPoints }) {
     }).addTo(map);
 
     return () => map.removeControl(routingControl);
-  }, [map]);
+  }, []);
 
   return null;
 }

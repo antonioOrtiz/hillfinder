@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "NODE_ENV=development next dev -p 6108",
+        "dev": "NODE_ENV=development next dev -p 8016",
         "build": "NODE_ENV=production next build",
         "start": "node_modules/next/dist/bin/next start -p $PORT",
         "find:unused": "next-unused",
@@ -13,6 +13,7 @@
         "@fullhuman/postcss-purgecss": "github:fullhuman/postcss-purgecss",
         "@geoman-io/leaflet-geoman-free": "^2.12.0",
         "@hapi/iron": "6.0.0",
+        "@tomtom-international/web-sdk-services": "^6.20.0",
         "axios": "^0.26.1",
         "bcrypt": "^5.0.1",
         "cloudinary": "^1.29.0",
@@ -59,6 +60,7 @@
         "passport-local": "^1.0.0",
         "postcss-flexbugs-fixes": "^5.0.2",
         "postcss-preset-env": "^6.7.1",
+        "pouchdb": "^7.3.0",
         "process": "^0.11.10",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
@@ -105,5 +107,6 @@
         ],
         "exclude": [],
         "entrypoints": []
-    }
+    },
+    "proxy": "http://localhost:6108"
 }

@@ -11,6 +11,16 @@ import { Draw } from "./Draw";
 import LeafletControlGeocoder from "./GeoSearch";
 import { LocateComponent as Locate } from "./LocateControl";
 import { RoutingMachine } from "./RoutingMachine";
+
+import { mapState } from "components/Context/MapContext";
+
+import {
+  getCurrentValue,
+  getCurrentValueForDegree,
+  max,
+  min,
+} from "utils/index";
+
 import { Spinner } from "./Spinner";
 
 const options = {
@@ -23,54 +33,26 @@ function IntialMarkers({ amountOfMarkersOnLoad, initRadiusForCircle }) {
       return 0;
     })
   );
-  const [topographyData, setTopographyData] = useState([]);
+
+  var { state } = mapState();
+
+  var { topographyData } = state;
+  var { dispatch } = mapState();
+
+  const [reverseGeoCodeData, setReverseGeoCodeData] = useState([]);
   const [startingPointsRoutingMachine, startingPointsForRoutingMachine] =
     useState([]);
   const [init, setInit] = useState(true);
 
-  const handleInitPointsInRoutingMachine = useCallback(
-    (initStartingPoints) => {
-      startingPointsForRoutingMachine(initStartingPoints);
-    },
-    [startingPointsRoutingMachine]
-  );
-
-  function getCurrentValueForDegree(iter, times) {
-    let i = 0;
-
-    function value() {
-      while (i < iter.length * times) {
-        const cur = Math.floor(i / times);
-        i += 1;
-        return iter[cur];
-      }
-    }
-    return value;
-  }
-
-  function getCurrentValue(values) {
-    let index = -1;
-    let l = values.length;
-
-    function increment() {
-      ++index;
-      if (index < l) {
-        return values[index];
-      } else {
-        index = -1;
-        ++index;
-        return values[index];
-      }
-    }
-
-    return increment;
-  }
+  const handleInitPointsInRoutingMachine = (initStartingPoints) => {
+    startingPointsForRoutingMachine(initStartingPoints);
+  };
 
   async function getTopographyData(latLang) {
     var newObj = {};
     newObj.topography = await getTopography(latLang, options);
     newObj.latlng = latLang;
-    setTopographyData((prev) => [...prev, newObj]);
+    dispatch({ type: "setTopographyData", payload: newObj });
   }
 
   let degree = getCurrentValueForDegree(
@@ -82,10 +64,6 @@ function IntialMarkers({ amountOfMarkersOnLoad, initRadiusForCircle }) {
   );
 
   let distance = getCurrentValue([141, 308, 475]);
-  let max = (a, f) =>
-    a.reduce((m, x) => (m["topography"][f] > x["topography"][f] ? m : x));
-  let min = (a, f) =>
-    a.reduce((m, x) => (m["topography"][f] < x["topography"][f] ? m : x));
 
   function setMarkerToSegment(degree, distance) {
     const { lat, lng } = initRadiusForCircle;
@@ -99,17 +77,17 @@ function IntialMarkers({ amountOfMarkersOnLoad, initRadiusForCircle }) {
 
   useEffect(() => {
     if (init) {
-      markers
-        .map(() => setMarkerToSegment(degree, distance))
-        .map((marker) => getTopographyData(marker));
-      setInit(false);
+      if (topographyData.length < amountOfMarkersOnLoad) {
+        markers
+          .map(() => setMarkerToSegment(degree, distance))
+          .map((marker) => getTopographyData(marker));
+      }
     }
-    return () => setInit(true);
-  }, []);
+    return () => setInit(false);
+  }, [amountOfMarkersOnLoad]);
 
   useEffect(() => {
-    // console.log("topographyData ", topographyData);
-    if (topographyData.length === amountOfMarkersOnLoad) {
+    if (topographyData?.length === amountOfMarkersOnLoad) {
       const routingInfo = [];
       const highestEl = max(topographyData, "elevation");
       const lowestEl = min(topographyData, "elevation");
@@ -118,7 +96,7 @@ function IntialMarkers({ amountOfMarkersOnLoad, initRadiusForCircle }) {
 
       handleInitPointsInRoutingMachine(routingInfo);
     }
-  }, [topographyData.length]);
+  }, [topographyData?.length]);
 
   return (
     <>
@@ -126,11 +104,14 @@ function IntialMarkers({ amountOfMarkersOnLoad, initRadiusForCircle }) {
       {startingPointsRoutingMachine.length != true ? (
         <Spinner showOrHide={startingPointsRoutingMachine.length} />
       ) : (
-        <RoutingMachine
-          startingPoints={startingPointsRoutingMachine}
-          options={options}
-          topographyData={topographyData}
-        />
+        <>
+          <RoutingMachine
+            amountOfMarkersOnLoad={amountOfMarkersOnLoad}
+            startingPoints={startingPointsRoutingMachine}
+            options={options}
+            topographyData={topographyData}
+          />
+        </>
       )}{" "}
     </>
   );
@@ -170,8 +151,8 @@ export default function MyMap() {
         radius={cirlcleRadius}
       />{" "}
       <MemoizedInitialMarkers
-        initRadiusForCircle={initRadiusForCircle}
         amountOfMarkersOnLoad={amountOfMarkersOnLoad}
+        initRadiusForCircle={initRadiusForCircle}
       />{" "}
     </MapContainer>
   );
